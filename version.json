@@ -1,0 +1,317 @@
+{
+ "version": "34.1",
+ "base": "34",
+ "fecha": "04/10/2026",
+ "notas": [
+  "Scroll del mapa con el mouse en los bordes (PC)",
+  "Unidades más visibles: plato de luz mate detrás de cada figura",
+  "Solo líderes y unidades especiales tienen nombre propio"
+ ],
+ "archivos": [
+  {
+   "p": "estudio.png",
+   "h": "737cbc0bc26210402ab0f64ec903ebefc2e1a57018d2497985fd01eb247d6456",
+   "n": 78734,
+   "base": true
+  },
+  {
+   "p": "fondo.jpg",
+   "h": "63618e98b5e39c846602bbdaa9c91aa287bdddc5a1de783ba38d34a88b257874",
+   "n": 169064,
+   "base": true
+  },
+  {
+   "p": "index.html",
+   "h": "b4658232d5d9c6cba534d0d2527b720713d673a65ed263ae4a862ef4e3d552ef",
+   "n": 849771
+  },
+  {
+   "p": "mapas/anillo.jpg",
+   "h": "ca269ab3ab155c98f2a168aea81b94f9fd6a8d34b99d1263a5a127e2e5768b67",
+   "n": 16473,
+   "base": true
+  },
+  {
+   "p": "mapas/borde.jpg",
+   "h": "5a60bb9e92cb304bcf4178dd99b3811cc9743a836d63656769933ecf8c30d22b",
+   "n": 10902,
+   "base": true
+  },
+  {
+   "p": "mapas/bosque.jpg",
+   "h": "15f6b89ce39f8ce5a871714d2f0002c79039f166b5fe9258fa1d1e8f41300c45",
+   "n": 13276,
+   "base": true
+  },
+  {
+   "p": "mapas/ciudad.jpg",
+   "h": "2dd131952e811ada5501b1d2c3207695cf061524f3f70beb18b0cfa2bd45d45b",
+   "n": 14880,
+   "base": true
+  },
+  {
+   "p": "mapas/colonias.jpg",
+   "h": "2c87476907d4bc13372e80f864e0ddab175951caeef50f17370885154f4cd8f9",
+   "n": 13792,
+   "base": true
+  },
+  {
+   "p": "mapas/colonias__aldeas.jpg",
+   "h": "bc1c1e561b9d838e50c1ee1f26ac7149dce49603c53e306dcd7abfa84672bd0a",
+   "n": 14284,
+   "base": true
+  },
+  {
+   "p": "mapas/consejo.jpg",
+   "h": "70e5e32286e7e2f5e693cdf5f610c4efa4f0f9a8a9df3bf428a3719847133a18",
+   "n": 7896,
+   "base": true
+  },
+  {
+   "p": "mapas/consejo__aldeas.jpg",
+   "h": "dd6ac157613b7f161a023e55389790cb6a97303886be2f5e1073256813a56ba1",
+   "n": 8076,
+   "base": true
+  },
+  {
+   "p": "mapas/costa.jpg",
+   "h": "2f8d1cd282303d2824286ca68628409af076cc4baac107d26d5a9eb139feb540",
+   "n": 13681,
+   "base": true
+  },
+  {
+   "p": "mapas/cruce.jpg",
+   "h": "76a181ecfaf3b7072c84f7a836466518950aba60ec4bc7b2cc6acc32150d8762",
+   "n": 17258,
+   "base": true
+  },
+  {
+   "p": "mapas/cuadrilla.jpg",
+   "h": "6acccb4b9b3a7999fe57a4cb28d13f3ab5b5e5ab2ef1f70b6042622690cf52b2",
+   "n": 12551,
+   "base": true
+  },
+  {
+   "p": "mapas/cuadrilla__aldeas.jpg",
+   "h": "6b42360cee0b8e16715bc07f35417430ccd43768211313d0f44aa8cea3c31871",
+   "n": 12977,
+   "base": true
+  },
+  {
+   "p": "mapas/cueva.jpg",
+   "h": "05607748ff863942d7c02555210372dc00a52f3516d55195910f1c2e0d9283dc",
+   "n": 17343,
+   "base": true
+  },
+  {
+   "p": "mapas/cueva__aldeas.jpg",
+   "h": "093c2a38c66f2e6f4f53f3a2b8cf702b4a3a136ef27e12366c99ad1881ad62ea",
+   "n": 17710,
+   "base": true
+  },
+  {
+   "p": "mapas/cumbre.jpg",
+   "h": "91be4f07b91b0517309865bf4f0b34f97cbf9e830a452a5e95c092bf20051ae2",
+   "n": 10093,
+   "base": true
+  },
+  {
+   "p": "mapas/cumbre__aldeas.jpg",
+   "h": "8b681d7d3e357ff2ff384c6454775c4c1a5115f0d85e837689fcee1c471972f4",
+   "n": 10327,
+   "base": true
+  },
+  {
+   "p": "mapas/escolta.jpg",
+   "h": "1b5587367d2ab6d2835f1f6eb3e852a95227d350737917c6b1daa179d04012dd",
+   "n": 8353,
+   "base": true
+  },
+  {
+   "p": "mapas/escolta__aldeas.jpg",
+   "h": "295c04be12eef88f2dfa9edfa4f0945f2bb190297d4f418214e25b8ef5ad924e",
+   "n": 8627,
+   "base": true
+  },
+  {
+   "p": "mapas/final_terra.jpg",
+   "h": "633d3bdee8838b48f677a2b61f0e3419f7850319b0e017dd81dcc52b2ca61eef",
+   "n": 14465,
+   "base": true
+  },
+  {
+   "p": "mapas/final_terra__aldeas.jpg",
+   "h": "ab86c745fdcce898448ef5848fbc055016cdce19454dc939f81a7bf5df40ee28",
+   "n": 14724,
+   "base": true
+  },
+  {
+   "p": "mapas/franja.jpg",
+   "h": "d85195aa25a9e441cda20d9ca31111b94dd974f0bdffcd058bf0f1c32ab3bbd9",
+   "n": 13040,
+   "base": true
+  },
+  {
+   "p": "mapas/herida.jpg",
+   "h": "0318d06840f0bfd2eb7ad5194364482fd706be659528be6368a3c44231341008",
+   "n": 13233,
+   "base": true
+  },
+  {
+   "p": "mapas/herida__aldeas.jpg",
+   "h": "6e964c692e9f19df141bdda7a3bb0db01b4d450c5e3882e93a04185a608bc781",
+   "n": 13576,
+   "base": true
+  },
+  {
+   "p": "mapas/isla.jpg",
+   "h": "1795471b2bc98bb0207413701c81f7dcbf5349888925c608334630292ec7392f",
+   "n": 16442,
+   "base": true
+  },
+  {
+   "p": "mapas/leales.jpg",
+   "h": "3c384218e3844e2b7c7b68022618261b4a1d3e48caebe459efba4909c4e19794",
+   "n": 12601,
+   "base": true
+  },
+  {
+   "p": "mapas/leales__aldeas.jpg",
+   "h": "b34972a461b19ff47596d5c97f7ae1b2ffa4a59ca2b16d9b54678360f6144f78",
+   "n": 13001,
+   "base": true
+  },
+  {
+   "p": "mapas/meseta.jpg",
+   "h": "d30fa9b29daadacf98330cee49a75c954ed2f8ab9efb86e09cd8f489b5c7c429",
+   "n": 11831,
+   "base": true
+  },
+  {
+   "p": "mapas/nave.jpg",
+   "h": "4172882cd35bd5c019e51de17aa0477db40dc8c85639f8dc1f06002dfaa3d294",
+   "n": 13317,
+   "base": true
+  },
+  {
+   "p": "mapas/nave__aldeas.jpg",
+   "h": "8592ed0ddf24934224d9e2115e1c7b9055615d323e4304528a6d00c359daaddc",
+   "n": 13706,
+   "base": true
+  },
+  {
+   "p": "mapas/pactos.jpg",
+   "h": "97584cad8f10ca536c763fe3b6021c5367ab9a9850eeea265be72175877b29ce",
+   "n": 13601,
+   "base": true
+  },
+  {
+   "p": "mapas/pantano.jpg",
+   "h": "687db9df1ed789b79df228688e74f89800594ea9d182871011ae5adc1c5580cb",
+   "n": 15519,
+   "base": true
+  },
+  {
+   "p": "mapas/renegados.jpg",
+   "h": "da19eff62020a35e7fcd031ca65e9797fc21d1b2ed05f549520d9fc449ddedd6",
+   "n": 12412,
+   "base": true
+  },
+  {
+   "p": "mapas/renegados__aldeas.jpg",
+   "h": "e06260fa37bd3fa91ae05a138a9b8a0bf51d298101b73d4d0c98fa6156235920",
+   "n": 12873,
+   "base": true
+  },
+  {
+   "p": "mapas/retirada.jpg",
+   "h": "9c1ddb092aca0826baaaf11e68d74973ff718e3278a217bf8e270af641c99c83",
+   "n": 8396,
+   "base": true
+  },
+  {
+   "p": "mapas/retirada__aldeas.jpg",
+   "h": "63a7baedf13393e165b77d28a3ee4870258b1e232736e87925119943d6cefc28",
+   "n": 8700,
+   "base": true
+  },
+  {
+   "p": "mapas/rosa.jpg",
+   "h": "c05a993da304ea3f099209759baf454544a702d4108ee21521eba2d099daf511",
+   "n": 13786,
+   "base": true
+  },
+  {
+   "p": "mapas/ruptura.jpg",
+   "h": "4a530f070615e062c9876d40846b48a860007bea1b62fc0b1a52a93b6fb49dee",
+   "n": 9150,
+   "base": true
+  },
+  {
+   "p": "mapas/ruptura__aldeas.jpg",
+   "h": "955b0c1e2c373ebe31fd37df5e958293fee199a933e3e7ddb8d640223da5780b",
+   "n": 9484,
+   "base": true
+  },
+  {
+   "p": "mapas/tresmanadas.jpg",
+   "h": "3b24a9c2d994eb048ab182d488d0a039f0c638af7d5d3096eefb0dc9f63e9c96",
+   "n": 14544,
+   "base": true
+  },
+  {
+   "p": "mapas/tresmanadas__aldeas.jpg",
+   "h": "8bbc040def668075a97f46cf08491aa3a7095b10c3d26d4dde3d9d81c943fc16",
+   "n": 14948,
+   "base": true
+  },
+  {
+   "p": "mapas/trespueblos.jpg",
+   "h": "27f5564bb1a0d16d31b8cfe1d74c5aeea0035bbf678dba29331080aa396a066d",
+   "n": 14808,
+   "base": true
+  },
+  {
+   "p": "mapas/trespueblos__aldeas.jpg",
+   "h": "db5269e8a3501467130e627a948aac9b0bfd3581347c8a7b0077fbd5ff261896",
+   "n": 15283,
+   "base": true
+  },
+  {
+   "p": "mapas/vado.jpg",
+   "h": "7b235604175b711b410a058c8f25c344697741299dc5208a698d33bb56a681e6",
+   "n": 13286,
+   "base": true
+  },
+  {
+   "p": "mapas/vientos.jpg",
+   "h": "0c126f2899bde4974e9608bd4d0dd29880657f3514f5cd4fe67978d2eeb8d8ec",
+   "n": 21219,
+   "base": true
+  },
+  {
+   "p": "mapas/yeldra.jpg",
+   "h": "fe086e1dd02158bab097109e8f02d69cd83e9a6908f56a8a6d2677945202b01a",
+   "n": 13638,
+   "base": true
+  },
+  {
+   "p": "mapas/yeldra__aldeas.jpg",
+   "h": "e0a4a75ae821aea725b8cab7854731775795a3b2693bdfecd3c35b6a23f0088c",
+   "n": 14249,
+   "base": true
+  },
+  {
+   "p": "mapas/yunque.jpg",
+   "h": "f81961d699f7aef1fbebf0113380fc52ca13117e7ca464b66f217d797e19cb85",
+   "n": 20288,
+   "base": true
+  },
+  {
+   "p": "mapas/yunque6.jpg",
+   "h": "64ab5616ef32b548404ccb18ee238baa623fc58adb763f0b0fe4c3f3cca4de39",
+   "n": 15630,
+   "base": true
+  }
+ ]
+}
