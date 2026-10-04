@@ -1,10 +1,9 @@
 {
- "version": "34.9",
+ "version": "34.10",
  "base": "34",
  "fecha": "04/10/2026",
  "notas": [
-  "9 mapas nuevos para 4, 5 y 6 jugadores",
-  "Multijugador: botón Al azar para elegir la civilización"
+  "Terrarios más fuertes en el bosque: +20% de daño y +4 de vida por turno"
  ],
  "archivos": [
   {
@@ -21,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "814c653f59077901b2b5ddd41332b0960de6bc9138f12daaf951ee974cd97c32",
-   "n": 873517
+   "h": "58519ca0f6e9f550c49b346a3b062fb640abc64eaf76d324e9c03c31390323f7",
+   "n": 873808
   },
   {
    "p": "mapas/anillo.jpg",
