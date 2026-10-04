@@ -943,7 +943,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
       <div class="toggle" id="cfgPantalla"><button data-v="1">Sí</button><button data-v="0">No</button></div></div>
     <div class="setrow"><div><b>Desplazar por los bordes</b><p>En computadora: al acercar el mouse al borde del tablero, el mapa se mueve solo hacia ese lado. Cuanto más cerca del borde, más rápido.</p></div>
       <div class="toggle" id="cfgBordes"><button data-v="1">Sí</button><button data-v="0">No</button></div></div>
-    <div class="setrow"><div><b>Rueda del ratón</b><p>Qué hace la rueda sobre el tablero. Con "desplazar", el zoom se hace con Ctrl + rueda o con los botones + y −.</p></div>
+    <div class="setrow"><div><b>Rueda del ratón</b><p>Qué hace la rueda sobre el tablero. Por defecto hace zoom; para mover el mapa, agarralo con el botón izquierdo y arrastralo. Con "desplazar", el zoom se hace con Ctrl + rueda o con los botones + y −.</p></div>
       <div class="toggle" id="cfgWheel"><button data-v="0">Desplazar</button><button data-v="1">Zoom</button></div></div>
     <div class="setrow"><div><b>Ambiente animado</b><p>Brillo en el agua, humo en las aldeas ocupadas y sombras de nubes cruzando el mapa. Desactivalo si el dispositivo se calienta.</p></div>
       <div class="toggle" id="cfgAmbient"><button data-v="1">Sí</button><button data-v="0">No</button></div></div>
@@ -2278,6 +2278,8 @@ function haloCanvas(type,px,col){
   const out={c,pad}; HALO_CACHE.set(k,out); return out;
 }
 /* plato de luz: un disco difuso, crema y mate, que se dibuja bajo cada unidad (bitmap compartido por tamaño) */
+/* de día el terreno ya es claro y el plato lava los detalles; de noche es lo que las hace legibles */
+const PLATO_FASE=[0.18,0.10,0.18,0.5,1,1];   // mañana, mediodía, tarde, atardecer, noche, noche cerrada
 const PLATO=new Map();
 function platoLuz(rad){
   const r=Math.max(6,Math.round(rad)); let e=PLATO.get(r); if(e) return e;
@@ -2517,7 +2519,7 @@ function draw(){
     if(u.leader){ ctx.beginPath(); ctx.ellipse(x,y+rad*0.68,rad*0.86,rad*0.34,0,0,7); ctx.strokeStyle='#D9C79B'; ctx.lineWidth=1.5; ctx.stroke(); }
     if(has(u,'escudo')){ ctx.beginPath(); ctx.ellipse(x,y+rad*0.68,rad*0.86,rad*0.34,0,0,7); ctx.strokeStyle='rgba(242,230,196,.75)'; ctx.lineWidth=1.8; ctx.stroke(); }
     /* plato de luz mate detrás de la figura: las siluetas oscuras se recortan del terreno oscuro (v34) */
-    { const pl=platoLuz(rad); ctx.drawImage(pl.c,x-pl.m,y-rad*0.1-pl.m,pl.w,pl.w); }
+    { const fz=PLATO_FASE[S.phase]; if(fz>0){ const pl=platoLuz(rad); ctx.globalAlpha=fz; ctx.drawImage(pl.c,x-pl.m,y-rad*0.1-pl.m,pl.w,pl.w); ctx.globalAlpha=1; } }
     /* silueta con contorno oscuro para recortarse del fondo */
     ctx.save(); ctx.shadowColor='rgba(0,0,0,.9)'; ctx.shadowBlur=size*0.22; ctx.shadowOffsetY=size*0.06; drawUnitSprite(ctx,u.type,x,y-rad*0.1,rad*2.2,'rgba(242,230,196,.95)'); ctx.restore();
     const f=FX.flash.get(u.id); if(f){ const p=1-(now-f.t0)/(f.t1-f.t0); ctx.beginPath();ctx.ellipse(x,y-rad*0.05,rad*0.95,rad*1.05,0,0,7); ctx.fillStyle=f.col; ctx.globalAlpha=Math.max(0,p*0.6); ctx.fill(); ctx.globalAlpha=1; }
@@ -2791,7 +2793,7 @@ function previewPath(c,r){
   else if(S.path){ S.path=null; draw(); }
 }
 if(!TOUCH){
-  cv.addEventListener('mousemove',e=>{ if(S.busy||S.over) return; const t=tileFromEvent(e); if(t) previewPath(t.c,t.r); });
+  cv.addEventListener('mousemove',e=>{ if(S.busy||S.over||dragging||dragPend&&(e.buttons&1)) return; const t=tileFromEvent(e); if(t) previewPath(t.c,t.r); });
   cv.addEventListener('mouseleave',()=>{ if(S.path){S.path=null;draw();} });
 }
 cv.addEventListener('click',e=>{
@@ -2837,21 +2839,35 @@ function computeTargets(u){ S.targets.clear(); if(u.acted||u.side!==S.cur) retur
 let endArm=0;
 /* --- desplazamiento y atajos en computadora --- */
 const VIEWPORT=()=>document.getElementById('mapWrap');
-let dragging=null;
+let dragging=null, dragPend=null, dragCorte=0;
 cv.addEventListener('pointerdown',e=>{
-  if(TOUCH) return;
-  const arrastre = e.button===1 || e.button===2 || (e.button===0&&(e.shiftKey||spaceDown));
-  if(!arrastre) return;
-  e.preventDefault(); const w=VIEWPORT();
-  dragging={x:e.clientX,y:e.clientY,l:w.scrollLeft,t:w.scrollTop};
-  cv.setPointerCapture(e.pointerId); cv.style.cursor='grabbing';
+  if(TOUCH||e.pointerType==='touch') return;
+  const w=VIEWPORT();
+  const manual = e.button===1 || e.button===2 || (e.button===0&&(e.shiftKey||spaceDown));
+  if(manual){
+    e.preventDefault();
+    dragging={x:e.clientX,y:e.clientY,l:w.scrollLeft,t:w.scrollTop};
+    cv.setPointerCapture(e.pointerId); cv.style.cursor='grabbing'; return;
+  }
+  /* botón izquierdo: si el puntero se mueve unos píxeles es un arrastre del mapa; si no, sigue siendo un clic normal */
+  if(e.button===0) dragPend={x:e.clientX,y:e.clientY,l:w.scrollLeft,t:w.scrollTop,id:e.pointerId};
 });
 cv.addEventListener('pointermove',e=>{
-  if(!dragging) return; const w=VIEWPORT();
+  const w=VIEWPORT();
+  if(!dragging&&dragPend&&(e.buttons&1)){
+    if(Math.hypot(e.clientX-dragPend.x,e.clientY-dragPend.y)>6){
+      dragging=dragPend; dragging.suave=true; dragPend=null;
+      try{ cv.setPointerCapture(e.pointerId); }catch(_){} cv.style.cursor='grabbing';
+      if(S.path){ S.path=null; }
+    }
+  }
+  if(!dragging) return;
   w.scrollLeft=dragging.l-(e.clientX-dragging.x); w.scrollTop=dragging.t-(e.clientY-dragging.y);
 });
-const endDrag=()=>{ if(dragging){ dragging=null; cv.style.cursor=''; } };
+const endDrag=()=>{ dragPend=null; if(dragging){ if(dragging.suave) dragCorte=performance.now(); dragging=null; cv.style.cursor=''; } };
 cv.addEventListener('pointerup',endDrag); cv.addEventListener('pointercancel',endDrag);
+/* el clic que cierra un arrastre no debe mover ni seleccionar nada */
+cv.addEventListener('click',e=>{ if(performance.now()-dragCorte<400){ e.stopImmediatePropagation(); e.preventDefault(); } },true);
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 /* pellizco para hacer zoom en el celular */
 (function(){
@@ -2870,13 +2886,19 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
   w.addEventListener('touchend',()=>{ if(pinch&&!event.touches.length) pinch=null; },{passive:true});
 })();
 /* rueda: zoom manteniendo el punto bajo el puntero */
+const WHEEL={acc:0,t:0};
 VIEWPORT().addEventListener('wheel',e=>{
   if(TOUCH||S.over||!S.tiles.length) return;
   if(!(e.ctrlKey||e.altKey||CFG.wheelZoom)) return;                 // si no, la rueda desplaza como siempre
   e.preventDefault();
+  WHEEL.acc+=e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1);
+  if(performance.now()-WHEEL.t>350) WHEEL.acc=e.deltaY*(e.deltaMode===1?33:1);   // gesto nuevo: arranca de cero
+  WHEEL.t=performance.now();
+  if(Math.abs(WHEEL.acc)<80) return;
+  const dir=WHEEL.acc<0?1:-1; WHEEL.acc=0;
   const w=VIEWPORT(), rect=cv.getBoundingClientRect();
   const mx=(e.clientX-rect.left)*(cv.width/rect.width), my=(e.clientY-rect.top)*(cv.height/rect.height);
-  const before=S.hex; const nuevo=Math.max(10,Math.min(56,S.hex+(e.deltaY<0?4:-4)));
+  const before=S.hex; const nuevo=Math.max(10,Math.min(56,S.hex+dir*4));
   if(nuevo===before) return;
   const fx=mx/cv.width, fy=my/cv.height;
   S.hex=nuevo; resizeCanvas(); draw();
@@ -2894,6 +2916,8 @@ function panLoop(){
     if(keys.has('ArrowDown')||keys.has('KeyS')) w.scrollTop+=v;
   }
   requestAnimationFrame(panLoop);
+}
+requestAnimationFrame(panLoop);
 
 /* desplazamiento por los bordes (solo mouse): el mapa se mueve hacia el lado donde está el puntero */
 const BORDE={x:0,y:0,dentro:false,px:0,py:0};
@@ -2923,8 +2947,6 @@ const BORDE={x:0,y:0,dentro:false,px:0,py:0};
     requestAnimationFrame(paso);
   })();
 })();
-}
-requestAnimationFrame(panLoop);
 function siguienteUnidad(){
   const s=S.sides[S.cur]; if(!s||!s.human) return;
   const libres=S.units.filter(u=>u.alive&&u.side===S.cur&&!u.acted&&u.mp>0);
@@ -3270,9 +3292,9 @@ async function aiUnit(u,s,L){
 }
 
 /* ---------- 19. MENÚS, NAVEGACIÓN Y CONFIGURACIÓN ---------- */
-const CFG_DEF={pistasOn:true,pistas:{},vozSfx:true,avisoTurno:true,jornadaSfx:true,wakeLock:true,orient:'apaisado',sound:true,vol:0.8,music:true,mvol:0.45,speed:1,hex:32,follow:true,confirmEnd:true,ambient:true,wheelZoom:false,minimap:true,bordes:true,pantalla:true};
+const CFG_DEF={pistasOn:true,pistas:{},vozSfx:true,avisoTurno:true,jornadaSfx:true,wakeLock:true,orient:'apaisado',sound:true,vol:0.8,music:true,mvol:0.45,speed:1,hex:32,follow:true,confirmEnd:true,ambient:true,wheelZoom:true,minimap:true,bordes:true,pantalla:true,rueda34:true};
 const CFG=Object.assign({},CFG_DEF);
-function loadCfg(){ try{ const v=JSON.parse(localStorage.getItem('terrania.cfg')); if(v&&typeof v==='object') Object.assign(CFG,CFG_DEF,v); }catch(e){} }
+function loadCfg(){ try{ const v=JSON.parse(localStorage.getItem('terrania.cfg')); if(v&&typeof v==='object'){ Object.assign(CFG,CFG_DEF,v); if(!v.rueda34){ CFG.wheelZoom=true; CFG.rueda34=true; } } }catch(e){} }
 function saveCfg(){ try{ localStorage.setItem('terrania.cfg',JSON.stringify(CFG)); }catch(e){} }
 function applyCfg(){
   SND.on=!!CFG.sound; SND.vol=+CFG.vol; FX.speed=+CFG.speed; MUSIC.on=!!CFG.music; MUSIC.vol=+CFG.mvol; if(SND.ctx) MUSIC.apply();
@@ -11466,10 +11488,27 @@ function vivoUnidad(id,tipo){
    dibuja en un bitmap chico —con la sombra ya incluida, una sola vez— y se renueva ~10 veces por segundo;
    el resto de los cuadros es una copia. Todas las unidades iguales y del mismo bando comparten bitmap.
    Caminar, atacar y reaccionar siguen dibujándose a mano, cuadro a cuadro. */
+/* contorno de la figura (v34.6): negro de día y blanco de noche, para que se recorte del terreno en cualquier hora.
+   Se arma a partir de la silueta: la figura se copia en 8 direcciones, se tiñe y se pone la figura encima. */
+const CONT_COL=()=>(S.phase>=4?'rgba(246,241,224,.97)':'rgba(5,8,6,.97)');
+function contornear(ox,src,W,H,t,color){
+  ox.setTransform(1,0,0,1,0,0); ox.globalCompositeOperation='source-over'; ox.clearRect(0,0,W,H);
+  const d=t*0.9; ox.drawImage(src,-d,-d); ox.drawImage(src,d,-d); ox.drawImage(src,-d,d); ox.drawImage(src,d,d);   // 4 diagonales alcanzan para 1–2 px de borde
+  ox.globalCompositeOperation='source-in'; ox.fillStyle=color; ox.fillRect(0,0,W,H);
+  ox.globalCompositeOperation='source-over'; ox.drawImage(src,0,0);
+}
+const contT=px=>Math.max(1.3,px*0.032);
+const LIVEC=new Map();                    // lienzos de trabajo para las figuras que se mueven o atacan
+function liveCanvas(px){
+  const k=Math.round(px); let e=LIVEC.get(k); if(e) return e;
+  const W=Math.ceil(3*k), H=Math.ceil(2.9*k), mk=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H; return c; };
+  const a=mk(), b=mk(); e={W,H,ax:Math.round(W/2),ay:Math.ceil(1.85*k),a,ag:a.getContext('2d'),b,bg:b.getContext('2d')};
+  LIVEC.set(k,e); return e;
+}
 const POSES=new Map(); let posesPoda=0;
 function vivoPose(g,tipo,x,y,px,col,mira,t,now){
   const niv=window.rendNivel?window.rendNivel():0;
-  const paso=[0.10,0.14,0.20,0.30][niv]||0.10;
+  const paso=[0.14,0.18,0.25,0.35][niv]||0.14;
   const pxr=Math.max(8,Math.round(px)), sb=g.shadowBlur||0, so=g.shadowOffsetY||0, sc=g.shadowColor;
   const k=tipo+'|'+col+'|'+mira+'|'+pxr+'|'+Math.round(sb);
   let e=POSES.get(k);
@@ -11477,23 +11516,27 @@ function vivoPose(g,tipo,x,y,px,col,mira,t,now){
     const m=Math.ceil(sb*2+Math.abs(so))+3;
     const W=Math.ceil(1.2*pxr+2*m), H=Math.ceil(1.5*pxr+2*m), ax=Math.round(W/2), ay=Math.ceil(1.05*pxr+m);
     const cv1=document.createElement('canvas'), cv2=document.createElement('canvas'); cv1.width=cv2.width=W; cv1.height=cv2.height=H;
-    e={cv:cv2,cx:cv2.getContext('2d'),tmp:cv1,tx:cv1.getContext('2d'),ax,ay,W,H,tq:-1,usado:now,sb,so,sc};
+    const cv3=document.createElement('canvas'); cv3.width=W; cv3.height=H;
+    e={cv:cv2,cx:cv2.getContext('2d'),tmp:cv1,tx:cv1.getContext('2d'),ol:cv3,ox:cv3.getContext('2d'),ax,ay,W,H,tq:-1,usado:now,sb,so,sc};
     POSES.set(k,e);
   }
   const tq=Math.floor(t/paso);
   if(e.tq!==tq){
     /* presupuesto por cuadro: sólo se renuevan unas pocas poses por vez; las demás reusan la anterior (apenas vieja).
        Si todavía no hay bitmap y no queda presupuesto, ese cuadro se dibuja a mano. */
-    const tope=[9,7,5,3][niv]||9, g0=window.__poseGasto||0;
-    if(g0>=tope){ if(e.tq<0) return false; }
+    /* las poses nuevas (nunca dibujadas) tienen su propio presupuesto: si compartieran el de las que sólo se renuevan, en una máquina lenta
+       las primeras unidades lo agotarían cada cuadro y las demás quedarían siempre en el camino caro */
+    const nueva=e.tq<0, tope=(nueva?[22,15,10,6]:[9,7,5,3])[niv]||9, g0=(nueva?window.__poseGastoN:window.__poseGasto)||0;
+    if(g0>=tope){ if(nueva) return false; }
     else {
     const tI=performance.now();
     e.tx.setTransform(1,0,0,1,0,0); e.tx.clearRect(0,0,e.W,e.H);
     VIVO_ARTE.dibujar(e.tx,tipo,e.ax,e.ay,pxr,'quieto',0,tq*paso,mira,col,0,false,null,null,false,0);
     const b=e.cx; b.setTransform(1,0,0,1,0,0); b.clearRect(0,0,e.W,e.H);
-    b.shadowColor=e.sc; b.shadowBlur=e.sb; b.shadowOffsetY=e.so; b.drawImage(e.tmp,0,0);
+    contornear(e.ox,e.tmp,e.W,e.H,contT(pxr),CONT_COL());
+    b.shadowColor=e.sc; b.shadowBlur=e.sb; b.shadowOffsetY=e.so; b.drawImage(e.ol,0,0);
     b.shadowColor='transparent'; b.shadowBlur=0; b.shadowOffsetY=0;
-    e.tq=tq; window.__poseGasto=g0+(performance.now()-tI);
+    e.tq=tq; if(nueva) window.__poseGastoN=g0+(performance.now()-tI); else window.__poseGasto=g0+(performance.now()-tI);
     }
   }
   e.usado=now;
@@ -11546,8 +11589,12 @@ drawUnitSprite=function(g,tipo,x,y,px,col){
     u._px=x; u._mira=mira;
     const colB=(S.sides[u.side]&&S.sides[u.side].color)||col;
     if(anim==='quieto'&&!rxv&&!reb&&!ak&&!window.__sinCachePoses&&vivoPose(g,tipo,x,y,px,colB,mira,t,now)) return;
-    VIVO_ARTE.dibujar(g,tipo,x,y,px,anim,f,t,mira,colB,
-      (ak&&ak.rango)?Math.abs(ak.dx):0, !!(ak&&ak.rango), rxv, reb, !!(ak&&ak.rango&&!ak.hit), (ak&&ak.rango)?ak.dy:0);
+    { const lc=liveCanvas(px);
+      lc.ag.setTransform(1,0,0,1,0,0); lc.ag.clearRect(0,0,lc.W,lc.H);
+      VIVO_ARTE.dibujar(lc.ag,tipo,lc.ax,lc.ay,px,anim,f,t,mira,colB,
+        (ak&&ak.rango)?Math.abs(ak.dx):0, !!(ak&&ak.rango), rxv, reb, !!(ak&&ak.rango&&!ak.hit), (ak&&ak.rango)?ak.dy:0);
+      contornear(lc.bg,lc.a,lc.W,lc.H,contT(px),CONT_COL());
+      g.drawImage(lc.b,Math.round(x-lc.ax),Math.round(y-lc.ay)); }
   }catch(e){ VIVO.fallo=String(e); VIVO.on=false; console.warn('[unidades vivas] apagadas:',e);
     _vivoSprite.apply(this,arguments); }
 };
@@ -11977,7 +12024,7 @@ try{
   aplicarNivel();
   const _drawCap=draw; let ultD=0, tmD=0;
   draw=function(){
-    window.__poseGasto=0;
+    window.__poseGasto=0; window.__poseGastoN=0;
     const n=window.rendNivel();
     if(n>=2){ const ahora=performance.now(), min=n>=3?50:33;
       if(ahora-ultD<min){ if(!tmD) tmD=setTimeout(()=>{ tmD=0; try{ draw(); }catch(e){} },min-(ahora-ultD)); return; }
