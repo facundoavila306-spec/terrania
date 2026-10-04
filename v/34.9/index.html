@@ -1384,7 +1384,8 @@ function applyTraits(u){
   const frac=(u.hp&&u.maxhp)?u.hp/u.maxhp:1;
   u.maxhp=Math.max(1,hp); u.hp=Math.max(1,Math.round(u.maxhp*frac)); u.baseMp=mp;
 }
-const xpNeed0=u=>u.lvl===1?24:u.lvl===2?48:50;
+/* los líderes ascienden muy de a poco: necesitan mucha más experiencia y además ganan la mitad por combate (v34.7) */
+const xpNeed0=u=>u.leader?(u.lvl<=2?100:160):(u.lvl===1?24:u.lvl===2?48:50);
 const xpNeed=u=>Math.max(6,Math.round(xpNeed0(u)*(hasTrait(u,'inteligente')?0.75:1)));
 
 
@@ -1419,6 +1420,17 @@ const MAPS = [
 {id:'yunque6',players:6,name:'La Gran Cordillera',desc:'Mapa ancho de montaña para seis. Los pasos son pocos y valen oro.',w:46,h:24,keeps:[{c:2,r:11},{c:43,r:12},{c:14,r:1},{c:31,r:1},{c:14,r:22},{c:31,r:22}],
  rows:['MMM...MMMMMhFFhhhMMMMMMhhhhhhh....MMMMMMMMM...','MMM...MMMMMhFFhhhMMMMMMhvhhhhh....MMMMMMMMMh..','MMMvhhMMMMMvFFhhMMMMMhh.....v..hhhMMMMMMMMMMMh','MMhhhhMMMMMhFhhMMMv............hhhMMMMMMMMMMMM','hhhhhMMMMMMhhhhMMMh............vMMMMMMMMMMMMMM','hhhhhMMMMMMhFhhhMhh...vFFF.....hhhMMMMMMMMMMMM','hhhhvMMMMMMhFhhhvhh..FhhhhF.....hhhMMMMMMMMMMM','hhhhhMMMMMMhvFFF.hhhhhhMMMv.......hMMMMMMMMMMM','hhhhhMMMMMMhFFF...hhhhMMMMhh......vMMMMMMMMMMh','.hhhhhMMMMMhhhhvhhhvhhMMMMhh.....hhMMMMMMMMMMh','.....hhMMMMMMMMMMMMMMMMMMhhvhhhvMMMMMMhhvvMMMM','.....v.hhhMMMMMMMMMMMMMvhhhhMMMMMMMhhhhhhhMhMM','........hhMMMMMMMMMMMMMhhhhMMMMMMMMhhhhhhhhMhM','.......hhhMMMMMMMMMMMMMhhhhhhMMMMMMhF.hhhhhhhM','hhv...hMMMMMMMMMMMhhhhhhhhhvhhMMMMMhv.hhhhhhMM','hhh..hMMMMMMMMhv......vMMMh...hMMMh~~.hhhhhhhh','hhhhhhMMMMMMhh...FFF...MMMh...hMMMh.F.hhMhhhhh','hhhhhhMMMMMMhhh.FFFF..hMMMh...hMMMhhF.hMMMvhhh','..hhhhMMMMMhhhhMMMMhhMMMMMMMMMMMMMMhhvMMMMMhhh','...hhvMMMMhh.hMMMMMMMMMMMMMMMMMMMMMMhMMMMMMhhh','...hhhMMMMh.vhMMMMMMMMMMMMMMMMMMMMMMMMMMMMMhhh','..hhhhMMMMhv.hhhMMMMMMMMMMMMMMMhMMMMMMMMMMMhhh','MMMMMMMvhhh..hhhMMMMMMMMMMMMMMhMhhhhhMMMMMMhhh','MMMMMMMh...hhhhhhhMMMMMh.hMMMMhFF.vvhhMMMMMMhh']}
 ];
+/* mapas de 4, 5 y 6 bandos generados con herramientas/gen_mapas.js (simétricos por espejo y giro) */
+MAPS.push({"id":"lago4","players":4,"name":"El Lago de los Cuatro","desc":"Cuatro bandos alrededor de un lago central. Los vados son pocos y quien los controle decide la guerra.","w":32,"h":28,"keeps":[{"c":24,"r":21},{"c":7,"r":20},{"c":7,"r":6},{"c":24,"r":7}],"rows":["################################","#############F#F#F#F############","#########FF.F.....F.FF##########","#######hh..F..........hh########","#######....FFFFFvFFFF...hF######","#####FF...F.FFFFFFFFF.....h#####","####h.......F.............Fh####","###hh......F.v.vhv..........####","###h............v...F.......h###","##F..F...Fh............F..F..F##","##F.FF.........~.~....F..FFF.F##","##F.FFF.....v~~~~~~v.....FFF..##","#h...FF.v...~~~~~~~~...v.FF...F#","#F...FF.v...~~~~~~~~...v..Fv..h#","#h..vF..v...~~~~~~~~...v.FF...F#","#F...FF.v...~~~~~~~~...v.FF...h#","##..FFF.....v~~~~~~v.....FFF.F##","##F.FFF..F....~.~.........FF.F##","##F..F..F............hF...F..F##","###h.......F...v............h###","####..........vhv.v.F......hh###","####hF.............F.......h####","#####h.....FFFFFFFFF.F...FF#####","######Fh...FFFFvFFFFF....#######","########hh..........F..hh#######","##########FF.F.....F.FF#########","############F#F#F#F#############","################################"]});
+MAPS.push({"id":"colinas4","players":4,"name":"Las Cuatro Lomas","desc":"Cuatro cerros con su torreón y una cumbre en el medio. Ganar altura es ganar la partida.","w":32,"h":28,"keeps":[{"c":24,"r":21},{"c":7,"r":20},{"c":7,"r":6},{"c":24,"r":7}],"rows":["################################","#############h#h#h#F############","#########hh.hF....h.Fh##########","#######FF.h..FFF.FF...FF########","#######.......FFvF......FF######","#####Fh.......FFF.........F#####","####F...........F.........FF####","###FF........v.v.v.F........####","###h........FM.hv.FF........F###","##h........FM..hh.MM........hF##","##F.......FF...hhM.FFF.......h##","##hF....FFM.FvMMMMv..MF.......##","#h.FFF..v...MMMMMFMM...v..FFF.h#","#h..FFF.vMhhMMFM.MMhhhMv.FFv..h#","#h..vFF.vMhhhMM.MFMMhhMv.FFF..h#","#h.FFF..v...MMFMMMMM...v..FFF.h#","##.......FM..vMMMMvF.MFF....Fh##","##h.......FFF.Mhh...FF.......F##","##Fh........MM.hh..MF........h##","###F........FF.vh.MF........h###","####........F.v.v.v........FF###","####FF.........F...........F####","#####F.........FFF.......hF#####","######FF......FvFF.......#######","########FF...FF.FFF..h.FF#######","##########hF.h....Fh.hh#########","############F#h#h#h#############","################################"]});
+MAPS.push({"id":"cienaga4","players":4,"name":"La Ciénaga Cuádruple","desc":"Barro y bosque cerrado entre cuatro torreones. El que se apura se hunde.","w":32,"h":28,"keeps":[{"c":24,"r":21},{"c":7,"r":20},{"c":7,"r":6},{"c":24,"r":7}],"rows":["################################","#############s#s#s#h############","#########sFssFshssssFs##########","#######hF.ssssssssFsshFh########","#######.....sFs.vssFs...hF######","#####FF.....FFF..FFF......F#####","####h......hsFF..FFF......Fh####","###Fh.......FvFvFvFF........####","###s........FFF.vFF..F......F###","##Fs...h.....FFFFFF........hsF##","##FssF.F....FFFFFFFM...F...sss##","##FFsFFF.FFFFv..F.vFFFFFsFFsss##","#ssss.FFvFFFF..F...FFFMvFFFsFss#","#sss..F.v.FFF..FFF.FFFFvF..vsss#","#sssv..FvFFFF.FFF..FFF.v.F..sss#","#ssFsFFFvMFFF...F..FFFFvFF.ssss#","##sssFFsFFFFFv.F..vFFFF.FFFsFF##","##sss...F...MFFFFFFF....F.FssF##","##Fsh........FFFFFF.....h...sF##","###F......F..FFv.FFF........s###","####........FFvFvFvF.......hF###","####hF......FFF..FFsh......h####","#####F......FFF..FFF.....FF#####","######Fh...sFssv.sFs.....#######","########hFhssFssssssss.Fh#######","##########sFsssshsFssFs#########","############h#s#s#s#############","################################"]});
+MAPS.push({"id":"pentagono5","players":5,"name":"El Pentágono de Ceniza","desc":"Cinco torreones en pentágono alrededor de un lago negro. Nadie está a salvo de dos vecinos a la vez.","w":38,"h":34,"keeps":[{"c":18,"r":5},{"c":32,"r":13},{"c":27,"r":26},{"c":11,"r":26},{"c":5,"r":13}],"rows":["######################################","#################F#F##################","#############FFFF.F.F.FF#F############","###########FF...........F.FF##########","#########FF....F......F.....hF########","#######FFh....................########","######F.....................h.FF######","#####FF....v..............v.....F#####","####F...........................FF####","###FF.........v.......v...........####","###F..F......v.........v.......F..F###","###........v.hv........hv.v.......FF##","##F................v.F.............F##","##F...............s~..F............F##","#FF..............~~~~~..............##","#F...........hv~~~~~~~.v.........F..F#","#F............s~~~~~~~~.............F#","#F.......v...F.~~~~~~~~...........F.F#","#F.........h.F..~~~~~~~.F..vv.......F#","##........vv....~~~~~.....hv.......FF#","##F...v........hv.~..vs........v...F##","##F.h.....v........F.......v.......F##","##hF...............................###","###F...............h..............F###","####..............vv...........F.FF###","####FF.F........v....v...........F####","#####F.........................FF#####","######FF.......................F######","########.....F.....v.........FF#######","########FF.............F...FF#########","##########FF.F...........FF###########","############F#FF.F.F.FFFF#############","##################h#F#################","######################################"]});
+MAPS.push({"id":"estrella5","players":5,"name":"La Estrella de Cinco Puntas","desc":"Cinco valles separados por cordones de montaña. Los pasos son angostos y se pelean a muerte.","w":38,"h":34,"keeps":[{"c":18,"r":5},{"c":32,"r":13},{"c":27,"r":26},{"c":11,"r":26},{"c":5,"r":13}],"rows":["######################################","#################F#F##################","#############hhFFFF.FFFF#h############","###########hh.M.........M.hF##########","#########Fh.................Fh########","#######hFF.....h.......F....F.########","######F......hhh......hhh.....Fh######","#####hF....v..h.........h.v.....h#####","####hM.........F.....FFF........Mh####","###FF...hh...Fv.......vFF...hM....####","###F...hh..FFv.......M.v.FF.hh...FF###","###.....h.Fv..vMM....MMhv.vF......FF##","##F.......F..MMM...v..MMM..........F##","##F...........M....M....M..........F##","#FF..............MMMMM.............F##","#h............vMMMMMMMMv............F#","#h...hh........MMMhhMMM......F.hh..Mh#","#hM..Mh.Fv.M...MMMhhMMM..MM..F.hh...h#","#h....h.FF.hM...MMMMMMM..MMvvF.hh...h#","##........vvMM..MMMMMM..MMhvF......Fh#","##h...v..F..M...v.M..v...M.FF..v...h##","##FF......v................vF.....Fh##","##Fh...hh.F......MMM.........hh....###","###F...hhh......hMMhM........hM...F###","####....h.........vv........hh...Fh###","####hM.........FvFFFFvF.........Mh####","#####h..............F..........Fh#####","######FF......hhh....hhh......FF######","########F......hh..v..M......FF#######","########FFFF..............FFF#########","##########FF.M...........FF###########","############h#Fh.hFF.FFhh#############","##################F#h#################","######################################"]});
+MAPS.push({"id":"valles5","players":5,"name":"Los Cinco Valles","desc":"Bosques y llanuras abiertas, muchas aldeas. Un mapa de movimiento rápido y alianzas cambiantes.","w":38,"h":34,"keeps":[{"c":18,"r":5},{"c":32,"r":13},{"c":27,"r":26},{"c":11,"r":26},{"c":5,"r":13}],"rows":["######################################","#################F#h##################","#############FFhhFh.F.FF#h############","###########hFh..........F.FF##########","#########hh..h..........h...FF########","#######Fh.....................########","######F......FF........FFF....hF######","#####Fh....vFFF....h...FFFvF....h#####","####hh...FFFF.....hF....FFFF...hhF####","###FF....FF...v..F.F..v...FFFF....####","###F......F..v..FFFFFF.v....F.....h###","###........v..v.FFFFF...v.v.......Fh##","##h..........F....Fv.....F.........h##","##h......h.FFF....F.....FF.........F##","#FF......h.FFF.........FFFF.hh......##","#F.........FFFvF.......vFFF.........F#","#h........FFF.F.........FFFF.......hF#","#Fhh.F...v................F....F..h.F#","#F...FFF...................vv.FFF...h#","##....FF..vv...F.....F.....v..FFF..hF#","##h...vF....FF.Fv....vFF.F....Fv...h##","##h...FFF.v.FFFFF....FFFFF.v.FFF...F##","##Fh...FF.....FFF....FFFF....FF....###","###F.........hFFF...FFF..h....F...h###","####........hh....vv....h......h.FF###","####Fh..........v....v..........hF####","#####F...........F...F.........hh#####","######hF.......FFFFFFF.........h######","########........FFFvF.F......hF#######","########hhF............h...Fh#########","##########hF.hh..........Fh###########","############F#FF.h.h.FhFh#############","##################F#F#################","######################################"]});
+MAPS.push({"id":"hexagono6","players":6,"name":"El Hexágono Quebrado","desc":"Seis torreones en hexágono y un centro de colinas para disputar. Grande y parejo.","w":44,"h":38,"keeps":[{"c":22,"r":5},{"c":35,"r":11},{"c":35,"r":25},{"c":21,"r":32},{"c":8,"r":26},{"c":8,"r":12}],"rows":["############################################","#################F#hhFFFhF#F################","#############F#FF.....F...h.FF##############","###########hh.F.............FFFh############","#########hF.h.F..............F.hhF##########","#########F.F..F..............F...FFF########","#######FF.FFF................v.FF.F.F#######","######h..h....v..FFF...FFF..........hF######","#####hF.........FFFF....FvFF..........h#####","#####........F.FFFvF.h..FFFF.F........FF####","####F.......FFFFFFFF.hh.FFFFFFFF......FF####","###h.......FFFvFvvFF..h.FFvvFFvFF.......h###","###F.........FFFF.FF....F..FFFF.F.......h###","##h...........FFFF.MMhM.MM.FF............F##","##F......F..hh...MMhhhvh..M..hhh.........F##","##F.h....F.F..h.MhhhhMh.hh.M..h..FFF.....F##","#hFF....FFFFFF.MMvhMMFMM.hvh...FFvFF.....F##","#F.FF...FFvFFF.Mhh.MM.FFMMhhMFFFFFFF...FF.F#","#h..F....FFvF.FMhhMMF...FMhhM.FvFFF..v...hh#","#hh...v..FFFvF.MhhMF...FMMhhMF.FvFF....F..h#","#F.FF...FFFFFFFMhhMMFF.MM.hhM.FFFvFF...FF.F#","##F.....FFvFF...hvh.MMFMMhvMM.FFFFFF....FFh#","##F.....FFF..h..M.hh.hMhhhhM.h..F.F....h.F##","##F.........hhh..M..hvhhhMM...hh..F......F##","##F............FF.MM.MhMM.FFFF...........h##","###h.......F.FFFF..F....FF.FFFF.........F###","###h.......FFvFFvvFF.h..FFvvFvFFF.......h###","####FF......FFFFFFFF.hh.FFFFFFFF.......F####","####FF........F.FFFF..h.FvFFF.F........#####","#####h..........FFvF....FFFF.........Fh#####","######Fh..........FFF...FFF..v....h..h######","#######F.F.FF.v................FFF.FF#######","########FFF...F..............F..F.F#########","##########Fhh.F..............F.h.Fh#########","############hFFF.............F.hh###########","##############FF.h...F.....FF#F#############","################F#FhFFFhh#F#################","############################################"]});
+MAPS.push({"id":"corona6","players":6,"name":"La Corona de Seis Picos","desc":"Seis bandos bajo una corona de montañas. Pocos pasos, muchas emboscadas.","w":44,"h":38,"keeps":[{"c":22,"r":5},{"c":35,"r":11},{"c":35,"r":25},{"c":21,"r":32},{"c":8,"r":26},{"c":8,"r":12}],"rows":["############################################","#################h#hhFFhFF#h################","#############h#FhFF.......hFFF##############","###########hh.F.FF........FFF.hh############","#########FF.....FF.......F.F....hh##########","#########F......F.F.......FF......FF########","#######hFF......FF........FF.v....FFh#######","######FFFFFF..v.F........FF......FFFhF######","#####hh..FFF......FF.FFF.v.....FFF....F#####","#####....F..F.....v.....F......FF.F...hF####","####F.......F....F........F....F.......F####","###h.........FvFvv...MM...vvF.v.........h###","###h.............M.hhMMMh.F...FF........h###","##FF.......FF....MMMMMMMMM.h....F.......Fh##","##hF.FF....F....hMMMM.vMMMMM.M..F....F.FFh##","##FFFF........MMMMMMMM.MMMMMMM...F....FFFF##","#FF.FFFFF.F....MMvMMMMMMM.vMMh...vF.FFF..F##","#F........vF..hMMM.M....MM.MMh......F.....h#","#h.........v.MMMMMM..F..MMMMMM.vF....v....h#","#h....v....Fv.MMMMMM..F..MMMMMM.v.........h#","#h.....F......hMM.MM....M.MMMh..Fv........F#","##F..FFF.Fv...hMMv.MMMMMMMvMM....F.FFFFF.FF#","##FFFF....F...MMMMMMM.MMMMMMMM........FFFF##","##hFF.F....F..M.MMMMMv.MMMMh....F....FF.Fh##","##hF.......F....h.MMMMMMMMM....FF.......FF##","###h........FF...F.hMMMhh.M.............h###","###h.........v.Fvv...MM...vvFvF.........h###","####F.......F....F........F....F.......F####","####Fh...F.FF......F.....v.....F..F....#####","#####F....FFF.....v.FFF.FF......FFF..hh#####","######FhFFF......FF........F.v..FFFFFF######","#######hFF....v.FF........FF......FFh#######","########FF......FF.......F.F......F#########","##########hh....F.F.......FF.....FF#########","############hh.FFF........FF.F.hh###########","##############FFFh.......FFhF#h#############","################h#FFhFFhh#h#################","############################################"]});
+MAPS.push({"id":"laguna6","players":6,"name":"La Laguna de los Seis","desc":"Una laguna enorme en el centro y seis orillas para pelear. Las costas se juegan por los vados.","w":44,"h":38,"keeps":[{"c":21,"r":4},{"c":36,"r":12},{"c":36,"r":26},{"c":22,"r":33},{"c":7,"r":25},{"c":7,"r":11}],"rows":["############################################","#################F#FFFFFFh#F################","#############F#FF.........FFFF##############","###########FFFFF............FFFF############","#########FFFFFF.............MFFFFF##########","#########FFFFFF..............FFFFFFF########","#######FF.FFFvFF........h...FvFFFMFFF#######","######F.....FFF....FF..F....FFFF....Fh######","#####FF.......Fs.v...F...v..ssF.......F#####","#####...hh....s..F..........s.........FF####","####F.....h..v.FFv.......sFF.....h.....F####","###F.......F...FvFs......svvF.v.........F###","###F...........sF.s.......Fss...F.......F###","##F..h.....F....s........................F##","##F...hh.F........s..~v~........F.F......F##","##F................~~~~~~~........F......F##","#FFF.....v......v~~~~~~~~~v.............FF##","#FFFFF.....Fss...~~~~~~~~~~....s.Fv..F.FFFF#","#FFFFvFFs.FvF..s.~~~~~~~~~~...sFvF.s.FFFFFF#","#FFFFFF.s.FvFs...~~~~~~~~~~.s..FvF.sFFvFFFF#","#FFFF.F..vF.s....~~~~~~~~~~...ssF.....FFFFF#","##FF.............v~~~~~~~~~v......v.....FFF#","##F......F........~~~~~~~................F##","##F......F.F........~v~..s........F.hh...F##","##F........................s....F.....h..F##","###F.......F...ssF.......s.Fs...........F###","###F.........v.Fvvs......sFvF...F.......F###","####F.....h.....FFs.......vFF.v..h.....F####","####FF.........s..........F..s....hh...#####","#####F.......Fss..v...F...v.sF.......FF#####","######hF....FFFF....F..FF....FFF.....F######","#######FFFMFFFvF...h........FFvFFF.FF#######","########FFFFFFF..............FFFFFF#########","##########FFFFFM.............FFFFFF#########","############FFFF............FFFFF###########","##############FFFF.........FF#F#############","################F#hFFFFFF#F#################","############################################"]});
+
 const SIDE_COLORS=[['#5AA7D8','Azul'],['#E05B5B','Rojo'],['#8CC23F','Verde'],['#E9C84A','Amarillo'],['#B07CE0','Violeta'],['#F08A3D','Naranja']];
 
 /* ---------- 5. ESTADO ---------- */
@@ -1708,7 +1720,7 @@ async function kill(dead,killer){
 const PENDING=new Set();
 function gainXP(u,amount){
   if(!u.alive) return;
-  u.xp+=Math.max(1,amount);
+  u.xp+=Math.max(1,u.leader?Math.round(amount*0.5):amount);
   const nx=def(u).next;
   if(nx&&nx.length&&u.xp>=xpNeed(u)) PENDING.add(u);
   else if(!nx&&u.xp>=50){ u.xp-=50; u.maxhp+=3; u.hp=u.maxhp; SND.play('village'); floatText(u,'+3 PV máx.','#D9C79B',0.9); log(`✦ <b>${def(u).name}</b> se endurece: +3 de vida máxima.`); }
@@ -2057,16 +2069,19 @@ function checkEnd(){
     }
     S.sides.forEach(s=>{ if(s.team!==ganador) s.alive=false; }); teams=[ganador];
   }
-  if(teams.length<=1){
-    S.over=true; const t=teams[0], win=t!=null?teamSides(t).filter(s=>s.alive):[];
+  /* si caen todos los jugadores humanos, la partida termina aunque las IA sigan peleando entre sí: antes se quedaba mirando
+     una guerra ajena sin pantalla de derrota */
+  const derrotaHumana=teams.length>1&&S.sides.some(s=>s.human)&&!S.sides.some(s=>s.alive&&s.human);
+  if(teams.length<=1||derrotaHumana){
+    S.over=true; const t=derrotaHumana?null:teams[0], win=t!=null?teamSides(t).filter(s=>s.alive):[];
     const porEquipos=new Set(S.sides.map(s=>s.team)).size<S.sides.length;
     const humanWins=win.some(s=>s.human), soloYo=S.sides.filter(x=>x.human).length===1;
-    document.getElementById('overTitle').textContent=!win.length?'Todos caen':(soloYo?(humanWins?'Victoria':'Derrota'):(porEquipos?`Gana el equipo ${t}`:`Gana el bando ${win[0].colorName.toLowerCase()}`));
+    document.getElementById('overTitle').textContent=derrotaHumana?(S.sides.filter(x=>x.human).length===1?'Derrota':'Cayeron todos los jugadores'):!win.length?'Todos caen':(soloYo?(humanWins?'Victoria':'Derrota'):(porEquipos?`Gana el equipo ${t}`:`Gana el bando ${win[0].colorName.toLowerCase()}`));
     const nombres=win.map(s=>`${s.colorName.toLowerCase()} (${FACTIONS[s.fac].name})`).join(' y ');
-    document.getElementById('overText').textContent=!win.length?'No queda nadie en pie sobre Terrania.':
+    document.getElementById('overText').textContent=derrotaHumana?'Tu líder cayó y tu bando se retiró del campo. La guerra por Terrania sigue, pero ya sin vos.':!win.length?'No queda nadie en pie sobre Terrania.':
       (humanWins?`${win.length>1?'Los bandos':'El bando'} ${nombres} controla${win.length>1?'n':''} el campo. El planeta cambió de dueño.`
                 :`${win.length>1?'Los bandos':'El bando'} ${nombres} se impuso. Tu líder no volverá a firmar nada.`);
-    avanzarCampana(win,humanWins); profRegistrar(); buildStats(); wakeApagar(); registrarPartidaAnonima();
+    for(const f of [()=>avanzarCampana(win,humanWins),profRegistrar,buildStats,wakeApagar,registrarPartidaAnonima]){ try{ f(); }catch(err){ logError('checkEnd',err); } }
     document.getElementById('over').classList.remove('hidden');
   }
 }
@@ -3100,7 +3115,38 @@ function aiRecruitPick(s,L){
   const order=roster.slice().sort((a,b)=>score[b]-score[a]);
   return order.find(afford)||null;
 }
+let AI_RUN=0;
 async function aiTurn(s){
+  const my=++AI_RUN; S.aiBeat=performance.now();
+  try{ await aiTurnInner(s,my); }
+  catch(err){
+    logError('aiTurn',err);
+    if(my===AI_RUN&&!S.over){ S.aiK=null; S.busy=false; try{ draw(); }catch(_){} nextSide(); }
+  }
+}
+function logError(donde,err){
+  try{ const m=(err&&(err.stack||err.message))||String(err);
+    localStorage.setItem('terrania.lastError',JSON.stringify({t:Date.now(),donde,turno:S&&S.turn,msg:String(m).slice(0,1500)})); }catch(_){}
+  try{ console.error('[Terrania]',donde,err); }catch(_){}
+}
+window.addEventListener('error',e=>logError('window',e.error||e.message));
+window.addEventListener('unhandledrejection',e=>logError('promesa',e.reason));
+// vigilante: si el turno queda colgado, lo destraba solo
+setInterval(()=>{ try{
+  if(typeof S==='undefined'||!S||!S.sides||S.over||!S.busy) return;
+  if(document.getElementById('game').classList.contains('hidden')) return;
+  const cur=S.sides[S.cur]; if(!cur) return;
+  const dlg=document.getElementById('advDlg'); if(dlg&&!dlg.classList.contains('hidden')) return;
+  const ahora=performance.now();
+  if(cur.human){
+    if(FX.running||S.path) { S.busyT=0; return; }
+    S.busyT=S.busyT||ahora; if(ahora-S.busyT>8000){ S.busyT=0; S.busy=false; logError('vigilante','humano busy colgado'); refreshUI(); draw(); }
+  } else if(!NET.on||NET.host){
+    if(FX.running) { S.aiBeat=ahora; return; }
+    if(ahora-(S.aiBeat||ahora)>30000){ S.aiBeat=ahora; AI_RUN++; S.aiK=null; S.busy=false; logError('vigilante','IA colgada'); nextSide(); }
+  }
+}catch(_){} },2000);
+async function aiTurnInner(s,my){
   const L=aiLevel(s); const K=aiKnows(s);
   let guard=0;
   while(canRecruitFrom(s)&&freeCastleTiles(s).length&&guard++<8){
@@ -3137,6 +3183,7 @@ async function aiTurn(s){
     draw();refreshUI();
     if(FX.speed>0) await wait(140/FX.speed);
   }
+  if(my!==AI_RUN) return;
   S.aiK=null; S.busy=false; draw(); if(!S.over){ nextSide(); if(NET.on&&NET.host) NET.enviar(); }
 }
 function aiBestAttack(u,s,L){
@@ -4052,7 +4099,10 @@ function renderLobby(sala){
     const facs=document.createElement('div'); facs.className='facs';
     FAC_IDS.forEach(f=>{ const F=FACTIONS[f], b=document.createElement('button'); b.style.setProperty('--f',F.color);
       b.textContent=`${F.sigil} ${F.name.replace(/^(Los|La) /,'')}`; b.setAttribute('aria-pressed',sl.fac===f);
-      b.disabled=!(mio||NET.host); b.onclick=()=>NET.cambiarSlot(i,'fac',f); facs.appendChild(b); });
+      b.disabled=!(mio||NET.host); b.onclick=async()=>{ if(sl.azar) await NET.cambiarSlot(i,'azar',false); NET.cambiarSlot(i,'fac',f); }; facs.appendChild(b); });
+    { const bz=document.createElement('button'); bz.type='button'; bz.textContent='🎲 Al azar'; bz.title='La civilización se sortea al empezar la partida';
+      bz.setAttribute('aria-pressed',!!sl.azar); for(const x of facs.querySelectorAll('button')) if(sl.azar) x.setAttribute('aria-pressed','false');
+      bz.disabled=!(mio||NET.host); bz.onclick=()=>NET.cambiarSlot(i,'azar',!sl.azar); facs.appendChild(bz); }
     d.appendChild(facs);
     if(NET.host){ const t=document.createElement('div'); t.className='teamsel'; t.innerHTML='<span>Equipo</span>';
       for(let k=1;k<=sala.slots.length;k++){ const b=document.createElement('button'); b.textContent=k; b.setAttribute('aria-pressed',sl.team===k);
@@ -7050,11 +7100,12 @@ const NET={
     up['slots/'+i+'/userId']=u.id; up['slots/'+i+'/nombre']=u.name; up['slots/'+i+'/tipo']='humano';
     await this.fb.update(this.ref(),up);
   },
-  async cambiarSlot(i,campo,valor){ if(!this.host&&campo!=='fac') return; await this.fb.update(this.ref(),{['slots/'+i+'/'+campo]:valor}); },
+  async cambiarSlot(i,campo,valor){ if(!this.host&&campo!=='fac'&&campo!=='azar') return; await this.fb.update(this.ref(),{['slots/'+i+'/'+campo]:valor}); },
   async cambiarCfg(campo,valor){ if(!this.host) return; await this.fb.update(this.ref(),{['cfg/'+campo]:valor}); },
   async empezar(){
     if(!this.host) return;
     const sala=this.sala;
+    if(!sala.semilla){ sala.slots.forEach((sl,i)=>{ if(sl.azar){ sl.fac=FAC_IDS[Math.floor(Math.random()*FAC_IDS.length)]; sl.azar=false; try{ this.fb.update(this.ref(),{['slots/'+i+'/fac']:sl.fac,['slots/'+i+'/azar']:false}); }catch(e){} } }); }
     if(sala.semilla){
       const g=JSON.parse(sala.semilla);
       aplicarEstado(g);
@@ -8283,7 +8334,7 @@ if(typeof aplicarEstado==='function'){
 
 function herMostrarFinalRecibido(g){
   if(S.over) return;
-  S.over=true; S.busy=false; S.sel=null; S.reach=null;
+  S.over=true; S.busy=false; S.sel=null; S.reach=null; AI_RUN++;
   try{ S.targets&&S.targets.clear(); }catch(e){}
   try{
     if(g.overTitle) document.getElementById('overTitle').textContent=g.overTitle;

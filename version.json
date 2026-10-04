@@ -1,9 +1,10 @@
 {
- "version": "34.8",
+ "version": "34.9",
  "base": "34",
  "fecha": "04/10/2026",
  "notas": [
-  "Arreglo: la partida ya no se puede quedar trabada (vigilante de turno + registro de errores)"
+  "9 mapas nuevos para 4, 5 y 6 jugadores",
+  "Multijugador: botón Al azar para elegir la civilización"
  ],
  "archivos": [
   {
@@ -20,8 +21,8 @@
   },
   {
    "p": "index.html",
-   "h": "ae8dafcb1a0e0cb7a31e6fefbb4bd461c7cbf64880fbaa31a898e1e5e916255d",
-   "n": 857651
+   "h": "814c653f59077901b2b5ddd41332b0960de6bc9138f12daaf951ee974cd97c32",
+   "n": 873517
   },
   {
    "p": "mapas/anillo.jpg",
