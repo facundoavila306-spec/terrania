@@ -606,6 +606,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
         <li><button data-go="campana"><span class="ico">🔥</span><span class="lbl">Campaña</span><span>Cuatro batallas encadenadas por Terrania</span></button></li>
         <li><button data-go="story"><span class="ico">📖</span><span class="lbl">Historia</span><span>La crónica de Terrania, las facciones y las reglas</span></button></li>
         <li><button data-go="settings"><span class="ico">⚙</span><span class="lbl">Configuración</span><span>Sonido, animaciones y tablero</span></button></li>
+        <li id="liSalirJuego" class="hidden"><button type="button" id="btnSalirJuego" data-menu="salir"><span class="ico">⏻</span><span class="lbl">Salir del juego</span><span>Cerrar la aplicación</span></button></li>
       </ul>
     </div>
     <div class="main-foot estudioFoot"><img src="estudio.png" alt="El Gallo McFlay" class="estudioLogo"><span>© 2026 Facundo · El Gallo McFlay · La Batalla por Terrania <span id="verTxt">v34</span> · <button type="button" id="btnCreditos" class="linkbtn">Créditos y licencias</button> · <button type="button" id="btnUpdMenu" class="linkbtn">↻ Buscar actualización</button></span></div>
@@ -938,9 +939,11 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
       <div class="toggle" id="cfgFollow"><button data-v="1">Sí</button><button data-v="0">No</button></div></div>
     <div class="setrow"><div><b>Minimapa</b><p>Un mapa chico en la esquina del tablero. Tocalo o arrastralo para saltar a esa zona.</p></div>
       <div class="toggle" id="cfgMini"><button data-v="1">Sí</button><button data-v="0">No</button></div></div>
+    <div class="setrow hidden" id="rowPantalla"><div><b>Pantalla completa</b><p>Solo en la versión instalada. También podés alternar con la tecla F11.</p></div>
+      <div class="toggle" id="cfgPantalla"><button data-v="1">Sí</button><button data-v="0">No</button></div></div>
     <div class="setrow"><div><b>Desplazar por los bordes</b><p>En computadora: al acercar el mouse al borde del tablero, el mapa se mueve solo hacia ese lado. Cuanto más cerca del borde, más rápido.</p></div>
       <div class="toggle" id="cfgBordes"><button data-v="1">Sí</button><button data-v="0">No</button></div></div>
-    <div class="setrow"><div><b>Rueda del ratón</b><p>Qué hace la rueda sobre el tablero. Con "desplazar", el zoom se hace con Ctrl + rueda o con los botones + y −.</p></div>
+    <div class="setrow"><div><b>Rueda del ratón</b><p>Qué hace la rueda sobre el tablero. Por defecto hace zoom; para mover el mapa, agarralo con el botón izquierdo y arrastralo. Con "desplazar", el zoom se hace con Ctrl + rueda o con los botones + y −.</p></div>
       <div class="toggle" id="cfgWheel"><button data-v="0">Desplazar</button><button data-v="1">Zoom</button></div></div>
     <div class="setrow"><div><b>Ambiente animado</b><p>Brillo en el agua, humo en las aldeas ocupadas y sombras de nubes cruzando el mapa. Desactivalo si el dispositivo se calienta.</p></div>
       <div class="toggle" id="cfgAmbient"><button data-v="1">Sí</button><button data-v="0">No</button></div></div>
@@ -2788,7 +2791,7 @@ function previewPath(c,r){
   else if(S.path){ S.path=null; draw(); }
 }
 if(!TOUCH){
-  cv.addEventListener('mousemove',e=>{ if(S.busy||S.over) return; const t=tileFromEvent(e); if(t) previewPath(t.c,t.r); });
+  cv.addEventListener('mousemove',e=>{ if(S.busy||S.over||dragging||dragPend&&(e.buttons&1)) return; const t=tileFromEvent(e); if(t) previewPath(t.c,t.r); });
   cv.addEventListener('mouseleave',()=>{ if(S.path){S.path=null;draw();} });
 }
 cv.addEventListener('click',e=>{
@@ -2834,21 +2837,35 @@ function computeTargets(u){ S.targets.clear(); if(u.acted||u.side!==S.cur) retur
 let endArm=0;
 /* --- desplazamiento y atajos en computadora --- */
 const VIEWPORT=()=>document.getElementById('mapWrap');
-let dragging=null;
+let dragging=null, dragPend=null, dragCorte=0;
 cv.addEventListener('pointerdown',e=>{
-  if(TOUCH) return;
-  const arrastre = e.button===1 || e.button===2 || (e.button===0&&(e.shiftKey||spaceDown));
-  if(!arrastre) return;
-  e.preventDefault(); const w=VIEWPORT();
-  dragging={x:e.clientX,y:e.clientY,l:w.scrollLeft,t:w.scrollTop};
-  cv.setPointerCapture(e.pointerId); cv.style.cursor='grabbing';
+  if(TOUCH||e.pointerType==='touch') return;
+  const w=VIEWPORT();
+  const manual = e.button===1 || e.button===2 || (e.button===0&&(e.shiftKey||spaceDown));
+  if(manual){
+    e.preventDefault();
+    dragging={x:e.clientX,y:e.clientY,l:w.scrollLeft,t:w.scrollTop};
+    cv.setPointerCapture(e.pointerId); cv.style.cursor='grabbing'; return;
+  }
+  /* botón izquierdo: si el puntero se mueve unos píxeles es un arrastre del mapa; si no, sigue siendo un clic normal */
+  if(e.button===0) dragPend={x:e.clientX,y:e.clientY,l:w.scrollLeft,t:w.scrollTop,id:e.pointerId};
 });
 cv.addEventListener('pointermove',e=>{
-  if(!dragging) return; const w=VIEWPORT();
+  const w=VIEWPORT();
+  if(!dragging&&dragPend&&(e.buttons&1)){
+    if(Math.hypot(e.clientX-dragPend.x,e.clientY-dragPend.y)>6){
+      dragging=dragPend; dragging.suave=true; dragPend=null;
+      try{ cv.setPointerCapture(e.pointerId); }catch(_){} cv.style.cursor='grabbing';
+      if(S.path){ S.path=null; }
+    }
+  }
+  if(!dragging) return;
   w.scrollLeft=dragging.l-(e.clientX-dragging.x); w.scrollTop=dragging.t-(e.clientY-dragging.y);
 });
-const endDrag=()=>{ if(dragging){ dragging=null; cv.style.cursor=''; } };
+const endDrag=()=>{ dragPend=null; if(dragging){ if(dragging.suave) dragCorte=performance.now(); dragging=null; cv.style.cursor=''; } };
 cv.addEventListener('pointerup',endDrag); cv.addEventListener('pointercancel',endDrag);
+/* el clic que cierra un arrastre no debe mover ni seleccionar nada */
+cv.addEventListener('click',e=>{ if(performance.now()-dragCorte<400){ e.stopImmediatePropagation(); e.preventDefault(); } },true);
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 /* pellizco para hacer zoom en el celular */
 (function(){
@@ -2867,13 +2884,19 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
   w.addEventListener('touchend',()=>{ if(pinch&&!event.touches.length) pinch=null; },{passive:true});
 })();
 /* rueda: zoom manteniendo el punto bajo el puntero */
+const WHEEL={acc:0,t:0};
 VIEWPORT().addEventListener('wheel',e=>{
   if(TOUCH||S.over||!S.tiles.length) return;
   if(!(e.ctrlKey||e.altKey||CFG.wheelZoom)) return;                 // si no, la rueda desplaza como siempre
   e.preventDefault();
+  WHEEL.acc+=e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1);
+  if(performance.now()-WHEEL.t>350) WHEEL.acc=e.deltaY*(e.deltaMode===1?33:1);   // gesto nuevo: arranca de cero
+  WHEEL.t=performance.now();
+  if(Math.abs(WHEEL.acc)<80) return;
+  const dir=WHEEL.acc<0?1:-1; WHEEL.acc=0;
   const w=VIEWPORT(), rect=cv.getBoundingClientRect();
   const mx=(e.clientX-rect.left)*(cv.width/rect.width), my=(e.clientY-rect.top)*(cv.height/rect.height);
-  const before=S.hex; const nuevo=Math.max(10,Math.min(56,S.hex+(e.deltaY<0?4:-4)));
+  const before=S.hex; const nuevo=Math.max(10,Math.min(56,S.hex+dir*4));
   if(nuevo===before) return;
   const fx=mx/cv.width, fy=my/cv.height;
   S.hex=nuevo; resizeCanvas(); draw();
@@ -3267,9 +3290,9 @@ async function aiUnit(u,s,L){
 }
 
 /* ---------- 19. MENÚS, NAVEGACIÓN Y CONFIGURACIÓN ---------- */
-const CFG_DEF={pistasOn:true,pistas:{},vozSfx:true,avisoTurno:true,jornadaSfx:true,wakeLock:true,orient:'apaisado',sound:true,vol:0.8,music:true,mvol:0.45,speed:1,hex:32,follow:true,confirmEnd:true,ambient:true,wheelZoom:false,minimap:true,bordes:true};
+const CFG_DEF={pistasOn:true,pistas:{},vozSfx:true,avisoTurno:true,jornadaSfx:true,wakeLock:true,orient:'apaisado',sound:true,vol:0.8,music:true,mvol:0.45,speed:1,hex:32,follow:true,confirmEnd:true,ambient:true,wheelZoom:true,minimap:true,bordes:true,pantalla:true,rueda34:true};
 const CFG=Object.assign({},CFG_DEF);
-function loadCfg(){ try{ const v=JSON.parse(localStorage.getItem('terrania.cfg')); if(v&&typeof v==='object') Object.assign(CFG,CFG_DEF,v); }catch(e){} }
+function loadCfg(){ try{ const v=JSON.parse(localStorage.getItem('terrania.cfg')); if(v&&typeof v==='object'){ Object.assign(CFG,CFG_DEF,v); if(!v.rueda34){ CFG.wheelZoom=true; CFG.rueda34=true; } } }catch(e){} }
 function saveCfg(){ try{ localStorage.setItem('terrania.cfg',JSON.stringify(CFG)); }catch(e){} }
 function applyCfg(){
   SND.on=!!CFG.sound; SND.vol=+CFG.vol; FX.speed=+CFG.speed; MUSIC.on=!!CFG.music; MUSIC.vol=+CFG.mvol; if(SND.ctx) MUSIC.apply();
@@ -3282,6 +3305,8 @@ function applyCfg(){
   document.querySelectorAll('#cfgConfirm button').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.v===1)===CFG.confirmEnd));
   document.querySelectorAll('#cfgAmbient button').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.v===1)===CFG.ambient));
   document.querySelectorAll('#cfgWheel button').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.v===1)===CFG.wheelZoom));
+  document.querySelectorAll('#cfgPantalla button').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.v===1)===(CFG.pantalla!==false)));
+  { const rp=document.getElementById('rowPantalla'); if(rp&&window.terraniaDesk) rp.classList.remove('hidden'); }
   document.querySelectorAll('#cfgBordes button').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.v===1)===(CFG.bordes!==false)));
   document.querySelectorAll('#cfgMini button').forEach(b=>b.setAttribute('aria-pressed',(+b.dataset.v===1)===CFG.minimap));
   document.getElementById('cfgVol').value=Math.round(CFG.vol*100);
@@ -3302,6 +3327,7 @@ function bindCfg(){
   bindToggle('cfgAmbient',v=>{CFG.ambient=v===1; if(S.tiles.length) draw();});
   bindToggle('cfgWheel',v=>CFG.wheelZoom=v===1);
   bindToggle('cfgBordes',v=>CFG.bordes=v===1);
+  bindToggle('cfgPantalla',v=>{ CFG.pantalla=v===1; if(window.aplicarPantallaDesk) window.aplicarPantallaDesk(); });
   document.querySelectorAll('#cfgWake button').forEach(b=>b.onclick=()=>{CFG.wakeLock=b.dataset.v==='1'; wakeAplicar(); saveCfg();});
   const bR=document.getElementById('btnResetApp'); if(bR) bR.onclick=()=>window.terraniaReset(true);
   const bindSiNo=(id,campo,extra)=>document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{ CFG[campo]=b.dataset.v==='1'; document.querySelectorAll('#'+id+' button').forEach(x=>x.setAttribute('aria-pressed',(x.dataset.v==='1')===CFG[campo])); saveCfg(); if(extra) extra(); });
@@ -11836,12 +11862,12 @@ try{
     load:SVG('<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v4.5H8"/><path d="M10.5 9.5v5l4-2.5z"/>'),
     net:SVG('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>')
   };
-  const CLASE={single:'nv-main',multi:'nv-p',campana:'nv-p',players:'nv-s',editor:'nv-s',story:'nv-s',settings:'nv-s'};
-  const ORDEN={net:0,load:1,single:2,multi:3,campana:4,players:5,editor:6,story:7,settings:8};
+  const CLASE={single:'nv-main',multi:'nv-p',campana:'nv-p',players:'nv-s',editor:'nv-s',story:'nv-s',settings:'nv-s',salir:'nv-p'};
+  const ORDEN={net:0,load:1,single:2,multi:3,campana:4,players:5,editor:6,story:7,settings:8,salir:9};
   function aplicar(){
     document.querySelectorAll('#main .main-nav li').forEach(li=>{
       const b=li.querySelector('button'); if(!b) return;
-      const k=b.dataset.go||(b.dataset.load?'load':(b.dataset.net?'net':''));
+      const k=b.dataset.go||(b.dataset.load?'load':(b.dataset.net?'net':(b.dataset.menu||'')));
       if(!k) return;
       const ico=b.querySelector('.ico'); if(ico&&ICONOS[k]&&!ico.dataset.svg){ ico.innerHTML=ICONOS[k]; ico.dataset.svg=1; }
       li.classList.add(CLASE[k]||'nv-p'); li.style.order=ORDEN[k]??5;
@@ -12134,12 +12160,20 @@ try{
       const r=leer(); const orig=(!desk())&&r&&r.base===BASE_ID&&cmp(r.version,VERSION)>0;
       el.textContent='Versión instalada: v'+i.version+(orig?' (actualizada desde internet; la de fábrica es la v'+VERSION+')':'')+'. Sin pasar por la tienda ni por el sitio: se baja directo.';
       const bo=document.getElementById('btnUpdOriginal'); if(bo) bo.style.display=(orig||(desk()&&i.actualizada))?'':'none';
-      const vt=document.getElementById('verTxt'); if(vt) vt.textContent='v'+i.version;
+      const vt=document.getElementById('verTxt'); if(vt&&i&&i.version) vt.textContent='v'+i.version;
     }).catch(()=>{});
   }
   window.TERRANIA_UPD={VERSION,BASE_ID,buscar,aplicar,revertir,flujo,estado,actual,info};
   const bBus=document.getElementById('btnUpdBuscar'); if(bBus) bBus.onclick=()=>flujo(false);
   const bMenu=document.getElementById('btnUpdMenu'); if(bMenu) bMenu.onclick=()=>flujo(false);
+  /* pantalla completa al abrir (versión instalada): se aplica al arrancar y al tocar el interruptor; F11 sigue alternando a mano */
+  window.aplicarPantallaDesk=async function(){ const d=desk(); if(!d||!d.pantalla||!d.alternar) return;
+    try{ const full=await d.pantalla(); const quiere=CFG.pantalla!==false; if(quiere!==!!full) await d.alternar(); }catch(e){} };
+  if(desk()) setTimeout(()=>window.aplicarPantallaDesk(),700);
+  /* salir del juego: sólo existe en la versión instalada (en el navegador se cierra la pestaña) */
+  { const li=document.getElementById('liSalirJuego'), bs=document.getElementById('btnSalirJuego');
+    if(li&&bs&&desk()&&desk().salir){ li.classList.remove('hidden');
+      bs.onclick=()=>{ if(confirm('¿Cerrar La Batalla por Terrania?\nSi tenés una partida en curso, guardala antes.')) desk().salir(); }; } }
   const bOri=document.getElementById('btnUpdOriginal'); if(bOri) bOri.onclick=()=>modal('Volver a la versión original','Se borran las actualizaciones bajadas y el juego vuelve a la versión con la que se instaló (v'+VERSION+').',[{t:'Cancelar',fn:cerrar},{t:'Volver',pri:true,fn:()=>revertir()}]);
   estado();
   /* al abrir: si hace más de 6 h que no mira, mira solo (sin bajar nada) */
