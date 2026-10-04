@@ -1,0 +1,26 @@
+{
+ "version": "34.0",
+ "electron": "33.4.11",
+ "bytes": 115619251,
+ "sha256": "927a924ff17816f23b21341cc55aa4d8f6d17c2eaabbfe1ca6ff6c3afcfc1c76",
+ "carpeta": "Terrania",
+ "exe": "Terrania.exe",
+ "partes": [
+  {
+   "archivo": "terrania-34.0.zip.001",
+   "bytes": 47185920,
+   "sha256": "0d61ccba4decdff88827d729d32cd2ca9ae75dcc798ddd175a4d01e04ed1ea08"
+  },
+  {
+   "archivo": "terrania-34.0.zip.002",
+   "bytes": 47185920,
+   "sha256": "dc2290b23ad9cd7423284339acbca583170f699681dd863d14e2483924b72a04"
+  },
+  {
+   "archivo": "terrania-34.0.zip.003",
+   "bytes": 21247411,
+   "sha256": "38af24d4554fb4a8d999661e000c513c0ceb0f9f4eb4cff4ef290b41b8f1436a"
+  }
+ ],
+ "notas": "Paquete completo (Electron 33.4.11 + juego 34.0)."
+}
