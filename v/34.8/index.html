@@ -1384,7 +1384,8 @@ function applyTraits(u){
   const frac=(u.hp&&u.maxhp)?u.hp/u.maxhp:1;
   u.maxhp=Math.max(1,hp); u.hp=Math.max(1,Math.round(u.maxhp*frac)); u.baseMp=mp;
 }
-const xpNeed0=u=>u.lvl===1?24:u.lvl===2?48:50;
+/* los líderes ascienden muy de a poco: necesitan mucha más experiencia y además ganan la mitad por combate (v34.7) */
+const xpNeed0=u=>u.leader?(u.lvl<=2?100:160):(u.lvl===1?24:u.lvl===2?48:50);
 const xpNeed=u=>Math.max(6,Math.round(xpNeed0(u)*(hasTrait(u,'inteligente')?0.75:1)));
 
 
@@ -1708,7 +1709,7 @@ async function kill(dead,killer){
 const PENDING=new Set();
 function gainXP(u,amount){
   if(!u.alive) return;
-  u.xp+=Math.max(1,amount);
+  u.xp+=Math.max(1,u.leader?Math.round(amount*0.5):amount);
   const nx=def(u).next;
   if(nx&&nx.length&&u.xp>=xpNeed(u)) PENDING.add(u);
   else if(!nx&&u.xp>=50){ u.xp-=50; u.maxhp+=3; u.hp=u.maxhp; SND.play('village'); floatText(u,'+3 PV máx.','#D9C79B',0.9); log(`✦ <b>${def(u).name}</b> se endurece: +3 de vida máxima.`); }
@@ -2057,16 +2058,19 @@ function checkEnd(){
     }
     S.sides.forEach(s=>{ if(s.team!==ganador) s.alive=false; }); teams=[ganador];
   }
-  if(teams.length<=1){
-    S.over=true; const t=teams[0], win=t!=null?teamSides(t).filter(s=>s.alive):[];
+  /* si caen todos los jugadores humanos, la partida termina aunque las IA sigan peleando entre sí: antes se quedaba mirando
+     una guerra ajena sin pantalla de derrota */
+  const derrotaHumana=teams.length>1&&S.sides.some(s=>s.human)&&!S.sides.some(s=>s.alive&&s.human);
+  if(teams.length<=1||derrotaHumana){
+    S.over=true; const t=derrotaHumana?null:teams[0], win=t!=null?teamSides(t).filter(s=>s.alive):[];
     const porEquipos=new Set(S.sides.map(s=>s.team)).size<S.sides.length;
     const humanWins=win.some(s=>s.human), soloYo=S.sides.filter(x=>x.human).length===1;
-    document.getElementById('overTitle').textContent=!win.length?'Todos caen':(soloYo?(humanWins?'Victoria':'Derrota'):(porEquipos?`Gana el equipo ${t}`:`Gana el bando ${win[0].colorName.toLowerCase()}`));
+    document.getElementById('overTitle').textContent=derrotaHumana?(S.sides.filter(x=>x.human).length===1?'Derrota':'Cayeron todos los jugadores'):!win.length?'Todos caen':(soloYo?(humanWins?'Victoria':'Derrota'):(porEquipos?`Gana el equipo ${t}`:`Gana el bando ${win[0].colorName.toLowerCase()}`));
     const nombres=win.map(s=>`${s.colorName.toLowerCase()} (${FACTIONS[s.fac].name})`).join(' y ');
-    document.getElementById('overText').textContent=!win.length?'No queda nadie en pie sobre Terrania.':
+    document.getElementById('overText').textContent=derrotaHumana?'Tu líder cayó y tu bando se retiró del campo. La guerra por Terrania sigue, pero ya sin vos.':!win.length?'No queda nadie en pie sobre Terrania.':
       (humanWins?`${win.length>1?'Los bandos':'El bando'} ${nombres} controla${win.length>1?'n':''} el campo. El planeta cambió de dueño.`
                 :`${win.length>1?'Los bandos':'El bando'} ${nombres} se impuso. Tu líder no volverá a firmar nada.`);
-    avanzarCampana(win,humanWins); profRegistrar(); buildStats(); wakeApagar(); registrarPartidaAnonima();
+    for(const f of [()=>avanzarCampana(win,humanWins),profRegistrar,buildStats,wakeApagar,registrarPartidaAnonima]){ try{ f(); }catch(err){ logError('checkEnd',err); } }
     document.getElementById('over').classList.remove('hidden');
   }
 }
@@ -2916,6 +2920,8 @@ function panLoop(){
     if(keys.has('ArrowDown')||keys.has('KeyS')) w.scrollTop+=v;
   }
   requestAnimationFrame(panLoop);
+}
+requestAnimationFrame(panLoop);
 
 /* desplazamiento por los bordes (solo mouse): el mapa se mueve hacia el lado donde está el puntero */
 const BORDE={x:0,y:0,dentro:false,px:0,py:0};
@@ -2945,8 +2951,6 @@ const BORDE={x:0,y:0,dentro:false,px:0,py:0};
     requestAnimationFrame(paso);
   })();
 })();
-}
-requestAnimationFrame(panLoop);
 function siguienteUnidad(){
   const s=S.sides[S.cur]; if(!s||!s.human) return;
   const libres=S.units.filter(u=>u.alive&&u.side===S.cur&&!u.acted&&u.mp>0);
@@ -3100,7 +3104,38 @@ function aiRecruitPick(s,L){
   const order=roster.slice().sort((a,b)=>score[b]-score[a]);
   return order.find(afford)||null;
 }
+let AI_RUN=0;
 async function aiTurn(s){
+  const my=++AI_RUN; S.aiBeat=performance.now();
+  try{ await aiTurnInner(s,my); }
+  catch(err){
+    logError('aiTurn',err);
+    if(my===AI_RUN&&!S.over){ S.aiK=null; S.busy=false; try{ draw(); }catch(_){} nextSide(); }
+  }
+}
+function logError(donde,err){
+  try{ const m=(err&&(err.stack||err.message))||String(err);
+    localStorage.setItem('terrania.lastError',JSON.stringify({t:Date.now(),donde,turno:S&&S.turn,msg:String(m).slice(0,1500)})); }catch(_){}
+  try{ console.error('[Terrania]',donde,err); }catch(_){}
+}
+window.addEventListener('error',e=>logError('window',e.error||e.message));
+window.addEventListener('unhandledrejection',e=>logError('promesa',e.reason));
+// vigilante: si el turno queda colgado, lo destraba solo
+setInterval(()=>{ try{
+  if(typeof S==='undefined'||!S||!S.sides||S.over||!S.busy) return;
+  if(document.getElementById('game').classList.contains('hidden')) return;
+  const cur=S.sides[S.cur]; if(!cur) return;
+  const dlg=document.getElementById('advDlg'); if(dlg&&!dlg.classList.contains('hidden')) return;
+  const ahora=performance.now();
+  if(cur.human){
+    if(FX.running||S.path) { S.busyT=0; return; }
+    S.busyT=S.busyT||ahora; if(ahora-S.busyT>8000){ S.busyT=0; S.busy=false; logError('vigilante','humano busy colgado'); refreshUI(); draw(); }
+  } else if(!NET.on||NET.host){
+    if(FX.running) { S.aiBeat=ahora; return; }
+    if(ahora-(S.aiBeat||ahora)>30000){ S.aiBeat=ahora; AI_RUN++; S.aiK=null; S.busy=false; logError('vigilante','IA colgada'); nextSide(); }
+  }
+}catch(_){} },2000);
+async function aiTurnInner(s,my){
   const L=aiLevel(s); const K=aiKnows(s);
   let guard=0;
   while(canRecruitFrom(s)&&freeCastleTiles(s).length&&guard++<8){
@@ -3137,6 +3172,7 @@ async function aiTurn(s){
     draw();refreshUI();
     if(FX.speed>0) await wait(140/FX.speed);
   }
+  if(my!==AI_RUN) return;
   S.aiK=null; S.busy=false; draw(); if(!S.over){ nextSide(); if(NET.on&&NET.host) NET.enviar(); }
 }
 function aiBestAttack(u,s,L){
@@ -8283,7 +8319,7 @@ if(typeof aplicarEstado==='function'){
 
 function herMostrarFinalRecibido(g){
   if(S.over) return;
-  S.over=true; S.busy=false; S.sel=null; S.reach=null;
+  S.over=true; S.busy=false; S.sel=null; S.reach=null; AI_RUN++;
   try{ S.targets&&S.targets.clear(); }catch(e){}
   try{
     if(g.overTitle) document.getElementById('overTitle').textContent=g.overTitle;
@@ -11488,10 +11524,27 @@ function vivoUnidad(id,tipo){
    dibuja en un bitmap chico —con la sombra ya incluida, una sola vez— y se renueva ~10 veces por segundo;
    el resto de los cuadros es una copia. Todas las unidades iguales y del mismo bando comparten bitmap.
    Caminar, atacar y reaccionar siguen dibujándose a mano, cuadro a cuadro. */
+/* contorno de la figura (v34.6): negro de día y blanco de noche, para que se recorte del terreno en cualquier hora.
+   Se arma a partir de la silueta: la figura se copia en 8 direcciones, se tiñe y se pone la figura encima. */
+const CONT_COL=()=>(S.phase>=4?'rgba(246,241,224,.97)':'rgba(5,8,6,.97)');
+function contornear(ox,src,W,H,t,color){
+  ox.setTransform(1,0,0,1,0,0); ox.globalCompositeOperation='source-over'; ox.clearRect(0,0,W,H);
+  const d=t*0.9; ox.drawImage(src,-d,-d); ox.drawImage(src,d,-d); ox.drawImage(src,-d,d); ox.drawImage(src,d,d);   // 4 diagonales alcanzan para 1–2 px de borde
+  ox.globalCompositeOperation='source-in'; ox.fillStyle=color; ox.fillRect(0,0,W,H);
+  ox.globalCompositeOperation='source-over'; ox.drawImage(src,0,0);
+}
+const contT=px=>Math.max(1.3,px*0.032);
+const LIVEC=new Map();                    // lienzos de trabajo para las figuras que se mueven o atacan
+function liveCanvas(px){
+  const k=Math.round(px); let e=LIVEC.get(k); if(e) return e;
+  const W=Math.ceil(3*k), H=Math.ceil(2.9*k), mk=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H; return c; };
+  const a=mk(), b=mk(); e={W,H,ax:Math.round(W/2),ay:Math.ceil(1.85*k),a,ag:a.getContext('2d'),b,bg:b.getContext('2d')};
+  LIVEC.set(k,e); return e;
+}
 const POSES=new Map(); let posesPoda=0;
 function vivoPose(g,tipo,x,y,px,col,mira,t,now){
   const niv=window.rendNivel?window.rendNivel():0;
-  const paso=[0.10,0.14,0.20,0.30][niv]||0.10;
+  const paso=[0.14,0.18,0.25,0.35][niv]||0.14;
   const pxr=Math.max(8,Math.round(px)), sb=g.shadowBlur||0, so=g.shadowOffsetY||0, sc=g.shadowColor;
   const k=tipo+'|'+col+'|'+mira+'|'+pxr+'|'+Math.round(sb);
   let e=POSES.get(k);
@@ -11499,23 +11552,27 @@ function vivoPose(g,tipo,x,y,px,col,mira,t,now){
     const m=Math.ceil(sb*2+Math.abs(so))+3;
     const W=Math.ceil(1.2*pxr+2*m), H=Math.ceil(1.5*pxr+2*m), ax=Math.round(W/2), ay=Math.ceil(1.05*pxr+m);
     const cv1=document.createElement('canvas'), cv2=document.createElement('canvas'); cv1.width=cv2.width=W; cv1.height=cv2.height=H;
-    e={cv:cv2,cx:cv2.getContext('2d'),tmp:cv1,tx:cv1.getContext('2d'),ax,ay,W,H,tq:-1,usado:now,sb,so,sc};
+    const cv3=document.createElement('canvas'); cv3.width=W; cv3.height=H;
+    e={cv:cv2,cx:cv2.getContext('2d'),tmp:cv1,tx:cv1.getContext('2d'),ol:cv3,ox:cv3.getContext('2d'),ax,ay,W,H,tq:-1,usado:now,sb,so,sc};
     POSES.set(k,e);
   }
   const tq=Math.floor(t/paso);
   if(e.tq!==tq){
     /* presupuesto por cuadro: sólo se renuevan unas pocas poses por vez; las demás reusan la anterior (apenas vieja).
        Si todavía no hay bitmap y no queda presupuesto, ese cuadro se dibuja a mano. */
-    const tope=[9,7,5,3][niv]||9, g0=window.__poseGasto||0;
-    if(g0>=tope){ if(e.tq<0) return false; }
+    /* las poses nuevas (nunca dibujadas) tienen su propio presupuesto: si compartieran el de las que sólo se renuevan, en una máquina lenta
+       las primeras unidades lo agotarían cada cuadro y las demás quedarían siempre en el camino caro */
+    const nueva=e.tq<0, tope=(nueva?[22,15,10,6]:[9,7,5,3])[niv]||9, g0=(nueva?window.__poseGastoN:window.__poseGasto)||0;
+    if(g0>=tope){ if(nueva) return false; }
     else {
     const tI=performance.now();
     e.tx.setTransform(1,0,0,1,0,0); e.tx.clearRect(0,0,e.W,e.H);
     VIVO_ARTE.dibujar(e.tx,tipo,e.ax,e.ay,pxr,'quieto',0,tq*paso,mira,col,0,false,null,null,false,0);
     const b=e.cx; b.setTransform(1,0,0,1,0,0); b.clearRect(0,0,e.W,e.H);
-    b.shadowColor=e.sc; b.shadowBlur=e.sb; b.shadowOffsetY=e.so; b.drawImage(e.tmp,0,0);
+    contornear(e.ox,e.tmp,e.W,e.H,contT(pxr),CONT_COL());
+    b.shadowColor=e.sc; b.shadowBlur=e.sb; b.shadowOffsetY=e.so; b.drawImage(e.ol,0,0);
     b.shadowColor='transparent'; b.shadowBlur=0; b.shadowOffsetY=0;
-    e.tq=tq; window.__poseGasto=g0+(performance.now()-tI);
+    e.tq=tq; if(nueva) window.__poseGastoN=g0+(performance.now()-tI); else window.__poseGasto=g0+(performance.now()-tI);
     }
   }
   e.usado=now;
@@ -11568,8 +11625,12 @@ drawUnitSprite=function(g,tipo,x,y,px,col){
     u._px=x; u._mira=mira;
     const colB=(S.sides[u.side]&&S.sides[u.side].color)||col;
     if(anim==='quieto'&&!rxv&&!reb&&!ak&&!window.__sinCachePoses&&vivoPose(g,tipo,x,y,px,colB,mira,t,now)) return;
-    VIVO_ARTE.dibujar(g,tipo,x,y,px,anim,f,t,mira,colB,
-      (ak&&ak.rango)?Math.abs(ak.dx):0, !!(ak&&ak.rango), rxv, reb, !!(ak&&ak.rango&&!ak.hit), (ak&&ak.rango)?ak.dy:0);
+    { const lc=liveCanvas(px);
+      lc.ag.setTransform(1,0,0,1,0,0); lc.ag.clearRect(0,0,lc.W,lc.H);
+      VIVO_ARTE.dibujar(lc.ag,tipo,lc.ax,lc.ay,px,anim,f,t,mira,colB,
+        (ak&&ak.rango)?Math.abs(ak.dx):0, !!(ak&&ak.rango), rxv, reb, !!(ak&&ak.rango&&!ak.hit), (ak&&ak.rango)?ak.dy:0);
+      contornear(lc.bg,lc.a,lc.W,lc.H,contT(px),CONT_COL());
+      g.drawImage(lc.b,Math.round(x-lc.ax),Math.round(y-lc.ay)); }
   }catch(e){ VIVO.fallo=String(e); VIVO.on=false; console.warn('[unidades vivas] apagadas:',e);
     _vivoSprite.apply(this,arguments); }
 };
@@ -11999,7 +12060,7 @@ try{
   aplicarNivel();
   const _drawCap=draw; let ultD=0, tmD=0;
   draw=function(){
-    window.__poseGasto=0;
+    window.__poseGasto=0; window.__poseGastoN=0;
     const n=window.rendNivel();
     if(n>=2){ const ahora=performance.now(), min=n>=3?50:33;
       if(ahora-ultD<min){ if(!tmD) tmD=setTimeout(()=>{ tmD=0; try{ draw(); }catch(e){} },min-(ahora-ultD)); return; }

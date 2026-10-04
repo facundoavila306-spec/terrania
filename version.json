@@ -1,14 +1,9 @@
 {
- "version": "34.7",
+ "version": "34.8",
  "base": "34",
  "fecha": "04/10/2026",
  "notas": [
-  "Si caen todos los jugadores humanos, la partida termina con pantalla de derrota (antes seguía la guerra entre IA sin aviso)",
-  "Los líderes ascienden mucho más lento: necesitan 100 de experiencia en vez de 48 y ganan la mitad por combate",
-  "Corrige la traba que crecía con el tiempo (error del scroll por bordes de 34.1–34.5)",
-  "Unidades con contorno: negro de día, blanco de noche",
-  "La rueda del mouse hace zoom y el mapa se arrastra con el botón izquierdo",
-  "Pantalla completa al abrir y botón Salir del juego (versión instalada)"
+  "Arreglo: la partida ya no se puede quedar trabada (vigilante de turno + registro de errores)"
  ],
  "archivos": [
   {
@@ -25,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "f956ef03b77158c8ae49a963416d693b1a84db4240157beccb02f37cdbcff8aa",
-   "n": 855975
+   "h": "ae8dafcb1a0e0cb7a31e6fefbb4bd461c7cbf64880fbaa31a898e1e5e916255d",
+   "n": 857651
   },
   {
    "p": "mapas/anillo.jpg",
