@@ -1,9 +1,9 @@
 {
- "version": "34.10",
+ "version": "34.11",
  "base": "34",
  "fecha": "04/10/2026",
  "notas": [
-  "Terrarios más fuertes en el bosque: +20% de daño y +4 de vida por turno"
+  "Terrarios: en el bosque recuperan 1 de vida por turno (antes 4)"
  ],
  "archivos": [
   {
@@ -20,7 +20,7 @@
   },
   {
    "p": "index.html",
-   "h": "58519ca0f6e9f550c49b346a3b062fb640abc64eaf76d324e9c03c31390323f7",
+   "h": "ec1b3facc9dbcaaeeb7169180ac9ecaba3642c8e5d513e9f52df774312f294df",
    "n": 873808
   },
   {
