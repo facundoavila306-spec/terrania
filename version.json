@@ -1,9 +1,9 @@
 {
- "version": "34.11",
+ "version": "34.12",
  "base": "34",
- "fecha": "04/10/2026",
+ "fecha": "05/10/2026",
  "notas": [
-  "Terrarios: en el bosque recuperan 1 de vida por turno (antes 4)"
+  "Historia: se eliminan las tres savias (la guerra se llama ahora La Guerra de Terrania)"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "ec1b3facc9dbcaaeeb7169180ac9ecaba3642c8e5d513e9f52df774312f294df",
-   "n": 873808
+   "h": "57cbdeb6faa53e3df771bb19d3a6d92ab834230ee1329f1b8efa1aca4f836c87",
+   "n": 871717
   },
   {
    "p": "mapas/anillo.jpg",
