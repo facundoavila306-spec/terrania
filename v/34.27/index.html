@@ -2500,6 +2500,26 @@ function buildTerrainLayer(){
 }
 /* drawRelief usa hexPath (que dibuja en ctx): redirigimos temporalmente */
 let _ctxRef=null; function ctx_swap(g){ const prev=_ctxRef; _ctxRef=g; return prev; }
+/* zona de movimiento: relleno suave del color del bando + borde marcado solo en el contorno de la zona */
+function drawAlcance(size){
+  const col=(S.sel&&S.sides[S.sel.side]&&S.sides[S.sel.side].color)||'#D9C79B';
+  const set=S.reach.best; const rgb=(()=>{ const m=/^#?([0-9a-f]{6})$/i.exec(col); if(!m) return '217,199,155'; const n=parseInt(m[1],16); return ((n>>16)&255)+','+((n>>8)&255)+','+(n&255); })();
+  ctx.save();
+  ctx.fillStyle='rgba('+rgb+',.17)';
+  for(const k of set.keys()){ const [c,r]=k.split(',').map(Number),{x,y}=hexPix(c,r,size); hexPath(x,y,size-1); ctx.fill(); }
+  const rr=size-1.5, seg=[];
+  for(const k of set.keys()){ const [c,r]=k.split(',').map(Number),{x,y}=hexPix(c,r,size);
+    for(const [nc,nr] of neighbors(c,r)){ if(set.has(nc+','+nr)) continue;
+      const pn=hexPix(nc,nr,size); let ang=Math.atan2(pn.y-y,pn.x-x); let i=Math.round((ang-Math.PI/6)/(Math.PI/3)); i=((i%6)+6)%6;
+      const a1=Math.PI/3*i, a2=Math.PI/3*(i+1);
+      seg.push([x+rr*Math.cos(a1),y+rr*Math.sin(a1),x+rr*Math.cos(a2),y+rr*Math.sin(a2)]); } }
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.beginPath(); for(const q of seg){ ctx.moveTo(q[0],q[1]); ctx.lineTo(q[2],q[3]); }
+  ctx.strokeStyle='rgba('+rgb+',.35)'; ctx.lineWidth=9; ctx.stroke();                /* halo */
+  ctx.strokeStyle='rgba(8,14,10,.55)'; ctx.lineWidth=5.5; ctx.stroke();               /* filete oscuro para que se lea sobre cualquier terreno */
+  ctx.strokeStyle='rgb('+rgb+')'; ctx.lineWidth=3.2; ctx.stroke();
+  ctx.restore();
+}
 function draw(){
   if(!S.tiles.length) return;
   const size=S.hex, now=performance.now();
@@ -2529,7 +2549,7 @@ function draw(){
     for(const t of S.tiles){ if(t.t==='vacio') continue; const {x,y}=hexPix(t.c,t.r,size); if(_fuera(x,y)||S.vis.has(key(t.c,t.r))) continue;
       for(let i=0;i<6;i++){ const a=Math.PI/3*i, px=x+rf*Math.cos(a), py=y+rf*Math.sin(a); i?ctx.lineTo(px,py):ctx.moveTo(px,py); } ctx.closePath(); }
     ctx.fillStyle='rgba(6,12,10,.62)'; ctx.fill(); }
-  if(S.reach){ for(const k of S.reach.best.keys()){ const [c,r]=k.split(',').map(Number),{x,y}=hexPix(c,r,size); hexPath(x,y,size-2); ctx.fillStyle='rgba(217,199,155,.20)';ctx.fill(); ctx.strokeStyle='rgba(217,199,155,.45)';ctx.lineWidth=1.5;ctx.stroke(); } }
+  if(S.reach){ drawAlcance(size); }
   for(const k of S.targets){ const [c,r]=k.split(',').map(Number),{x,y}=hexPix(c,r,size); hexPath(x,y,size-2); ctx.strokeStyle='#E05B5B';ctx.lineWidth=3;ctx.stroke(); }
   if(S.path&&S.sel){
     const pts=[hexPix(S.sel.c,S.sel.r,size),...S.path.map(([c,r])=>hexPix(c,r,size))];
@@ -11335,6 +11355,25 @@ const VIVO_RAIZ={
 };
 
 /* ───────── 1. el suelo vivo reemplaza el horneado plano ───────── */
+/* mientras el suelo vivo se hornea (unos cientos de ms) el mapa se ve plano; para que el jugador no vea el cambio de estilo
+   se cubre con un velo oscuro y se levanta en cuanto el mapa de verdad está listo (o a los 6 s, por las dudas) */
+let _cubreT=0;
+function cubrirMapa(on){
+  try{
+    const area=document.getElementById('mapArea'); if(!area) return;
+    let v=document.getElementById('mapaCubre');
+    if(on){
+      clearTimeout(_cubreT); _cubreT=setTimeout(()=>cubrirMapa(false),6000);
+      if(!v){ v=document.createElement('div'); v.id='mapaCubre';
+        v.style.cssText='position:absolute;inset:0;z-index:6;background:#09110F;display:flex;align-items:center;justify-content:center;color:#D9C79B;font:italic 400 15px/1.2 Fraunces,serif;letter-spacing:.04em;opacity:1;transition:opacity .45s ease;pointer-events:auto';
+        v.textContent='Preparando el campo de batalla…'; area.appendChild(v); }
+      v.style.opacity='1'; v.style.display='flex';
+    } else {
+      clearTimeout(_cubreT); if(!v) return;
+      v.style.opacity='0'; setTimeout(()=>{ const w=document.getElementById('mapaCubre'); if(w&&w.style.opacity==='0') w.remove(); },520);
+    }
+  }catch(e){}
+}
 const _vivoBuild=buildTerrainLayer;
 buildTerrainLayer=function(){
   if(!VIVO.on) return _vivoBuild();
@@ -11362,9 +11401,10 @@ buildTerrainLayer=function(){
     fir+=':'+hh;
     const ok=VIVO_MAPA.construir(size, cv.width, cv.height, LAYER.cv, S.w, S.h,
       (c,r)=>{ const t=tileAt(c,r); return t?t.t:'vacio'; }, VIVO.jornada(), fir, !window.__horneadoSincro);
-    if(ok===false){                                   // todavía se está horneando: por ahora, el mapa plano
+    if(ok===false){                                   // todavía se está horneando: se tapa el mapa plano para que no se vea el salto de estilo
       VIVO.listo=false; _vivoBuild(); LAYER.dirty=false;
-      VIVO_MAPA.alListo(()=>{ LAYER.dirty=true; VIVO.firMini=null; try{ if(S.tiles.length&&!document.getElementById('game').classList.contains('hidden')) draw(); }catch(e){} });
+      cubrirMapa(true);
+      VIVO_MAPA.alListo(()=>{ LAYER.dirty=true; VIVO.firMini=null; try{ if(S.tiles.length&&!document.getElementById('game').classList.contains('hidden')) draw(); }catch(e){} cubrirMapa(false); });
       return;
     }
     VIVO.listo=true; VIVO.faseVista=S.phase; LAYER.dirty=false; VIVO.gen=(VIVO.gen||0)+1;
@@ -12269,10 +12309,15 @@ try{
   window.aplicarPantallaDesk=async function(){ const d=desk(); if(!d||!d.pantalla||!d.alternar) return;
     try{ const full=await d.pantalla(); const quiere=CFG.pantalla!==false; if(quiere!==!!full) await d.alternar(); }catch(e){} };
   if(desk()) setTimeout(()=>window.aplicarPantallaDesk(),700);
-  /* salir del juego: sólo existe en la versión instalada (en el navegador se cierra la pestaña) */
+  /* salir del juego: siempre hay botón. En la versión instalada cierra la aplicación; si la instalada es vieja
+     (sin 'salir') o es el navegador, se intenta cerrar la ventana y, si no se deja, se avisa cómo cerrarla a mano */
   { const li=document.getElementById('liSalirJuego'), bs=document.getElementById('btnSalirJuego');
-    if(li&&bs&&desk()&&desk().salir){ li.classList.remove('hidden');
-      bs.onclick=()=>{ if(confirm('¿Cerrar La Batalla por Terrania?\nSi tenés una partida en curso, guardala antes.')) desk().salir(); }; } }
+    if(li&&bs){ li.classList.remove('hidden');
+      bs.onclick=()=>{
+        if(!confirm('¿Cerrar La Batalla por Terrania?\nSi tenés una partida en curso, guardala antes.')) return;
+        const d=desk(); if(d&&d.salir){ d.salir(); return; }
+        try{ window.close(); }catch(e){}
+        setTimeout(()=>{ try{ modal('No pude cerrar sola','El navegador no me deja cerrar esta pestaña desde el juego. Cerrala con la <b>X</b> de la pestaña o con <b>Ctrl + W</b>.<br><small>Si usás la versión instalada: Alt + F4.</small>',[{t:'Entendido'}]); }catch(e){} },500); }; } }
   const bOri=document.getElementById('btnUpdOriginal'); if(bOri) bOri.onclick=()=>modal('Volver a la versión original','Se borran las actualizaciones bajadas y el juego vuelve a la versión con la que se instaló (v'+VERSION+').',[{t:'Cancelar',fn:cerrar},{t:'Volver',pri:true,fn:()=>revertir()}]);
   estado();
   /* al abrir: si hace más de 20 min que no mira, mira solo (sin bajar nada) */

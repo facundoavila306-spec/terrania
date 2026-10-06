@@ -1,9 +1,9 @@
 {
- "version": "34.26",
+ "version": "34.27",
  "base": "34",
  "fecha": "06/10/2026",
  "notas": [
-  "Botón Salir del juego siempre visible en el menú"
+  "Al empezar una partida ya no se ve el mapa viejo antes del nuevo: se muestra un velo de carga hasta que el mapa está listo"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "a84aa0f576075d4f84b6078195f1d430b8791e34c933f6f8451e93859cd4706e",
-   "n": 876290
+   "h": "911a1d398bd368435aeec95fc94a9631e582a1d473ca824a274db58d20ebb5c0",
+   "n": 877549
   },
   {
    "p": "mapas/anillo.jpg",
