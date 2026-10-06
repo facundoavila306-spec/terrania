@@ -1128,12 +1128,12 @@ const FACTIONS = {
     def :{llanura:60,bosque:35,colina:60,montana:45,pantano:40,agua:20,aldea:60,fortaleza:60,puente:40,vado:25}},
   oscura:{id:'oscura', name:'La Alianza Oscura', color:'#C7455F', sigil:'☠',
     tag:'Fuertes de noche · montaña · Festín',
-    lore:'Bestias del planeta marcadas por la Marchitez. No tienen doctrina: tienen hambre. Son las unidades más baratas y rápidas del planeta, y las que menos aguantan: ganan por número, no por calidad. La Marchitez que les dio poder las dejó abiertas de par en par al daño arcano.',
+    lore:'Bestias del planeta marcadas por la Marchitez. No tienen doctrina: tienen hambre. Son las unidades más baratas del planeta, y las que menos aguantan: ganan por número, no por calidad. La Marchitez que les dio poder las dejó abiertas de par en par al daño arcano.',
     move:{llanura:1,bosque:2,colina:2,montana:1,pantano:2,agua:99,aldea:1,fortaleza:1,puente:1,vado:3},
     def :{llanura:45,bosque:55,colina:55,montana:70,pantano:65,agua:20,aldea:50,fortaleza:50,puente:35,vado:35}},
   terrarios:{id:'terrarios', name:'Los Terrarios', color:'#8CC23F', sigil:'❦',
     tag:'Fuertes de mañana · bosque · Arraigo',
-    lore:'El bosque cuando decide moverse. <b>Arraigo</b>: no comen, así que sus unidades de nivel 1 no cuestan mantenimiento y sostienen ejércitos grandes con pocas aldeas. Los más lentos y los más caros, pero los que más aguantan: cada Terrario cuesta y camina como un árbol, y en el bosque pegan un 20% más fuerte y se reponen 1 de vida por turno. En campo abierto son blancos fáciles, y el fuego los borra: pelean donde ellos eligen o no pelean.',
+    lore:'El bosque cuando decide moverse. <b>Arraigo</b>: no comen, así que sus unidades de nivel 1 no cuestan mantenimiento y sostienen ejércitos grandes con pocas aldeas. Son los que más aguantan: más vida y corteza dura, aunque la montaña y las colinas los frenan. En el bosque pegan un 20% más fuerte y se reponen 1 de vida por turno. Fuera de él no tienen ventaja, y el fuego los borra: pelean donde ellos eligen o no pelean.',
     move:{llanura:1,bosque:1,colina:2,montana:3,pantano:2,agua:99,aldea:1,fortaleza:1,puente:1,vado:3},
     def :{llanura:35,bosque:70,colina:50,montana:40,pantano:50,agua:20,aldea:45,fortaleza:50,puente:30,vado:30}},
 };
@@ -11355,6 +11355,25 @@ const VIVO_RAIZ={
 };
 
 /* ───────── 1. el suelo vivo reemplaza el horneado plano ───────── */
+/* mientras el suelo vivo se hornea (unos cientos de ms) el mapa se ve plano; para que el jugador no vea el cambio de estilo
+   se cubre con un velo oscuro y se levanta en cuanto el mapa de verdad está listo (o a los 6 s, por las dudas) */
+let _cubreT=0;
+function cubrirMapa(on){
+  try{
+    const area=document.getElementById('mapArea'); if(!area) return;
+    let v=document.getElementById('mapaCubre');
+    if(on){
+      clearTimeout(_cubreT); _cubreT=setTimeout(()=>cubrirMapa(false),6000);
+      if(!v){ v=document.createElement('div'); v.id='mapaCubre';
+        v.style.cssText='position:absolute;inset:0;z-index:6;background:#09110F;display:flex;align-items:center;justify-content:center;color:#D9C79B;font:italic 400 15px/1.2 Fraunces,serif;letter-spacing:.04em;opacity:1;transition:opacity .45s ease;pointer-events:auto';
+        v.textContent='Preparando el campo de batalla…'; area.appendChild(v); }
+      v.style.opacity='1'; v.style.display='flex';
+    } else {
+      clearTimeout(_cubreT); if(!v) return;
+      v.style.opacity='0'; setTimeout(()=>{ const w=document.getElementById('mapaCubre'); if(w&&w.style.opacity==='0') w.remove(); },520);
+    }
+  }catch(e){}
+}
 const _vivoBuild=buildTerrainLayer;
 buildTerrainLayer=function(){
   if(!VIVO.on) return _vivoBuild();
@@ -11382,9 +11401,10 @@ buildTerrainLayer=function(){
     fir+=':'+hh;
     const ok=VIVO_MAPA.construir(size, cv.width, cv.height, LAYER.cv, S.w, S.h,
       (c,r)=>{ const t=tileAt(c,r); return t?t.t:'vacio'; }, VIVO.jornada(), fir, !window.__horneadoSincro);
-    if(ok===false){                                   // todavía se está horneando: por ahora, el mapa plano
+    if(ok===false){                                   // todavía se está horneando: se tapa el mapa plano para que no se vea el salto de estilo
       VIVO.listo=false; _vivoBuild(); LAYER.dirty=false;
-      VIVO_MAPA.alListo(()=>{ LAYER.dirty=true; VIVO.firMini=null; try{ if(S.tiles.length&&!document.getElementById('game').classList.contains('hidden')) draw(); }catch(e){} });
+      cubrirMapa(true);
+      VIVO_MAPA.alListo(()=>{ LAYER.dirty=true; VIVO.firMini=null; try{ if(S.tiles.length&&!document.getElementById('game').classList.contains('hidden')) draw(); }catch(e){} cubrirMapa(false); });
       return;
     }
     VIVO.listo=true; VIVO.faseVista=S.phase; LAYER.dirty=false; VIVO.gen=(VIVO.gen||0)+1;
@@ -12289,10 +12309,15 @@ try{
   window.aplicarPantallaDesk=async function(){ const d=desk(); if(!d||!d.pantalla||!d.alternar) return;
     try{ const full=await d.pantalla(); const quiere=CFG.pantalla!==false; if(quiere!==!!full) await d.alternar(); }catch(e){} };
   if(desk()) setTimeout(()=>window.aplicarPantallaDesk(),700);
-  /* salir del juego: sólo existe en la versión instalada (en el navegador se cierra la pestaña) */
+  /* salir del juego: siempre hay botón. En la versión instalada cierra la aplicación; si la instalada es vieja
+     (sin 'salir') o es el navegador, se intenta cerrar la ventana y, si no se deja, se avisa cómo cerrarla a mano */
   { const li=document.getElementById('liSalirJuego'), bs=document.getElementById('btnSalirJuego');
-    if(li&&bs&&desk()&&desk().salir){ li.classList.remove('hidden');
-      bs.onclick=()=>{ if(confirm('¿Cerrar La Batalla por Terrania?\nSi tenés una partida en curso, guardala antes.')) desk().salir(); }; } }
+    if(li&&bs){ li.classList.remove('hidden');
+      bs.onclick=()=>{
+        if(!confirm('¿Cerrar La Batalla por Terrania?\nSi tenés una partida en curso, guardala antes.')) return;
+        const d=desk(); if(d&&d.salir){ d.salir(); return; }
+        try{ window.close(); }catch(e){}
+        setTimeout(()=>{ try{ modal('No pude cerrar sola','El navegador no me deja cerrar esta pestaña desde el juego. Cerrala con la <b>X</b> de la pestaña o con <b>Ctrl + W</b>.<br><small>Si usás la versión instalada: Alt + F4.</small>',[{t:'Entendido'}]); }catch(e){} },500); }; } }
   const bOri=document.getElementById('btnUpdOriginal'); if(bOri) bOri.onclick=()=>modal('Volver a la versión original','Se borran las actualizaciones bajadas y el juego vuelve a la versión con la que se instaló (v'+VERSION+').',[{t:'Cancelar',fn:cerrar},{t:'Volver',pri:true,fn:()=>revertir()}]);
   estado();
   /* al abrir: si hace más de 20 min que no mira, mira solo (sin bajar nada) */
