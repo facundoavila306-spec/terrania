@@ -1,9 +1,9 @@
 {
- "version": "34.15",
+ "version": "34.16",
  "base": "34",
  "fecha": "06/10/2026",
  "notas": [
-  "Menú: se saca la frase debajo del título"
+  "El botón de actualizar titila en verde fluo cuando hay versión nueva"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "cd0e4bc225a1eddabc4d1bbb443c6b19686e2c1b64905b1380e5ea320318c743",
-   "n": 871573
+   "h": "c87391e0329ce1ce80600c203e3a93994d6bcdf82635eca4a1284a51bca37761",
+   "n": 872618
   },
   {
    "p": "mapas/anillo.jpg",
