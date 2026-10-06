@@ -1,9 +1,9 @@
 {
- "version": "34.31",
+ "version": "34.32",
  "base": "34",
  "fecha": "06/10/2026",
  "notas": [
-  "Música: tema propio para el menú y tema de combate en el mapa"
+  "Menú de campañas: ahora se puede bajar para ver las misiones siguientes en el celular"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "7a673050719eb2c5c397621c6a9422797579e70216e8e638345ff40c054058d2",
-   "n": 899209
+   "h": "06acf23d6a2ddf9114fda714bbf0563b7a60287a67929c9684aaf5af797f6751",
+   "n": 899216
   },
   {
    "p": "mapas/anillo.jpg",

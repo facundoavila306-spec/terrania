@@ -828,7 +828,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
 </section>
 
 <!-- ══════════════ CAMPAÑA ══════════════ -->
-<section id="campana" class="hidden">
+<section id="campana" class="screen hidden">
 <div class="pane">
   <div class="pane-head"><button class="back" data-go="main">← Menú</button><h2 id="campTitulo">Campañas</h2><p class="hint" id="campHint">Elegí qué campaña jugar.</p></div>
 
@@ -2004,10 +2004,28 @@ const MUSIC={on:true,vol:0.5,playing:false,phase:null,pending:null,timer:null,ne
     manana:{bpm:84,drum:[1,0,0,0, 0,0,1,0],bass:[50,50,55,53],mel:[[62,1],[65,.5],[69,.5],[67,1],[65,1],[62,.5],[64,.5],[65,1],[67,1],[69,1],[74,.5],[72,.5],[69,1],[67,.5],[65,.5],[67,1],[62,2],[0,1],[69,1],[71,.5],[72,.5],[74,1],[72,1],[69,.5],[67,.5],[69,1],[65,1],[67,1],[64,.5],[62,.5],[64,1],[60,1],[62,2],[0,1]]},
     tarde: {bpm:96,drum:[1,0,1,0, 1,1,1,0],bass:[45,45,48,52],mel:[[69,.75],[69,.25],[72,1],[71,.5],[69,.5],[67,1],[69,.75],[69,.25],[74,1],[72,.5],[71,.5],[69,1],[67,.75],[67,.25],[69,1],[72,1],[71,1],[69,.5],[67,.5],[64,1],[69,2],[0,1],[76,.75],[76,.25],[74,1],[72,.5],[71,.5],[69,1],[72,.75],[72,.25],[71,1],[69,1],[67,1],[69,2],[0,1]]},
     noche: {bpm:64,drum:[1,0,0,0, 0,0,0,0],bass:[40,40,41,40],mel:[[64,2],[65,1],[64,1],[62,2],[59,2],[64,1.5],[67,.5],[65,1],[64,1],[62,2],[60,2],[59,1],[62,1],[64,2],[65,1],[64,.5],[62,.5],[59,3],[0,1],[67,2],[65,1],[64,1],[62,1.5],[60,.5],[59,2],[57,2],[59,1],[60,1],[62,2],[64,1],[62,1],[59,3],[0,1]]},
+    /* tema del menú: re menor, lento y amplio (Dm · Sib · Do · Lam, ocho compases) */
+    menu:  {bpm:76,drum:[1,0,0,0, 0,0,0,0],bass:[50,46,48,45],mel:[[69,2],[74,1],[72,.5],[70,.5],[69,2],[65,1],[67,1],[72,1.5],[70,.5],[67,1],[69,1],[69,3],[0,1],[74,2],[77,1],[76,.5],[74,.5],[77,2],[74,1],[72,1],[72,1],[74,1],[76,1],[72,1],[74,3],[0,1]]},
+    /* tema de combate: re menor, 138 pulsos, bajo en corcheas y tambor lleno */
+    combate:{bpm:138,drum:[1,0,1,1, 1,0,1,1],corcheas:true,bass:[38,38,34,36],mel:[[62,.5],[62,.5],[69,.5],[62,.5],[70,.5],[62,.5],[72,.5],[70,.5],[62,.5],[62,.5],[69,.5],[62,.5],[74,1],[72,.5],[70,.5],[70,.5],[70,.5],[77,.5],[70,.5],[76,.5],[74,.5],[72,.5],[70,.5],[72,.5],[72,.5],[79,.5],[72,.5],[77,.5],[76,.5],[74,.5],[72,.5],[74,1],[74,.5],[72,.5],[70,1],[69,1],[74,.5],[77,.5],[81,1],[79,.5],[77,.5],[76,1],[77,1],[74,.5],[77,.5],[79,1],[77,.5],[74,.5],[76,.5],[74,.5],[72,.5],[70,.5],[69,2]]},
   },
   f:m=>440*Math.pow(2,(m-69)/12),
   init(){ SND.init(); if(!SND.ctx||this.master) return; const c=SND.ctx; this.master=c.createGain(); this.master.gain.value=this.on?this.vol:0; this.master.connect(c.destination); },
-  setPhase(id){ id=TEMA_DE[id]||id; if(!this.songs[id]) return; if(!this.playing){ this.phase=id; return; } if(this.phase!==id) this.pending=id; },
+  setPhase(id){ id=TEMA_DE[id]||id; if(!this.songs[id]) return;
+    if(id==='menu'){ this.enCombate=false; this.base=null; }
+    else if(id!=='combate'&&this.enCombate){ this.base=id; return; }            // en pleno combate, la tonada de la jornada espera
+    if(!this.playing){ this.phase=id; return; } if(this.phase!==id) this.pending=id; },
+  /* tema que corresponde ahora: menú fuera de la partida; en el mapa, combate si se está peleando y si no la tonada de la jornada */
+  temaActual(){ try{ const g=document.getElementById('game'); const enJuego=g&&!g.classList.contains('hidden')&&S&&S.tiles&&S.tiles.length;
+      return enJuego?(this.enCombate?'combate':(TEMA_DE[PHASES[S.phase].id]||'manana')):'menu'; }catch(e){ return 'menu'; } },
+  /* se llama en cada ataque: sube el tema de combate y lo mantiene hasta unos segundos después del último golpe */
+  combate(){
+    try{ const g=document.getElementById('game'); if(!g||g.classList.contains('hidden')) return; }catch(e){ return; }
+    if(!CFG.music||!this.on) return;
+    this.combateHasta=performance.now()+9000;
+    if(!this.enCombate){ this.base=(this.phase==='menu'||this.phase==='combate')?(TEMA_DE[PHASES[S.phase].id]||'manana'):this.phase; this.enCombate=true; this.init(); this.setPhase('combate'); if(!this.playing) this.start('combate'); }
+    if(!this._vigia) this._vigia=setInterval(()=>{ if(this.enCombate&&performance.now()>this.combateHasta){ this.enCombate=false; this.setPhase(this.base||'manana'); } },1000);
+  },
   start(id){ this.init(); if(!SND.ctx) return; if(this.playing){ this.setPhase(id); return; } this.phase=id||this.phase||'manana'; this.playing=true; this.next=SND.ctx.currentTime+0.1; this.step=0; this.bar=0; this.startDrone(); clearInterval(this.timer); this.timer=setInterval(()=>this.schedule(),120); },
   stop(){ this.playing=false; clearInterval(this.timer); if(this.drone){ try{this.drone.forEach(o=>o.stop());}catch(e){} this.drone=null; } },
   startDrone(){ if(this.drone) return; const c=SND.ctx,song=this.songs[this.phase]; const g=c.createGain(); g.gain.value=0.16; g.connect(this.master); const f=c.createBiquadFilter(); f.type='lowpass'; f.frequency.value=320; f.connect(g);
@@ -2024,19 +2042,30 @@ const MUSIC={on:true,vol:0.5,playing:false,phase:null,pending:null,timer:null,ne
     if(!this.playing||!SND.ctx) return; const c=SND.ctx;
     while(this.next<c.currentTime+0.6){
       const song=this.songs[this.phase], beat=60/song.bpm;
-      if(this.pending&&(this.step%2===0)){ this.phase=this.pending; this.pending=null; if(this.drone){ this.drone.forEach((o,i)=>o.frequency.setTargetAtTime(this.f(this.songs[this.phase].bass[0]-12+(i?7:0)),this.next,0.5)); } continue; }
+      if(this.pending&&(this.step%2===0)){ this.phase=this.pending; this.pending=null; this.step=0; this.bar=0; if(this.drone){ this.drone.forEach((o,i)=>o.frequency.setTargetAtTime(this.f(this.songs[this.phase].bass[0]-12+(i?7:0)),this.next,0.5)); } continue; }
       /* la melodía es una lista de [nota, negras]; la recorremos por índice de evento */
       const ev=song.mel[this.step%song.mel.length]; const [m,d]=ev; const dur=d*beat;
-      if(m) this.pluck(m,this.next,dur,this.phase==='noche'?0.16:0.22);
+      if(m) this.pluck(m,this.next,dur,this.phase==='noche'?0.16:(this.phase==='combate'?0.2:(this.phase==='menu'?0.2:0.22)));
       /* bajo y tambor por negra dentro de la duración del evento */
       for(let q=0;q<Math.round(d*2);q++){ const t=this.next+q*beat/2; const idx=Math.floor(this.bar*8+q)%8; const b=Math.floor(this.bar)%song.bass.length;
-        if(q%2===0&&idx%2===0) this.bassNote(song.bass[b],t,beat); if(song.drum[idx%8]) this.drumHit(t,idx%4===0); }
+        if(song.corcheas?true:(q%2===0&&idx%2===0)) this.bassNote(song.bass[b],t,song.corcheas?beat/2:beat); if(song.drum[idx%8]) this.drumHit(t,idx%4===0); }
       this.next+=dur; this.step++; this.bar+=d/4;
       if(this.step%song.mel.length===0) this.step=0;
     }
   },
   apply(){ if(this.master) this.master.gain.setTargetAtTime(this.on?this.vol:0,SND.ctx.currentTime,0.2); if(this.on&&!this.playing&&SND.ctx) this.start(this.phase||'manana'); }
 };
+
+/* música por escena: el menú tiene su tema, el mapa la tonada de la jornada y el combate el suyo */
+(function(){
+  const _s=show; show=function(id){ const r=_s.apply(this,arguments);
+    try{ if(id!=='game'&&id!=='cutscene'&&MUSIC.playing) MUSIC.setPhase('menu'); }catch(e){} return r; };
+  const _a=doAttack; doAttack=async function(){ try{ MUSIC.combate(); }catch(e){} return _a.apply(this,arguments); };
+  /* el navegador no deja sonar nada antes del primer gesto: al primer toque arranca el tema del menú */
+  const primero=()=>{ document.removeEventListener('pointerdown',primero,true); document.removeEventListener('keydown',primero,true);
+    try{ if(CFG.music&&!MUSIC.playing){ SND.init(); MUSIC.start(MUSIC.temaActual()); } }catch(e){} };
+  document.addEventListener('pointerdown',primero,true); document.addEventListener('keydown',primero,true);
+})();
 
 /* ---------- 12. TURNOS ---------- */
 function startSideTurn(){
@@ -3206,15 +3235,15 @@ document.getElementById('btnSound').onclick=()=>{CFG.sound=!CFG.sound; applyCfg(
 const SPEEDS=[[1,'▶ ×1'],[2.2,'⏩ ×2'],[0,'⏭ Al instante']];
 document.getElementById('btnSpeed').title='Velocidad de animaciones y movimientos, también de la IA';
 document.getElementById('btnSpeed').onclick=()=>{const i=SPEEDS.findIndex(x=>x[0]===CFG.speed); CFG.speed=SPEEDS[(i+1)%SPEEDS.length][0]; applyCfg(); saveCfg();};
-document.getElementById('btnMusic').onclick=()=>{CFG.music=!CFG.music; applyCfg(); saveCfg(); if(CFG.music){MUSIC.init();MUSIC.start(S.tiles.length?PHASES[S.phase].id:'manana');}};
+document.getElementById('btnMusic').onclick=()=>{CFG.music=!CFG.music; applyCfg(); saveCfg(); if(CFG.music){MUSIC.init();MUSIC.start(MUSIC.temaActual());}};
 function syncTopbar(){ document.getElementById('btnSound').textContent=SND.on?'🔊':'🔇'; document.getElementById('btnMusic').style.opacity=CFG.music?1:0.45; const sp=SPEEDS.find(x=>x[0]===FX.speed)||SPEEDS[0]; document.getElementById('btnSpeed').textContent=sp[1]; }
 
 /* ---------- 18. IA (tres niveles) ---------- */
 const AI_LEVELS={
   recluta:   {name:'Recluta',    goldMul:0.75, income:-1, smart:false, look:false, sloppy:35, desc:'Se distrae: un tercio de las veces elige mal el ataque. Arranca con menos oro. Para aprender el juego.'},
   veterano:  {name:'Veterano',   goldMul:1.0,  income:0,  smart:true,  look:false, sloppy:0,  desc:'La IA a pleno: elige cada ataque por daño esperado y respuesta, toma y guarda aldeas, protege a su líder.'},
-  comandante:{name:'Comandante', goldMul:1.4,  income:4,  smart:true,  look:true,  sloppy:0,  desc:'La misma cabeza con más recursos: arranca con 40% más de oro y cobra 4 más por turno. Te obliga a jugar mejor que ella.'},
-  maestro:   {name:'Maestro',    goldMul:1.15, income:2,  smart:true,  look:true,  sloppy:0,  deep:true, desc:'Antes de mover, calcula de verdad qué le podés hacer vos el turno que viene a cada unidad rival (no una estimación: simula el combate real) y elige la posición donde pierde menos. Casi no depende del oro extra: gana por cabeza.'},
+  comandante:{name:'Comandante', goldMul:1.4,  income:4,  smart:true,  look:true,  sloppy:0,  desc:'La misma cabeza con más recursos: arranca con 40% más de oro y cobra 4 más por turno. Cuida a su líder: lo deja en el torreón salvo peligro o jugada clave. Te obliga a jugar mejor que ella.'},
+  maestro:   {name:'Maestro',    goldMul:1.15, income:2,  smart:true,  look:true,  sloppy:0,  deep:true, desc:'Además recluta más soldados, usa el oro hasta el final y sale a robar aldeas con sus exploradores. Antes de mover, calcula de verdad qué le podés hacer vos el turno que viene a cada unidad rival (no una estimación: simula el combate real) y elige la posición donde pierde menos. Casi no depende del oro extra: gana por cabeza.'},
 };
 const aiLevel=s=>AI_LEVELS[s.ai]||AI_LEVELS.veterano;
 const aiF=(L,k)=>L.smart&&!!(L.flags&&L.flags[k]);
@@ -3236,7 +3265,7 @@ const maxHit=u=>Math.max(...def(u).atk.map(a=>a.d*a.s));
 
 function aiRecruitPick(s,L){
   const roster=ROSTER[s.fac], mine=S.units.filter(u=>u.alive&&u.side===s.i&&!u.leader);
-  const afford=t=>UNITS[t].cost<=s.gold-4;
+  const afford=t=>UNITS[t].cost<=s.gold-(L.deep?0:4);
   if(aiF(L,'spam')){ const t=roster[mine.length%5===4?3:0]; return afford(t)?t:(afford(roster[0])?roster[0]:null); }
   if(aiF(L,'rangedheavy')){ const wish=[0,1,1,0,3,1,2,1][mine.length%8]; let pick=roster[wish]; if(!afford(pick)) pick=roster.slice().sort((a,b)=>UNITS[a].cost-UNITS[b].cost).find(afford); return pick; }
   if(!aiF(L,'recruit')){ const wish=[0,1,0,2,3,1,0,2][mine.length%8]; let pick=roster[wish]; if(!afford(pick)) pick=roster.slice().sort((a,b)=>UNITS[a].cost-UNITS[b].cost).find(afford); return pick; }
@@ -3297,7 +3326,7 @@ async function aiTurnInner(s,my){
   while(canRecruitFrom(s)&&freeCastleTiles(s).length&&guard++<8){
     if(s.gold<0) break;
     const upk=S.units.filter(u=>u.alive&&u.side===s.i&&!u.leader).reduce((a,u)=>a+u.lvl,0);
-    if(upk>(s.vils||0)+3&&s.gold<40) break;                 // no reclutar hasta la ruina
+    if(upk>(s.vils||0)+(L.deep?7:3)&&s.gold<(L.deep?20:40)) break;                 // no reclutar hasta la ruina (el Maestro aguanta más soldados)
     const pick=aiRecruitPick(s,L); if(!pick) break;
     const spots=freeCastleTiles(s),[c,r]=spots[rnd(spots.length)];
     const u=spawn(pick,s.i,c,r); u.mp=0;u.acted=true; s.gold-=UNITS[pick].cost; s.st.recruited++; s.st.gold+=UNITS[pick].cost;
@@ -3331,9 +3360,22 @@ async function aiTurnInner(s,my){
   if(my!==AI_RUN) return;
   S.aiK=null; S.busy=false; draw(); if(!S.over){ nextSide(); if(NET.on&&NET.host) NET.enviar(); }
 }
+/* el líder de la IA se queda en el torreón: ataca desde donde está, pegado a su torreón, o cuando la jugada vale la pena
+   (mata y casi no se expone). Si el torreón corre peligro puede salir hasta 2 casillas a defenderlo. */
+function aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgo){        // (oc,or) = donde está de verdad; u.c/u.r valen la casilla que se está probando
+  const k=s.keep; if(!k) return true;
+  if(c===oc&&r===or) return true;
+  const dk=hexDist(c,r,k.c,k.r);
+  if(dk<=1) return true;
+  if(dk<=2&&S.units.some(f=>f.alive&&!allied(f.side,u.side)&&!f.leader&&hexDist(f.c,f.r,k.c,k.r)<=3)) return true;
+  if(kill&&dk<=3&&riesgo<u.hp*0.35) return true;
+  return false;
+}
+const esReptil=u=>fac(u).id==='reptiloides';
 function aiBestAttack(u,s,L){
   const reach=computeReach(u), tod=phaseMul(u); let best=null;
-  const mapas=L.deep?mapaAmenazaReal(u):null;
+  const esRep=esReptil(u)&&L.smart;
+  const mapas=(L.deep||esRep)?mapaAmenazaReal(u):null;
   for(const k of reach.best.keys()){
     const [c,r]=k.split(',').map(Number);
     if(unitAt(c,r)&&!(c===u.c&&r===u.r)) continue;
@@ -3350,7 +3392,9 @@ function aiBestAttack(u,s,L){
         if(aiF(L,'focus')){ sc+=(1-e.hp/e.maxhp)*22; if(isRanged(e)&&!P.dAtk) sc+=10; if(P.dAtk===null) sc+=8; }
         if(aiF(L,'jornada')){ if(tod<1&&!kill) sc-=7; if(tod>1) sc+=8; }
         if(aiF(L,'retreat')&&u.hp<u.maxhp*0.3&&!kill&&P.expD>u.hp*0.5) sc-=20;
-        if(L.look&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
+        if((L.look||esRep)&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
+        if(esRep&&isRanged(u)){ const tt=tileAt(c,r); if(tt.t==='agua'||tt.t==='vado') sc+=12; }
+        if(L.smart&&u.leader&&!aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgoEn(u,c,r,L,mapas))) continue;
         if(!best||sc>best.sc) best={sc,c,r,e,a,u,mp:reach.best.get(k),reach};
       }
     }
@@ -3390,13 +3434,14 @@ function amenazaRealEn(u,c,r,mapas){
   golpes.sort((a,b)=>b-a);
   return golpes.reduce((tot,d,i)=>tot+d*(i===0?1:0.55**i),0);       // el primer golpe pesa entero, los demás cada vez menos
 }
-function riesgoEn(u,c,r,L,mapas){ return (L.deep&&mapas)?amenazaRealEn(u,c,r,mapas):threatAt(u,c,r); }
+function riesgoEn(u,c,r,L,mapas){ return mapas?amenazaRealEn(u,c,r,mapas):threatAt(u,c,r); }
 async function aiUnit(u,s,L){
   const reach=computeReach(u);
   const foes=aiVisibleFoes(s,S.aiK);
   const myLeader=S.units.find(x=>x.alive&&x.side===u.side&&x.leader);
   const tod=phaseMul(u);
-  const mapas=L.deep?mapaAmenazaReal(u):null;
+  const esRep=esReptil(u)&&L.smart;
+  const mapas=(L.deep||esRep)?mapaAmenazaReal(u):null;
   let best=null; const options=[];
   for(const k of reach.best.keys()){
     const [c,r]=k.split(',').map(Number);
@@ -3419,7 +3464,10 @@ async function aiUnit(u,s,L){
         }
         if(aiF(L,'jornada')){ if(tod<1&&!kill) sc-=7; if(tod>1) sc+=8; }
         if(aiF(L,'retreat')&&u.hp<u.maxhp*0.3&&!kill&&P.expD>u.hp*0.5) sc-=20;
-        if(L.look&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
+        if((L.look||esRep)&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
+        if(esRep&&isRanged(u)){ const tt=tileAt(c,r); if(tt.t==='agua'||tt.t==='vado') sc+=12; }       // Nado: dispara desde donde no lo alcanzan a pie
+        if(L.deep&&!u.leader){ const tv=tileAt(c,r); if(tv.t==='aldea'&&(tv.owner<0||!allied(tv.owner,u.side))) sc+=10; }   // atacar y de paso tomar la aldea
+        if(L.smart&&u.leader&&!aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgoEn(u,c,r,L,mapas))) continue;
         if(sc>0&&!e.leader) options.push({sc,c,r,e,a});
         if(!best||sc>best.sc) best={sc,c,r,e,a};
       }
@@ -3433,17 +3481,18 @@ async function aiUnit(u,s,L){
   }
   /* líder: en el torreón, salvo que tenga que volver */
   if(u.leader){
-    if(aiF(L,'leader')){ const k=S.sides[u.side].keep; const kk=key(k.c,k.r); if(!(u.c===k.c&&u.r===k.r)&&reach.best.has(kk)&&!unitAt(k.c,k.r)) await moveUnit(u,k.c,k.r,reach.best.get(kk),reach); }
+    if(L.smart){ const k=S.sides[u.side].keep; const kk=key(k.c,k.r); if(!(u.c===k.c&&u.r===k.r)&&reach.best.has(kk)&&!unitAt(k.c,k.r)) await moveUnit(u,k.c,k.r,reach.best.get(kk),reach); }
     u.acted=true; return;
   }
   /* retirada de heridos */
-  if(aiF(L,'retreat')&&!iaModoCampana().agresiva&&u.hp<u.maxhp*0.3){
+  if((aiF(L,'retreat')||esRep)&&!iaModoCampana().agresiva&&u.hp<u.maxhp*(esRep?0.4:0.3)&&foes.length){
     let bm=null;
     for(const k of reach.best.keys()){ const [c,r]=k.split(',').map(Number); if(unitAt(c,r)&&!(c===u.c&&r===u.r)) continue;
       const t=tileAt(c,r); let sc=0; const nearest=Math.min(...foes.map(f=>hexDist(f.c,f.r,c,r)));
       sc+=nearest*5; if(t.t==='aldea') sc+=30; if(has(u,'regenera')&&t.t==='bosque') sc+=22; if(has(u,'regenera_pantano')&&t.t==='pantano') sc+=22;
       const oc=u.c,or=u.r;u.c=c;u.r=r; sc+=defenseOf(u)*0.3; u.c=oc;u.r=or;
-      if(L.look) sc-=riesgoEn(u,c,r,L,mapas)*0.3;
+      if(esRep&&(t.t==='agua'||t.t==='vado')) sc+=25;                                  // Nado: se mete al agua, donde nadie lo sigue
+      if(L.look||esRep) sc-=riesgoEn(u,c,r,L,mapas)*0.3;
       if(!bm||sc>bm.sc) bm={sc,c,r}; }
     if(bm&&(bm.c!==u.c||bm.r!==u.r)) await moveUnit(u,bm.c,bm.r,reach.best.get(key(bm.c,bm.r)),reach);
     u.acted=true; return;
@@ -3469,14 +3518,21 @@ async function aiUnit(u,s,L){
     if(IM2.defender&&miKeep&&hexDist(c,r,miKeep.c,miKeep.r)>IM2.defender&&!foes.some(f=>hexDist(f.c,f.r,miKeep.c,miKeep.r)<=IM2.defender+1)) continue;
     const t=tileAt(c,r);
     let sc=-1e9; for(const [gc,gr,w] of goals) sc=Math.max(sc,(60-hexDist(c,r,gc,gr))*w);
-    if(t.t==='aldea'&&(t.owner<0||!allied(t.owner,u.side))) sc+=30;
+    if(t.t==='aldea'&&(t.owner<0||!allied(t.owner,u.side))){
+      sc+=30;
+      if(L.deep){                                   // Maestro: roba aldeas, y más las del rival que están sin guardia
+        if(t.owner>=0) sc+=15;
+        if(has(u,'hostigador')&&!foes.some(f=>!f.leader&&hexDist(f.c,f.r,c,r)<=3)) sc+=20;
+      }
+    }
     else if(t.t==='aldea'&&t.owner>=0&&allied(t.owner,u.side)&&threatened(t)) sc+=18;
     if(u.hp<u.maxhp*0.5&&t.t==='aldea'&&(t.owner===u.side||t.owner<0)) sc+=20;
     if(leaderInDanger&&hexDist(c,r,myLeader.c,myLeader.r)<=1) sc+=16;
     if(aiF(L,'cohesion')){ const ally=S.units.some(x=>x.alive&&x!==u&&allied(x.side,u.side)&&!x.leader&&hexDist(x.c,x.r,c,r)<=2); if(!ally) sc-=12; }
     const oc=u.c,or=u.r;u.c=c;u.r=r; sc+=defenseOf(u)*(aiF(L,'terrain')?0.25:0.12); u.c=oc;u.r=or;
     if(aiF(L,'jornada')&&tod<1){ const nearest=Math.min(...foes.map(f=>hexDist(f.c,f.r,c,r))); if(nearest<=2) sc-=5; }    // en mala jornada no te arrimás tanto
-    if(L.look) sc-=riesgoEn(u,c,r,L,mapas)*0.2;
+    if(esRep){ if(t.t==='agua'||t.t==='vado') sc+=isRanged(u)?8:3; }                // Nado: el agua es su camino
+    if(L.look||esRep) sc-=riesgoEn(u,c,r,L,mapas)*0.2;
     if(!bm||sc>bm.sc) bm={sc,c,r};
   }
   if(bm&&(bm.c!==u.c||bm.r!==u.r)) await moveUnit(u,bm.c,bm.r,reach.best.get(key(bm.c,bm.r)),reach);
@@ -3512,7 +3568,7 @@ function applyCfg(){
 function bindCfg(){
   const bindToggle=(id,fn)=>document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{fn(+b.dataset.v);applyCfg();saveCfg();});
   bindToggle('cfgSound',v=>{CFG.sound=v===1; if(CFG.sound){SND.init();SND.play('select');}});
-  bindToggle('cfgMusic',v=>{CFG.music=v===1; if(CFG.music){MUSIC.init();MUSIC.start('manana');}});
+  bindToggle('cfgMusic',v=>{CFG.music=v===1; if(CFG.music){MUSIC.init();MUSIC.start(MUSIC.temaActual());}});
   document.getElementById('cfgMvol').oninput=e=>{CFG.mvol=e.target.value/100; applyCfg(); saveCfg();};
   bindToggle('cfgSpeed',v=>CFG.speed=v);
   bindToggle('cfgHex',v=>CFG.hex=v);
@@ -3628,7 +3684,7 @@ function show(id){
   }
   const el=document.getElementById(id); if(el.scrollTop) el.scrollTop=0;
 }
-document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ SND.init(); if(CFG.music) MUSIC.start('manana'); if(b.dataset.go==='story'&&b.dataset.tab) openLore(b.dataset.tab); show(b.dataset.go); });
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ SND.init(); if(CFG.music) MUSIC.start('menu'); if(b.dataset.go==='story'&&b.dataset.tab) openLore(b.dataset.tab); show(b.dataset.go); });
 document.querySelector('[data-go="single"]').onclick=()=>{ SND.init(); if(SETUP.mode!=='single'){SETUP.mode='single'; SETUP.slots.forEach((x,i)=>x.human=i===0);} show('single'); };
 document.getElementById('btnHotseat').onclick=()=>{ SETUP.mode='hotseat'; SETUP.slots.forEach(x=>x.human=true); show('single'); };
 document.getElementById('btnStart').onclick=()=>{
