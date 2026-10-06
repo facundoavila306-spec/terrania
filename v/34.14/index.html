@@ -47,7 +47,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;letter-sp
 .main-nav button .lbl{font-family:'Fraunces';font-size:19px;font-weight:600;color:var(--ink)}
 .main-nav button span:not(.ico):not(.lbl){font-family:'Barlow';font-size:12.5px;color:var(--dim);font-weight:400;line-height:1.4}
 .main-nav button:hover,.main-nav button:focus-visible{border-color:var(--bone);background:var(--panel2);outline:none;transform:translateY(-1px)}
-.main-nav li:first-child:not([style*="none"]) button,.main-nav li#btnResumeNet button,.main-nav li#btnContinue button{border-color:var(--bone);background:color-mix(in srgb,var(--bone) 10%,var(--panel))}
+.main-nav li:first-child:not([style*="none"]) button,.main-nav li#btnResumeNet button,.main-nav li#__x button{border-color:var(--bone);background:color-mix(in srgb,var(--bone) 10%,var(--panel))}
 .main-nav button:hover span{color:var(--bone)}
 .main-foot{position:absolute;left:clamp(24px,8vw,120px);bottom:26px;color:var(--dim);font-size:13px}
 @media(max-width:600px){.main-nav button{grid-template-columns:1fr;gap:2px;padding:10px 14px}}
@@ -595,16 +595,16 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
   <div class="acctpill" id="acctPill" style="display:none"></div>
   <div class="main-wrap">
     <div class="main-title">
-      <h1>La Batalla<span class="sub2">por</span> Terrania<span class="sub">Tres facciones. Un planeta. Una sola savia que corre por los tres.</span></h1>
+      <h1>La Batalla<span class="sub2">por</span> Terrania<span class="sub">Un planeta. Una sola guerra.</span></h1>
       <ul class="main-nav">
         <li id="btnResumeNet" style="display:none"><button data-net="1"><span class="ico">🌐</span><span class="lbl">Volver a la sala</span><span id="netBadge"></span></button></li>
-        <li id="btnContinue" style="display:none"><button data-load="1"><span class="ico">↺</span><span class="lbl">Continuar</span><span>Retomar una partida guardada</span></button></li>
-        <li><button data-go="players"><span class="ico">👤</span><span class="lbl">Jugadores</span><span id="profPill">Elegir jugador</span></button></li>
-        <li><button data-go="single"><span class="ico">⚔</span><span class="lbl">Un jugador</span><span>Escaramuza contra la IA en doce mapas</span></button></li>
+        <li><button data-go="single"><span class="ico">⚔</span><span class="lbl">Un jugador</span><span>Escaramuza contra la IA</span></button></li>
         <li><button data-go="multi"><span class="ico">🤝</span><span class="lbl">Multijugador</span><span>En el mismo dispositivo o en línea</span></button></li>
+        <li><button data-go="campana"><span class="ico">🔥</span><span class="lbl">Campaña</span><span>Cuatro campañas con historia propia</span></button></li>
+        <li id="btnContinue"><button data-load="1"><span class="ico">↺</span><span class="lbl">Cargar partida</span><span>Retomar una partida guardada</span></button></li>
         <li><button data-go="editor"><span class="ico">🗺</span><span class="lbl">Editor de mapas</span><span>Diseñá tu propio campo de batalla</span></button></li>
-        <li><button data-go="campana"><span class="ico">🔥</span><span class="lbl">Campaña</span><span>Cuatro batallas encadenadas por Terrania</span></button></li>
         <li><button data-go="story"><span class="ico">📖</span><span class="lbl">Historia</span><span>La crónica de Terrania, las facciones y las reglas</span></button></li>
+        <li><button data-go="players"><span class="ico">👤</span><span class="lbl">Jugadores</span><span id="profPill">Elegir jugador</span></button></li>
         <li><button data-go="settings"><span class="ico">⚙</span><span class="lbl">Configuración</span><span>Sonido, animaciones y tablero</span></button></li>
         <li id="liSalirJuego" class="hidden"><button type="button" id="btnSalirJuego" data-menu="salir"><span class="ico">⏻</span><span class="lbl">Salir del juego</span><span>Cerrar la aplicación</span></button></li>
       </ul>
@@ -833,7 +833,6 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
   <div class="pane-head"><button class="back" data-go="main">← Menú</button><h2 id="campTitulo">Campañas</h2><p class="hint" id="campHint">Elegí qué campaña jugar.</p></div>
 
   <div id="campSelector" class="fac-list" style="margin-bottom:20px">
-    <button data-camp-sel="tres" class="fac" style="--c:#D9C79B"><span class="sigil">❦</span><span><strong>La Guerra de las Tres Savias</strong><span>Elegí una facción. Cuatro batallas por las cuatro regiones de Terrania.</span></span></button>
     <button data-camp-sel="conquista" class="fac" style="--c:#5AA7D8"><span class="sigil">⚙</span><span><strong>La Odisea de la Perseverancia</strong><span>Los Conquistadores, siempre. Desde el naufragio hasta la guerra por Terrania.</span></span></button>
     <button data-camp-sel="sucesion" class="fac" style="--c:#8CC23F"><span class="sigil">🌱</span><span><strong>La Sucesión</strong><span>Los Terrarios, siempre. Dos hermanos, un solo trono, nueve batallas.</span></span></button>
     <button data-camp-sel="ruptura" class="fac" style="--c:#C7455F"><span class="sigil">🥀</span><span><strong>La Ruptura</strong><span>La Alianza Oscura, siempre. Un Terrario con otro nombre, nueve batallas.</span></span></button>
@@ -1129,7 +1128,7 @@ const FACTIONS = {
     def :{llanura:60,bosque:35,colina:60,montana:45,pantano:40,agua:20,aldea:60,fortaleza:60,puente:40,vado:25}},
   oscura:{id:'oscura', name:'La Alianza Oscura', color:'#C7455F', sigil:'☠',
     tag:'Fuertes de noche · montaña y pantano · trepan',
-    lore:'Bestias del planeta bebidas en savia negra. No tienen doctrina: tienen hambre. Son las unidades más baratas y rápidas del planeta, y las que menos aguantan: ganan por número, no por calidad. La savia que les dio poder las dejó abiertas de par en par al daño arcano.',
+    lore:'Bestias del planeta marcadas por la Marchitez. No tienen doctrina: tienen hambre. Son las unidades más baratas y rápidas del planeta, y las que menos aguantan: ganan por número, no por calidad. La Marchitez que les dio poder las dejó abiertas de par en par al daño arcano.',
     move:{llanura:1,bosque:2,colina:2,montana:1,pantano:2,agua:99,aldea:1,fortaleza:1,puente:1,vado:3},
     def :{llanura:45,bosque:55,colina:55,montana:70,pantano:65,agua:20,aldea:50,fortaleza:50,puente:35,vado:35}},
   terrarios:{id:'terrarios', name:'Los Terrarios', color:'#8CC23F', sigil:'❦',
@@ -1167,7 +1166,7 @@ const UNITS = {
     res:{filo:0,perf:0,imp:10,fuego:-5,frio:0,arc:-15}, ab:[],
     note:'La unidad más barata del juego. <b>Horda</b>: +1 de daño por cada Nara adyacente (máx. +3). Solos no valen nada, de a seis son una trituradora. Contra tiradores solo sirven cargando.'},
   nica:{fac:'oscura',name:'Nica',role:'Choque',cost:20,hp:48,mp:5,glyph:'🪓',
-    atk:[{n:'Hacha de savia',d:11,s:2,t:'filo',r:'melee',sp:'carga'},{n:'Tajo',d:7,s:3,t:'imp',r:'melee'}],
+    atk:[{n:'Hacha negra',d:11,s:2,t:'filo',r:'melee',sp:'carga'},{n:'Tajo',d:7,s:3,t:'imp',r:'melee'}],
     res:{filo:20,perf:10,imp:0,fuego:-10,frio:0,arc:-15}, ab:[],
     note:'Dos formas de pelear: <b>Carga</b> hace +75% de daño pero recibe +50% en la respuesta; el Tajo es el golpe seguro. Elegí según cuánto te quede de vida.'},
   nolopmas:{fac:'oscura',name:'Nolopmas',role:'Exploración',cost:15,hp:35,mp:8,glyph:'🦇',
@@ -1191,9 +1190,9 @@ const UNITS = {
     note:'Artillería vegetal. El impacto atraviesa armaduras: es la respuesta al Guardián Pretoriano. Inútil en campo abierto.'},
   rodador:{fac:'terrarios',name:'Rodador',role:'Exploración',cost:18,hp:36,mp:8,glyph:'🧶',
     move:{llanura:1,bosque:1,colina:2,montana:4,pantano:2,agua:99,aldea:1,fortaleza:1,puente:1,vado:3},
-    atk:[{n:'Espinas de savia',d:6,s:2,t:'arc',r:'melee'}],
+    atk:[{n:'Espinas vivas',d:6,s:2,t:'arc',r:'melee'}],
     res:{filo:10,perf:20,imp:-20,fuego:-40,frio:0,arc:30}, ab:['hostigador'],
-    note:'Una bola de zarzas que rueda. <b>Hostigador</b>: ignora la zona de control. Sus espinas van bañadas en savia verde pura: el único daño <b>arcano</b> del juego, y la Alianza Oscura recibe hasta +40% de él. Se aplasta fácil.'},
+    note:'Una bola de zarzas que rueda. <b>Hostigador</b>: ignora la zona de control. Sus espinas van bañadas en fuerza viva del bosque: el único daño <b>arcano</b> del juego, y la Alianza Oscura recibe hasta +40% de él. Se aplasta fácil.'},
   ancestro:{fac:'terrarios',name:'Ancestro',role:'Élite',cost:33,hp:70,mp:5,glyph:'🌳',
     atk:[{n:'Embestida',d:15,s:2,t:'imp',r:'melee',sp:'raices'}],
     res:{filo:30,perf:60,imp:-10,fuego:-60,frio:20,arc:20}, ab:['escudo'],
@@ -1205,7 +1204,7 @@ const UNITS = {
     res:{filo:20,perf:20,imp:10,fuego:0,frio:0,arc:0}, ab:[],
     note:'Firmó el pacto y firmó su ruptura. Si cae, la colonia se rinde.'},
   lider_osc:{fac:'oscura',name:'El Marchito',role:'Líder',cost:0,hp:68,mp:6,lvl:2,glyph:'💀',leader:true,
-    atk:[{n:'Zarpa de savia negra',d:13,s:3,t:'imp',r:'melee',sp:'drena'},{n:'Aliento marchito',d:10,s:2,t:'frio',r:'rango'}],
+    atk:[{n:'Zarpa marchita',d:13,s:3,t:'imp',r:'melee',sp:'drena'},{n:'Aliento marchito',d:10,s:2,t:'frio',r:'rango'}],
     res:{filo:30,perf:20,imp:10,fuego:-30,frio:20,arc:-30}, ab:[],
     note:'Fue un Ancestro. Eligió pudrirse antes que seguir esperando.'},
   lider_terr:{fac:'terrarios',name:'Raíz Madre Sylvaan',role:'Líder',cost:0,hp:76,mp:6,lvl:2,glyph:'🌻',leader:true,
@@ -1279,15 +1278,15 @@ nara_alfa:{fac:'oscura',name:'Nara Alfa',role:'Nivel 3 · desde Nara Colmillo',c
   note:'<b>Liderazgo de manada</b>: los Nara adyacentes de menor nivel hacen +25% de daño. Con un Alfa al frente, seis Nara son un tren.'},
 nara_hinchado:{fac:'oscura',name:'Nara Hinchado',role:'Nivel 2 · desde Nara',cost:0,lvl:2,hp:56,mp:4,glyph:'🐖',
   atk:[{n:'Colmillos',d:6,s:3,t:'filo',r:'melee'}], res:{filo:20,perf:20,imp:30,fuego:-10,frio:20,arc:-30}, ab:[], next:['nara_reventon'],
-  note:'La savia negra le infló la carne hasta el tamaño de una carreta. Lento, sin horda, imposible de tirar.'},
+  note:'La Marchitez le infló la carne hasta el tamaño de una carreta. Lento, sin horda, imposible de tirar.'},
 nara_reventon:{fac:'oscura',name:'Nara Reventón',role:'Nivel 3 · desde Nara Hinchado',cost:0,lvl:3,hp:68,mp:4,glyph:'🐖',
   atk:[{n:'Colmillos',d:8,s:3,t:'filo',r:'melee'}], res:{filo:25,perf:25,imp:30,fuego:-10,frio:20,arc:-30}, ab:['regenera_pantano'],
   note:'Se <b>regenera en el pantano</b>. Un tapón de carne para cualquier vado.'},
 nica_astado:{fac:'oscura',name:'Nica Astado',role:'Nivel 2 · desde Nica',cost:0,lvl:2,hp:64,mp:5,glyph:'🪓',
-  atk:[{n:'Hacha de savia',d:14,s:2,t:'filo',r:'melee',sp:'carga'},{n:'Tajo',d:9,s:3,t:'filo',r:'melee'}], res:R(RES.nica,{filo:25}), ab:[], next:['nica_colosal'],
+  atk:[{n:'Hacha negra',d:14,s:2,t:'filo',r:'melee',sp:'carga'},{n:'Tajo',d:9,s:3,t:'filo',r:'melee'}], res:R(RES.nica,{filo:25}), ab:[], next:['nica_colosal'],
   note:'Le volvieron a crecer los cuernos que tenía antes de beber. La carga ahora tira abajo lo que sea.'},
 nica_colosal:{fac:'oscura',name:'Nica Colosal',role:'Nivel 3 · desde Nica Astado',cost:0,lvl:3,hp:78,mp:5,glyph:'🪓',
-  atk:[{n:'Hacha de savia',d:17,s:2,t:'filo',r:'melee',sp:'carga'},{n:'Tajo',d:11,s:3,t:'filo',r:'melee'}], res:R(RES.nica,{filo:30,perf:15}), ab:['rompeescudo'],
+  atk:[{n:'Hacha negra',d:17,s:2,t:'filo',r:'melee',sp:'carga'},{n:'Tajo',d:11,s:3,t:'filo',r:'melee'}], res:R(RES.nica,{filo:30,perf:15}), ab:['rompeescudo'],
   note:'<b>Rompeescudo</b>: su ataque ignora el escudo del rival. Diecisiete por dos con carga es el golpe más fuerte de Terrania.'},
 nolopmas_chupasangre:{fac:'oscura',name:'Nolopmas Chupasangre',role:'Nivel 2 · desde Nolopmas',cost:0,lvl:2,hp:42,mp:9,glyph:'🦇',move:MOVE_NOLO,
   atk:[{n:'Garras sangrantes',d:8,s:3,t:'filo',r:'melee',sp:'drena'}], res:RES.nolo, ab:['hostigador'], next:['nolopmas_nocturno'],
@@ -1302,13 +1301,13 @@ nusluz_ceniciento:{fac:'oscura',name:'Nusluz Ceniciento',role:'Nivel 3 · desde 
   atk:[{n:'Daga curva',d:6,s:2,t:'filo',r:'melee'},{n:'Arco corrupto',d:12,s:3,t:'perf',r:'rango'},{n:'Flecha ígnea',d:14,s:2,t:'fuego',r:'rango'}], res:R(RES.nus,{fuego:20}), ab:[],
   note:'Catorce por dos de fuego contra un Ancestro es un Ancestro menos. Camina sobre ceniza propia.'},
 nusluz_venenoso:{fac:'oscura',name:'Nusluz Venenoso',role:'Nivel 2 · desde Nusluz',cost:0,lvl:2,hp:50,mp:5,glyph:'🏹',
-  atk:[{n:'Daga curva',d:6,s:2,t:'filo',r:'melee'},{n:'Arco de savia negra',d:9,s:3,t:'perf',r:'rango',sp:'veneno'}], res:RES.nus, ab:[], next:['nusluz_pestilente'],
+  atk:[{n:'Daga curva',d:6,s:2,t:'filo',r:'melee'},{n:'Arco marchito',d:9,s:3,t:'perf',r:'rango',sp:'veneno'}], res:RES.nus, ab:[], next:['nusluz_pestilente'],
   note:'<b>Veneno</b>: quien recibe un golpe pierde 8 de vida por turno hasta pisar una aldea. La contra perfecta a lo que se regenera.'},
 nusluz_pestilente:{fac:'oscura',name:'Nusluz Pestilente',role:'Nivel 3 · desde Nusluz Venenoso',cost:0,lvl:3,hp:60,mp:5,glyph:'🏹',
-  atk:[{n:'Daga curva',d:7,s:2,t:'filo',r:'melee'},{n:'Arco de savia negra',d:11,s:3,t:'perf',r:'rango',sp:'veneno'},{n:'Flecha ígnea',d:9,s:2,t:'fuego',r:'rango'}], res:R(RES.nus,{perf:25}), ab:[],
+  atk:[{n:'Daga curva',d:7,s:2,t:'filo',r:'melee'},{n:'Arco marchito',d:11,s:3,t:'perf',r:'rango',sp:'veneno'},{n:'Flecha ígnea',d:9,s:2,t:'fuego',r:'rango'}], res:R(RES.nus,{perf:25}), ab:[],
   note:'Veneno y fuego en el mismo carcaj. Nada de lo que toca vuelve entero al bosque.'},
 lider_osc3:{fac:'oscura',name:'El Marchito Despierto',role:'Líder · nivel 3',cost:0,lvl:3,hp:84,mp:6,glyph:'💀',leader:true,
-  atk:[{n:'Zarpa de savia negra',d:15,s:3,t:'imp',r:'melee',sp:'drena'},{n:'Aliento marchito',d:12,s:2,t:'frio',r:'rango',sp:'veneno'}], res:{filo:35,perf:25,imp:15,fuego:-30,frio:25,arc:-30}, ab:[],
+  atk:[{n:'Zarpa marchita',d:15,s:3,t:'imp',r:'melee',sp:'drena'},{n:'Aliento marchito',d:12,s:2,t:'frio',r:'rango',sp:'veneno'}], res:{filo:35,perf:25,imp:15,fuego:-30,frio:25,arc:-30}, ab:[],
   note:'Ya no le pide permiso a la grieta para levantarse. Su aliento <b>envenena</b>.'},
 
 /* ═══ TERRARIOS ═══ */
@@ -1331,10 +1330,10 @@ catapulta_viva:{fac:'terrarios',name:'Catapulta Viva',role:'Nivel 3 · desde Ped
   atk:[{n:'Rama',d:10,s:1,t:'imp',r:'melee'},{n:'Peñasco',d:18,s:2,t:'imp',r:'rango'}], res:R(RES.ped,{filo:20}), ab:[],
   note:'Dieciocho por dos. La artillería del bosque, y sigue sin poder responder a un tiro de rifle.'},
 rodador_zarzal:{fac:'terrarios',name:'Rodador Zarzal',role:'Nivel 2 · desde Rodador',cost:0,lvl:2,hp:40,mp:9,glyph:'🧶',move:MOVE_ROD,
-  atk:[{n:'Espinas de savia',d:8,s:2,t:'arc',r:'melee'}], res:RES.rod, ab:['hostigador'], next:['tormenta_zarzas'],
+  atk:[{n:'Espinas vivas',d:8,s:2,t:'arc',r:'melee'}], res:RES.rod, ab:['hostigador'], next:['tormenta_zarzas'],
   note:'Más espinas, más savia, nueve de movimiento. La Alianza Oscura lo ve venir y no puede hacer nada.'},
 tormenta_zarzas:{fac:'terrarios',name:'Tormenta de Zarzas',role:'Nivel 3 · desde Rodador Zarzal',cost:0,lvl:3,hp:48,mp:9,glyph:'🌪',move:MOVE_ROD,
-  atk:[{n:'Espinas de savia',d:9,s:3,t:'arc',r:'melee',sp:'ralentiza'}], res:R(RES.rod,{imp:-10}), ab:['hostigador'],
+  atk:[{n:'Espinas vivas',d:9,s:3,t:'arc',r:'melee',sp:'ralentiza'}], res:R(RES.rod,{imp:-10}), ab:['hostigador'],
   note:'<b>Enreda</b>: quien recibe un golpe queda ralentizado. Tres golpes arcanos y el rival no puede ni irse.'},
 ancestro_venerable:{fac:'terrarios',name:'Ancestro Venerable',role:'Nivel 2 · desde Ancestro',cost:0,lvl:2,hp:76,mp:5,glyph:'🌳',
   atk:[{n:'Embestida',d:18,s:2,t:'imp',r:'melee',sp:'raices'}], res:RES.anc, ab:['escudo'], escudo:15, next:['patriarca'],
@@ -3108,7 +3107,7 @@ function aiRecruitPick(s,L){
     if(i===1&&fMelee>fRanged) v+=14;                                              // distancia contra melee
     if(i===3&&mine.length>=3) v+=10;                                              // élite cuando ya hay línea
     if(fFac.terrarios&&d.atk.some(a=>a.t==='fuego')) v+=12+fFac.terrarios*2;      // fuego contra el bosque
-    if(fFac.oscura&&d.atk.some(a=>a.t==='arc')) v+=12+fFac.oscura*2;             // arcano contra la savia negra
+    if(fFac.oscura&&d.atk.some(a=>a.t==='arc')) v+=12+fFac.oscura*2;             // arcano contra la Marchitez
     if(fFac.conquistadores&&d.atk.some(a=>a.t==='imp')) v+=6;
     if(mine.filter(u=>u.type===t).length>=3) v-=8;
     v+=rnd(6);
@@ -3536,27 +3535,18 @@ const LORE = [
 {id:'planeta', title:'Terrania, el planeta', sub:'Geografía',
  epi:['No es que el suelo esté vivo. Es que estamos parados sobre algo que piensa más lento que nosotros, y por eso creímos que no pensaba.','Ingeniera Tamsin Okoro, cuaderno de campo'],
  body:[
- `Terrania orbita una estrella anaranjada y vieja, más tibia que la que los humanos dejaron atrás. Tiene un solo continente que importa, una franja de tierra del tamaño de un país mediano rodeada por un mar gris que nadie ha cruzado, y sobre ese continente crece un único bosque. No un bosque grande: <b>un único organismo</b>. Cada árbol comparte raíces con el siguiente, cada raíz lleva savia verde, y la savia lleva algo que los humanos tardaron dos años en admitir que era memoria.`,
+ `Terrania orbita una estrella anaranjada y vieja, más tibia que la que los humanos dejaron atrás. Tiene un solo continente que importa, una franja de tierra del tamaño de un país mediano rodeada por un mar gris que nadie ha cruzado, y sobre ese continente crece un único bosque. No un bosque grande: <b>un único organismo</b>. Cada árbol comparte raíces con el siguiente, cada raíz lleva savia, y la savia lleva algo que los humanos tardaron dos años en admitir que era memoria.`,
  `Los Terrarios son la parte de ese organismo que camina. No son individuos en el sentido humano; son brotes que el bosque desprende cuando necesita ojos, manos o lanzas, y que vuelven a él cuando ya no los necesita. Por eso no le temen a morir, y por eso les cuesta entender que un humano sí.`,
- `El continente se divide en cuatro regiones que definen la guerra: la <b>Franja Gris</b> al oeste, junto al mar, donde nada crece; el <b>Bosque Ancestral</b> en el corazón; el <b>Pantano de Ceniza</b> al sur, donde cayó el reactor; y el <b>Paso del Yunque</b> al norte, la única cordillera, donde la savia de hierro asoma en vetas que brillan de noche.`,
+ `El continente se divide en cuatro regiones que definen la guerra: la <b>Franja Gris</b> al oeste, junto al mar, donde nada crece; el <b>Bosque Ancestral</b> en el corazón; el <b>Pantano de Ceniza</b> al sur, donde cayó el reactor; y el <b>Paso del Yunque</b> al norte, la única cordillera, donde el hierro asoma en vetas que brillan de noche.`,
  `El clima es suave y aburrido. Nunca hace frío de verdad y nunca hay tormentas. Lo único violento que hay en Terrania son sus tres pueblos.`],
- see:['savias','jornadas','franja']},
-{id:'savias', title:'Las tres savias', sub:'Lo que corre por dentro',
- epi:['Verde para vivir, de hierro para mover, negra para no morir. Nadie te dijo que pudieras tener las tres.','Dicho de la Franja'],
- body:[
- `Todo en Terrania corre por savia, y hay tres.`,
- `La <b>savia verde</b> es la sangre del bosque. Lleva agua, azúcares y memoria. Un Terrario herido que vuelve a pisar bosque la absorbe por los pies y se cierra; un Terrario lejos del bosque va perdiendo, con la savia, la certeza de quién es. Los humanos la estudiaron con esperanza durante años: cura, pero solo a los suyos.`,
- `La <b>savia de hierro</b> es lo que los humanos encontraron bajo las raíces del Paso del Yunque: un mineral fibroso y denso que arde en un reactor con la mitad del combustible que traían. Los Terrarios nunca la nombraron porque nunca la usaron; para el bosque era el esqueleto del suelo, algo que no se toca porque sostiene. Para la colonia era diez años más de luz.`,
- `La <b>savia negra</b> dormía más abajo. No es una sustancia que exista naturalmente en la superficie: es lo que queda de la savia verde cuando algo la quema desde adentro sin dejarla morir. Apareció en el Pantano de Ceniza, donde el reactor de la <i>Perseverancia</i> se partió al caer y cocinó las raíces durante un año. El bosque la sintió como un dolor sordo y aprendió a no pensar en ella. Un Ancestro decidió pensar.`,
- `Quien bebe savia negra no muere. Cambia. Se vuelve más rápido, más hambriento y más solo, porque la savia negra no comparte memoria: la roba. Por eso la Alianza Oscura no tiene bosque al que volver. Solo tiene al Marchito.`],
- see:['pantano','marchito','oscura']},
+ see:['jornadas','franja']},
 {id:'jornadas', title:'El reloj de las jornadas', sub:'Mañana, tarde y noche',
  epi:['Ataquen al mediodía. Retírense al anochecer. El que no aprende eso no llega a aprender otra cosa.','Manual de campo de la Guardia Pretoriana'],
  body:[
  `El día de Terrania dura unas treinta horas humanas y los tres pueblos lo dividen igual: mañana, tarde y noche. No por costumbre, sino porque el planeta lo impone.`,
- `Con la <b>mañana</b> el bosque despierta. La savia verde sube desde las raíces con la primera luz y los Terrarios se mueven más rápido, golpean más fuerte y se cierran las heridas antes. Es la hora en que un Ancestro parece imparable y en que los colonos aprendieron a no salir de sus fortalezas.`,
+ `Con la <b>mañana</b> el bosque despierta. La savia sube desde las raíces con la primera luz y los Terrarios se mueven más rápido, golpean más fuerte y se cierran las heridas antes. Es la hora en que un Ancestro parece imparable y en que los colonos aprendieron a no salir de sus fortalezas.`,
  `La <b>tarde</b> es de los humanos. Los paneles de la colonia cargan las baterías de riel al máximo, el sol seca el barro, y las armas que dependen de energía acumulada tienen su hora de gloria. Además, y esto los Terrarios lo saben mejor que nadie, a la tarde el bosque tiene sueño: la savia baja y los brotes se ponen lentos.`,
- `La <b>noche</b> pertenece a la savia negra. Es una sustancia fría y la oscuridad la despierta. Los Nara aúllan en las llanuras, los Nolopmas salen de las cuevas y los Nusluz encienden sus flechas. Los colonos la llaman <i>la hora del hambre</i> y cierran los postigos. Los Terrarios no cierran nada, pero a la noche también se quedan quietos.`,
+ `La <b>noche</b> pertenece a la Marchitez. Es una sustancia fría y la oscuridad la despierta. Los Nara aúllan en las llanuras, los Nolopmas salen de las cuevas y los Nusluz encienden sus flechas. Los colonos la llaman <i>la hora del hambre</i> y cierran los postigos. Los Terrarios no cierran nada, pero a la noche también se quedan quietos.`,
  `En la guerra esto lo cambia todo. Un ejército que ataca a la hora equivocada pierde un cuarto de su fuerza y regala un cuarto al enemigo. Los tres bandos saben que la victoria no está en tener más soldados, sino en elegir a qué hora usarlos.`],
  see:['conquistadores','terrarios','oscura']},
 {id:'franja', title:'La Franja Gris', sub:'Región · el oeste',
@@ -3572,19 +3562,19 @@ const LORE = [
  `El Bosque Ancestral es el corazón del organismo. Aquí las raíces son más gruesas que un hombre y bajan tan hondo que nadie sabe dónde terminan. Aquí está enraizada Sylvaan, la Raíz Madre, que no se ha movido de su lugar en más tiempo del que la colonia lleva existiendo.`,
  `Los caminos son estrechos, sinuosos, y cambian. Un sendero que los exploradores marcaron en primavera puede no existir en otoño, no porque alguien lo haya cerrado, sino porque el bosque decidió crecer en otro sentido. Los humanos se pierden. Los Terrarios no pueden perderse porque cada árbol les dice dónde están.`,
  `Militarmente es el peor lugar del mundo para atacar. Cada tronco es una cobertura, cada claro una trampa. Los Brotales se curan con solo quedarse quietos y los Pedrales tienen piedra a mano. Un Ancestro en el bosque, de mañana, ha aguantado solo a una compañía entera.`,
- `Y sin embargo la colonia entró. Al principio con taladoras escoltadas, de noche, por el borde norte donde el bosque toca la cordillera. Después con más. El Bosque Ancestral tiene hoy claros que no hizo el bosque, y en cada uno hay un pozo que baja hasta la savia de hierro.`],
+ `Y sin embargo la colonia entró. Al principio con taladoras escoltadas, de noche, por el borde norte donde el bosque toca la cordillera. Después con más. El Bosque Ancestral tiene hoy claros que no hizo el bosque, y en cada uno hay un pozo que baja hasta el hierro.`],
  see:['terrarios','sylvaan','hierro']},
 {id:'pantano', title:'El Pantano de Ceniza', sub:'Región · el sur',
  body:[
  `Al sur del bosque, donde el terreno baja hacia el mar, había un humedal tranquilo que los Terrarios usaban poco. Ahí fue a caer el módulo del reactor de la <i>Perseverancia</i>, desprendido del casco durante el reingreso. No explotó: se hundió, se partió y estuvo un año entero cocinando el subsuelo con un calor que no venía de ningún sol.`,
- `El bosque sintió el dolor y retiró las raíces. El humedal se volvió pantano y el pantano se volvió gris: ceniza vegetal flotando sobre agua negra. Y debajo de todo eso, donde la savia verde no llegó a irse a tiempo, nació la savia negra.`,
+ `El bosque sintió el dolor y retiró las raíces. El humedal se volvió pantano y el pantano se volvió gris: ceniza vegetal flotando sobre agua negra. Y debajo de todo eso, donde la savia no llegó a irse a tiempo, nació la Marchitez.`,
  `Durante ocho años nadie fue al pantano. Los humanos, porque medían radiación y no les gustaba el número; los Terrarios, porque el bosque no piensa en lo que le duele. Fue el lugar perfecto para un Ancestro que quería estar solo y pensar cosas que el bosque no habría permitido.`,
- `Hoy el Pantano de Ceniza es la casa de la Alianza Oscura. Los Nara se revuelcan en el barro tibio, los Nolopmas cuelgan de los troncos muertos y el Marchito está enraizado en el centro exacto donde cayó el reactor, bebiendo de la grieta. Es terreno donde la Alianza se mueve como pez en el agua y donde un Conquistador con armadura se hunde hasta la rodilla.`],
- see:['savias','marchito','oscura']},
+ `Hoy el Pantano de Ceniza es la casa de la Alianza Oscura. Los Nara se revuelcan en el barro tibio, los Nolopmas cuelgan de los troncos muertos y el Marchito está enraizado en el centro exacto donde cayó el reactor, hundido en la grieta. Es terreno donde la Alianza se mueve como pez en el agua y donde un Conquistador con armadura se hunde hasta la rodilla.`],
+ see:['marchito','oscura']},
 {id:'yunque', title:'El Paso del Yunque', sub:'Región · el norte',
  body:[
  `La única cordillera de Terrania cruza el norte del continente como una costura. Los colonos la llamaron el Yunque por la forma de su pico más alto, chato y ancho, y porque fue ahí donde empezaron a forjar el futuro de la colonia sin preguntarle a nadie.`,
- `Las vetas de savia de hierro afloran en las laderas altas. De noche brillan con un tono cobrizo que los Terrarios siempre habían visto y nunca les había importado. La primera expedición de Tamsin Okoro tardó tres días en subir y una hora en entender qué estaba mirando.`,
+ `Las vetas de hierro afloran en las laderas altas. De noche brillan con un tono cobrizo que los Terrarios siempre habían visto y nunca les había importado. La primera expedición de Tamsin Okoro tardó tres días en subir y una hora en entender qué estaba mirando.`,
  `El paso es estrecho, con un valle en el medio y cumbres a los lados. Quien tiene las cumbres tiene el paso: se ataca desde arriba, se ve todo, se retrocede sin ser visto. La Alianza Oscura trepa como nadie; los Nica nacieron en estas piedras antes de ser Nica. Los Conquistadores levantaron fortalezas en las cotas medias y las defienden con tiradores.`,
  `Los Terrarios odian la montaña, donde no hay raíz que los sostenga, y aun así vienen, porque el Yunque es donde el pacto se rompió, y para el bosque la memoria de una herida es la herida.`],
  see:['hierro','okoro','oscura']},
@@ -3602,7 +3592,7 @@ const LORE = [
 {id:'hambre', title:'Los años del hambre', sub:'Años 1 a 3',
  body:[
  `Los primeros dos años en Terrania no fueron una guerra: fueron una espera larga a ver quién se moría primero.`,
- `Los colonos comían raciones de la nave y lo poco que crecía en la ceniza. Intentaron sembrar semillas terrestres en la Franja y el suelo las escupió. Intentaron cazar en el borde del bosque y los animales, que ya entonces eran raros, desaparecieron. Intentaron talar para construir y se encontraron con que el tronco sangraba savia verde y que al día siguiente había un Brotal parado donde había estado el árbol, mirándolos sin hacer nada.`,
+ `Los colonos comían raciones de la nave y lo poco que crecía en la ceniza. Intentaron sembrar semillas terrestres en la Franja y el suelo las escupió. Intentaron cazar en el borde del bosque y los animales, que ya entonces eran raros, desaparecieron. Intentaron talar para construir y se encontraron con que el tronco sangraba savia y que al día siguiente había un Brotal parado donde había estado el árbol, mirándolos sin hacer nada.`,
  `Los Terrarios tampoco atacaron. Observaban. Para el bosque, once mil animales nuevos eran una anomalía a estudiar, no un enemigo. Cada tanto un brote se acercaba, se quedaba un día entero quieto frente al campamento y volvía. Los colonos lo llamaban <i>la visita</i>, y algunos empezaron a dejarle agua.`,
  `Fue Tamsin Okoro, la ingeniera jefa de sistemas, la que notó que la savia de los troncos cortados vibraba en frecuencias regulares cuando un Terrario estaba cerca. Tardó un año en construir el traductor. La primera frase que salió del aparato, después de semanas de ruido, fue una pregunta: <b>por qué siguen cortando</b>.`,
  `La segunda fue de Arex: porque nos morimos de frío.`,
@@ -3625,10 +3615,10 @@ const LORE = [
  `Okoro subió al Yunque en el año diez buscando cobre. Encontró otra cosa. Su informe tiene una sola línea que Arex subrayó dos veces: <i>arde el doble y está justo debajo de la línea de árboles</i>.`,
  `Debajo. La tercera cláusula.`],
  see:['hierro','okoro','jornadas']},
-{id:'hierro', title:'Savia de hierro', sub:'Año 11',
+{id:'hierro', title:'El hierro del Yunque', sub:'Año 11',
  epi:['Le pregunté a Arex si le habíamos preguntado al bosque. Me dijo que el bosque no tiene hospitales.','Ingeniera Tamsin Okoro'],
  body:[
- `La primera taladora entró al bosque una noche del año once, por el borde norte, donde los árboles se vuelven ralos al pie del Yunque. La escoltaban veinte Lanceros con órdenes de no disparar. Cavó hasta el amanecer, cargó dos toneladas de savia de hierro y volvió a la Franja antes de que el bosque terminara de despertarse.`,
+ `La primera taladora entró al bosque una noche del año once, por el borde norte, donde los árboles se vuelven ralos al pie del Yunque. La escoltaban veinte Lanceros con órdenes de no disparar. Cavó hasta el amanecer, cargó dos toneladas de hierro y volvió a la Franja antes de que el bosque terminara de despertarse.`,
  `Nadie dijo nada. Ni el bosque, que sintió el pozo como se siente una astilla, ni la colonia, que miró para otro lado con el alivio de quien enciende la calefacción. Arex nunca firmó la orden de perforar. Tampoco la de parar.`,
  `A la tercera semana los Brotales que hacían la visita dejaron de venir. A la sexta, la fruta del borde empezó a aparecer menos días. Al tercer mes Yris se plantó frente al traductor y dijo una sola frase: <b>están tocando lo de abajo</b>. Okoro contestó que era solo un mineral. Yris se quedó quieta seis horas y se fue sin decir nada más. No volvió.`,
  `La colonia interpretó el silencio como consentimiento. Abrió cuatro pozos más. Puso fortalezas en las cotas medias del Yunque para proteger las rutas. Los Lanceros empezaron a llevar las lanzas cargadas.`,
@@ -3640,16 +3630,16 @@ const LORE = [
  `Se llamaba Vhorn, aunque los Terrarios no usan nombres, y era uno de los Ancestros más antiguos del bosque: un árbol de guerra de treinta metros que había estado quieto durante siglos porque no había habido guerra.`,
  `Cuando empezaron los pozos, Vhorn pidió al Consejo de Raíces permiso para bajar al norte y arrancar las taladoras. Sylvaan dijo que no. Dijo que el bosque había firmado y que el bosque cumple, y que si los humanos habían roto el pacto, el bosque les retiraría la fruta y esperaría a que volvieran a tener hambre. Diez años, veinte. El bosque tiene tiempo.`,
  `Vhorn no tenía. O decidió que no. Se arrancó las raíces del Bosque Ancestral, cosa que ningún Ancestro había hecho, y caminó tres semanas hacia el sur, hasta el pantano donde el bosque no quería pensar, y hundió las raíces en la grieta del reactor.`,
- `La savia negra lo cambió en una noche. Perdió la corteza verde y le creció otra, negra y agrietada, que supura. Perdió la memoria del bosque y ganó una furia nítida y propia. Y descubrió que podía darla de beber.`,
+ `La Marchitez lo cambió en una noche. Perdió la corteza verde y le creció otra, negra y agrietada, que supura. Perdió la memoria del bosque y ganó una furia nítida y propia. Y descubrió que podía contagiarla.`,
  `Empezó con los jabalíes del pantano: nacieron los <b>Nara</b>. Siguió con las bestias de cuerno de las cumbres: los <b>Nica</b>. Con los planeadores de las cuevas: los <b>Nolopmas</b>. Y por último con los cazadores del bosque que fueron a buscarlo y lo encontraron: los <b>Nusluz</b>, que ya no volvieron a casa.`,
  `Al terminar el año doce, el pantano tenía ejército, y el ejército tenía un solo pensamiento.`],
  see:['vhorn','oscura','pantano']},
-{id:'guerra', title:'La guerra de las tres savias', sub:'Hoy',
+{id:'guerra', title:'La guerra de Terrania', sub:'Hoy',
  body:[
  `La primera incursión de la Alianza Oscura no fue contra la colonia. Fue contra el bosque. Una noche del año trece, cien Nara con cuatro Nica al frente entraron por el sur del Bosque Ancestral y quemaron un bosquecillo de Brotales jóvenes con fuego que llevaban los Nusluz. El bosque, que llevaba dos años pensando qué hacer con los humanos, tuvo que empezar a pensar en otra cosa.`,
  `Sylvaan despertó a los Ancestros. Por primera vez en siglos el bosque desprendió brotes con lanzas, plantó Pedrales en los claros y soltó Rodadores por los senderos. Y con el bosque en armas, la colonia entendió que ya no había nada que interpretar como consentimiento.`,
  `Arex ordenó cerrar los pozos. Tarde: los pozos eran ahora fortalezas, y las fortalezas estaban rodeadas. Los primeros Lanceros muertos por Brotales cayeron defendiendo taladoras que ya no funcionaban.`,
- `Hoy hay tres ejércitos y ningún aliado. Los <b>Conquistadores</b> quieren la tierra y la savia de hierro, y saben que sin ellas la colonia se apaga en una generación. Los <b>Terrarios</b> quieren el pacto: que se vayan de debajo de las raíces, que devuelvan la línea de árboles, y que el bosque pueda volver a pensar en paz. La <b>Alianza Oscura</b> no quiere nada que se pueda dar. Quiere que la Franja arda y que el bosque se marchite, y que sobre la ceniza de los dos crezca lo único que la savia negra sabe hacer crecer: más savia negra.`,
+ `Hoy hay tres ejércitos y ningún aliado. Los <b>Conquistadores</b> quieren la tierra y el hierro, y saben que sin ellas la colonia se apaga en una generación. Los <b>Terrarios</b> quieren el pacto: que se vayan de debajo de las raíces, que devuelvan la línea de árboles, y que el bosque pueda volver a pensar en paz. La <b>Alianza Oscura</b> no quiere nada que se pueda dar. Quiere que la Franja arda y que el bosque se marchite, y que sobre la ceniza de los dos crezca lo único que la Marchitez sabe hacer crecer: más Marchitez.`,
  `Cada jornada le da la ventaja a uno. Cada terreno le da la ventaja a otro. Y en algún lugar, algunas mañanas, todavía aparece fruta en el borde de la Franja.`],
  see:['conquistadores','terrarios','oscura']},
 ]},
@@ -3657,7 +3647,7 @@ const LORE = [
 {id:'conquistadores', title:'Los Conquistadores', sub:'La colonia',
  epi:['No somos colonos. Los colonos eligen dónde bajar.','Grafiti en Puerto Arex'],
  body:[
- `Se llaman a sí mismos la Colonia, o la Gente de la Perseverancia. <i>Conquistadores</i> es el nombre que les puso el traductor de savia cuando intentó volcar la palabra con que el bosque los nombra, y les quedó, con la mezcla de orgullo y vergüenza con que se cargan los apodos ajenos.`,
+ `Se llaman a sí mismos la Colonia, o la Gente de la Perseverancia. <i>Conquistadores</i> es el nombre que les puso el traductor de raíces cuando intentó volcar la palabra con que el bosque los nombra, y les quedó, con la mezcla de orgullo y vergüenza con que se cargan los apodos ajenos.`,
  `Son once mil personas y dos generaciones. La primera recuerda la nave y el hambre; la segunda nació en Terrania y no conoce otra cosa que la Franja, la fruta del bosque y el ruido nocturno del sur. Gobierna Ilse Arex por costumbre más que por ley: hay un consejo, hay votaciones, y todos saben que lo que Arex anota es lo que pasa.`,
  `Su fuerza es la disciplina y la tecnología de <b>riel</b>: armas que aceleran proyectiles con la carga de las baterías solares. Por eso son fuertes de tarde, cuando las baterías están llenas, y por eso sus fortalezas están donde da el sol. La doctrina la escribió la Guardia Pretoriana y cabe en tres frases: la línea aguanta, el tirador borra, la moto roba.`,
  `Sus <b>Lanceros Ligeros</b> son baratos y rápidos en llano, y en formación cerrada aguantan lo que solos no. Sus <b>Tiradores de Precisión</b> no fallan casi nunca, a cambio de caerse con un golpe. Sus <b>Tiradores</b> cargan además munición incendiaria, la única cosa que el bosque teme de verdad. Sus <b>Motoristas de Riel</b> corren la Franja de punta a punta robando aldeas y rematando heridos. Y sus <b>Guardianes Pretorianos</b>, con escudo y bastón de arco eléctrico, son el muro detrás del cual la colonia sigue existiendo.`,
@@ -3666,19 +3656,19 @@ const LORE = [
 {id:'terrarios', title:'Los Terrarios', sub:'El bosque que camina',
  epi:['Preguntan cuántos somos. Uno. Preguntan cuántos brotes tenemos. Los que hagan falta.','Yris'],
  body:[
- `Los Terrarios no son un pueblo: son un bosque que a veces camina. Cada Brotal, cada Pedral, cada Ancestro es un desprendimiento del mismo organismo, con raíces que en algún momento estuvieron unidas a las de todos los demás y que guardan, en la savia verde, una memoria común.`,
+ `Los Terrarios no son un pueblo: son un bosque que a veces camina. Cada Brotal, cada Pedral, cada Ancestro es un desprendimiento del mismo organismo, con raíces que en algún momento estuvieron unidas a las de todos los demás y que guardan, en la savia, una memoria común.`,
  `Por eso son lentos: piensan entre todos, y pensar entre millones lleva tiempo. Por eso no le temen a la muerte: un brote que cae vuelve a la tierra y su savia vuelve al bosque. Y por eso les cuesta tanto la guerra: el bosque nunca había necesitado decidir rápido.`,
  `El <b>Consejo de Raíces</b> es la forma que toma esa decisión lenta: los Ancestros más viejos, enraizados en círculo en el corazón del Bosque Ancestral, con Sylvaan en el centro. Cuando el Consejo decide, todo el bosque lo sabe al instante. Cuando no decide, todo el bosque espera.`,
- `Militarmente son duros de matar y difíciles de mover. Los <b>Brotales</b> se regeneran en el bosque y resisten flechas y balas como resiste la madera. Los <b>Pedrales</b> arrojan peñascos que ninguna armadura frena. Los <b>Rodadores</b>, bolas de zarzas que ruedan a toda velocidad, llevan espinas bañadas en savia verde pura, el único daño arcano de Terrania y el que la savia negra más teme. Y los <b>Ancestros</b> son murallas con raíces: bloquean un paso solos y frenan a quien se les acerque.`,
+ `Militarmente son duros de matar y difíciles de mover. Los <b>Brotales</b> se regeneran en el bosque y resisten flechas y balas como resiste la madera. Los <b>Pedrales</b> arrojan peñascos que ninguna armadura frena. Los <b>Rodadores</b>, bolas de zarzas que ruedan a toda velocidad, llevan espinas bañadas en fuerza viva del bosque, el único daño arcano de Terrania y el que la Marchitez más teme. Y los <b>Ancestros</b> son murallas con raíces: bloquean un paso solos y frenan a quien se les acerque.`,
  `Su debilidad es una sola y enorme: arden. Un Tirador con munición incendiaria o un Nusluz con flechas ígneas puede deshacer en dos ráfagas lo que el bosque tardó un siglo en crecer. Por eso los Terrarios eligen dónde pelear, o no pelean.`],
  see:['sylvaan','bosque','unidades-terrarios']},
-{id:'oscura', title:'La Alianza Oscura', sub:'La savia negra',
+{id:'oscura', title:'La Alianza Oscura', sub:'La Marchitez',
  epi:['No tenemos bosque al que volver. Eso no es una pérdida. Es libertad.','El Marchito'],
  body:[
  `La Alianza Oscura no es una alianza y nadie en ella la llama así. El nombre lo puso la colonia, que necesitaba una palabra para el ejército que salía del pantano de noche. Ellos no se nombran. Tienen un solo pensamiento y ese pensamiento es el Marchito.`,
- `Son las bestias de Terrania bebidas en savia negra. Antes de la corrupción eran animales tímidos, escasos, que el bosque toleraba y los colonos casi nunca veían. Después son otra cosa: más rápidos, más grandes, con la piel agrietada y los ojos con un brillo frío. No comparten memoria como los Terrarios; la savia negra roba en lugar de dar. Por eso obedecen: sin el Marchito no tendrían quién pensara por ellos.`,
- `Los <b>Nara</b> eran jabalíes de pantano. Son la carne de la Alianza, baratos y muchos, peligrosos solo en manada. Los <b>Nica</b> eran las bestias de cuerno de las cumbres del Yunque: ahora son máquinas de embestir que ganan o mueren en el primer golpe. Los <b>Nolopmas</b> eran planeadores nocturnos de las cuevas, tímidos comedores de insectos; hoy planean a ras del suelo, más rápidos que cualquier cosa con patas, y se alimentan de lo que muerden. Y los <b>Nusluz</b> fueron Terrarios: cazadores del bosque que bajaron al pantano a buscar a Vhorn, lo encontraron y bebieron. Son los únicos de la Alianza que recuerdan lo que eran, y por eso son los más crueles.`,
- `Pelean de noche, en la montaña y en el pantano. Ganan por número y por brutalidad. Y tienen una sola grieta: la savia negra no soporta la savia verde pura, y las espinas de un Rodador les hacen mucho más daño que a cualquier otro.`],
+ `Son las bestias de Terrania marcadas por la Marchitez. Antes de la corrupción eran animales tímidos, escasos, que el bosque toleraba y los colonos casi nunca veían. Después son otra cosa: más rápidos, más grandes, con la piel agrietada y los ojos con un brillo frío. No comparten memoria como los Terrarios; la Marchitez roba en lugar de dar. Por eso obedecen: sin el Marchito no tendrían quién pensara por ellos.`,
+ `Los <b>Nara</b> eran jabalíes de pantano. Son la carne de la Alianza, baratos y muchos, peligrosos solo en manada. Los <b>Nica</b> eran las bestias de cuerno de las cumbres del Yunque: ahora son máquinas de embestir que ganan o mueren en el primer golpe. Los <b>Nolopmas</b> eran planeadores nocturnos de las cuevas, tímidos comedores de insectos; hoy planean a ras del suelo, más rápidos que cualquier cosa con patas, y se alimentan de lo que muerden. Y los <b>Nusluz</b> fueron Terrarios: cazadores del bosque que bajaron al pantano a buscar a Vhorn, lo encontraron y se hundieron con él en la Marchitez. Son los únicos de la Alianza que recuerdan lo que eran, y por eso son los más crueles.`,
+ `Pelean de noche, en la montaña y en el pantano. Ganan por número y por brutalidad. Y tienen una sola grieta: la Marchitez no soporta la fuerza viva del bosque, y las espinas de un Rodador les hacen mucho más daño que a cualquier otro.`],
  see:['vhorn','pantano','unidades-oscura']},
 ]},
 {cat:'Personajes', entries:[
@@ -3704,15 +3694,15 @@ const LORE = [
  `Antes se llamaba Vhorn, o así lo tradujo el aparato de Okoro, y era un Ancestro: uno de los árboles de guerra del bosque, treinta metros de corteza y paciencia que llevaba siglos quieto en el borde norte porque el bosque no había necesitado guerra.`,
  `Fue el primero en sentir los pozos. Estaba enraizado cerca del Yunque y las taladoras le pasaron por debajo como cuchillos. Pidió permiso para arrancarlas. Sylvaan dijo que el bosque espera. Vhorn descubrió, en ese momento, algo que ningún Terrario había descubierto: que se puede no estar de acuerdo con el bosque.`,
  `Se arrancó. Caminó al sur. Bebió.`,
- `Lo que volvió del pantano ya no es un Terrario. La corteza se le volvió negra y agrietada y supura una savia oscura que quema el pasto donde cae. Perdió la memoria común y ganó una sola idea, nítida como un clavo: que el bosque que espera merece lo mismo que los humanos que cavan. Que la paciencia es cobardía. Que lo único honesto en Terrania es el hambre.`,
- `Se llama a sí mismo el Marchito con una ironía que ningún Nara entiende. Está enraizado en la grieta del reactor, en el centro del pantano, y rara vez la deja, porque la savia negra pide beber seguido. Cuando pelea, lo hace con una zarpa de raíces podridas que le devuelve la vida que quita, y con un aliento helado que apaga la savia verde.`,
+ `Lo que volvió del pantano ya no es un Terrario. La corteza se le volvió negra y agrietada y supura un lodo oscuro que quema el pasto donde cae. Perdió la memoria común y ganó una sola idea, nítida como un clavo: que el bosque que espera merece lo mismo que los humanos que cavan. Que la paciencia es cobardía. Que lo único honesto en Terrania es el hambre.`,
+ `Se llama a sí mismo el Marchito con una ironía que ningún Nara entiende. Está enraizado en la grieta del reactor, en el centro del pantano, y rara vez la deja, porque la Marchitez pide más, y seguido. Cuando pelea, lo hace con una zarpa de raíces podridas que le devuelve la vida que quita, y con un aliento helado que apaga a los brotes.`,
  `Sylvaan todavía lo llama Vhorn. Él ya no contesta a eso.`],
- see:['marchito','savias','oscura']},
+ see:['marchito','oscura']},
 {id:'okoro', title:'Ingeniera Tamsin Okoro', sub:'Los Conquistadores',
  epi:['Construí la máquina que nos permitió hablar con el bosque. Y encontré la piedra que nos hizo dejar de escucharlo. Si hay una persona a la que culpar, tiene mi cara.','Tamsin Okoro'],
  body:[
  `Era ingeniera jefa de sistemas de la <i>Perseverancia</i>, una de las pocas tripulantes despiertas en el momento del impacto y la única que entendía cómo funcionaba lo que quedaba de la nave. Sin ella no habría habido luz el primer invierno.`,
- `Es alta, flaca, con las manos siempre manchadas de algo, y tiene la costumbre de hablar con las cosas mientras las arregla. Fue esa costumbre la que la hizo notar que los troncos cortados vibraban en presencia de un Terrario, y su terquedad la que la mantuvo un año construyendo un aparato que todos decían que no iba a funcionar. El <b>traductor de savia</b> es su obra maestra y la razón de que once mil personas no murieran de hambre.`,
+ `Es alta, flaca, con las manos siempre manchadas de algo, y tiene la costumbre de hablar con las cosas mientras las arregla. Fue esa costumbre la que la hizo notar que los troncos cortados vibraban en presencia de un Terrario, y su terquedad la que la mantuvo un año construyendo un aparato que todos decían que no iba a funcionar. El <b>traductor de raíces</b> es su obra maestra y la razón de que once mil personas no murieran de hambre.`,
  `También es la razón de la guerra. Fue ella la que subió al Yunque en el año diez buscando cobre y volvió con una piedra que ardía el doble. Escribió el informe. Subrayó la línea. Y cuando Arex no firmó ni la orden de perforar ni la de parar, Okoro entendió el silencio igual que todos y diseñó las taladoras.`,
  `Hoy dirige los talleres de Puerto Arex y no duerme. Sigue manteniendo el traductor encendido en el borde de la Franja, por si Yris vuelve. No ha vuelto. Okoro le habla igual, cada noche, mientras arregla cosas.`],
  see:['hambre','hierro','yris']},
@@ -3741,13 +3731,12 @@ const LORE = [
  ['Jornada','Cada tercio del día de Terrania: mañana, tarde y noche. Cada una favorece a un bando. En la guerra, un turno es una jornada.'],
  ['La visita','Nombre que los colonos daban a los Brotales que, en los años del hambre, se quedaban un día entero quietos frente al campamento, mirando.'],
  ['Pacto de la Franja','El acuerdo del año tres. Tres cláusulas: no cruzar la línea de árboles, no cortar un tronco vivo, no tocar lo que está debajo de las raíces. Se rompió la tercera.'],
- ['Perseverancia','La nave colonia. Salió con cuarenta mil personas dormidas hacia otro planeta; cayó en Terrania con once mil despiertas. Su reactor, al partirse, engendró la savia negra.'],
+ ['Perseverancia','La nave colonia. Salió con cuarenta mil personas dormidas hacia otro planeta; cayó en Terrania con once mil despiertas. Su reactor, al partirse, engendró la Marchitez.'],
  ['Puerto Arex','La única ciudad humana, levantada sobre el casco de la nave. Nadie la llama así salvo en los documentos.'],
  ['Riel','La tecnología de la colonia: armas que aceleran proyectiles con la carga de las baterías solares. Lanzas de riel, rifles de riel, fortalezas de riel. Funciona mejor a la tarde.'],
- ['Savia de hierro','El mineral fibroso bajo las raíces del Yunque que arde el doble que el combustible de la nave. Para el bosque, el esqueleto del suelo. Para la colonia, diez años más de luz.'],
- ['Savia negra','Lo que queda de la savia verde cuando algo la quema desde adentro sin dejarla morir. Nació en la grieta del reactor. Quien la bebe no muere: cambia, y deja de compartir memoria.'],
- ['Savia verde','La sangre del bosque. Lleva agua, azúcares y memoria. Cura a los Terrarios que la pisan y es veneno puro para la savia negra.'],
- ['Traductor de savia','El aparato de Tamsin Okoro que convierte las vibraciones de la savia en palabras. Hizo posible el pacto. Sigue encendido en el borde de la Franja, por las dudas.'],
+ ['Hierro del Yunque','El mineral fibroso bajo las raíces del Yunque que arde el doble que el combustible de la nave. Para el bosque, el esqueleto del suelo. Para la colonia, diez años más de luz.'],
+ ['Marchitez','La corrupción negra que nació en la grieta del reactor de la Perseverancia. Quien se hunde en ella no muere: cambia, y deja de compartir memoria.'],
+ ['Traductor de raíces','El aparato de Tamsin Okoro que convierte las vibraciones de las raíces en palabras. Hizo posible el pacto. Sigue encendido en el borde de la Franja, por las dudas.'],
  ]},
 ]},
 ];
@@ -4230,12 +4219,12 @@ function slotLabel(slot){ const g=readSave(slot); if(!g) return null; const M=MA
     if(g.conq) mision='Odisea · '+CAMPANA_CONQ.escenarios[g.conq.indice].nombre+' — ';
     else if(g.terra) mision='Sucesión · '+CAMPANA_TERRA.escenarios[g.terra.indice].nombre+' — ';
     else if(g.alianza) mision='Ruptura · '+CAMPANA_ALIANZA.escenarios[g.alianza.indice].nombre+' — ';
-    else if(g.campana) mision='Tres Savias · '+CAMPANA.escenarios[g.campana.indice].nombre+' — ';
+    else if(g.campana) mision='La Guerra de Terrania · '+CAMPANA.escenarios[g.campana.indice].nombre+' — ';
   }catch(e){}
   return `${mision?'<span class="tiny" style="color:var(--bone)">'+mision+'</span>':''}<b>${M?M.name:g.map}</b> · turno ${g.turn} · ${g.sides.length} bandos${eqs.length<g.sides.length?' ('+eqs.map(t=>g.sides.filter((x,i)=>(x.team||i+1)===t).length).join(' vs ')+')':''}<br><span class="tiny">${d.toLocaleDateString()} ${d.toLocaleTimeString().slice(0,5)}${slot==='auto'?' · guardado automático':''}</span>`; }
 function openSlots(mode){
   const dlg=document.getElementById('saveDlg'), rows=document.getElementById('saveRows');
-  document.getElementById('saveTitle').textContent=mode==='save'?'Guardar partida':'Continuar partida';
+  document.getElementById('saveTitle').textContent=mode==='save'?'Guardar partida':'Cargar partida';
   rows.innerHTML='';
   SAVE_SLOTS.forEach(slot=>{
     if(mode==='save'&&slot==='auto') return;
@@ -4255,7 +4244,7 @@ function refreshNetResume(){
   const v=NET.guardada(); li.style.display=v?'':'none';
   if(v) document.getElementById('netBadge').textContent=`Sala ${v.code} · retomar donde quedó`;
 }
-function refreshContinue(){ const b=document.getElementById('btnContinue'); if(!b) return; const any=SAVE_SLOTS.some(sl=>readSave(sl)); b.style.display=any?'':'none'; }
+function refreshContinue(){ const b=document.getElementById('btnContinue'); if(!b) return; const any=SAVE_SLOTS.some(sl=>readSave(sl)); b.style.display=''; b.querySelector('span:last-child').textContent=any?'Retomar una partida guardada':'Todavía no hay partidas guardadas'; }
 
 /* ---------- 19d. PANTALLA SIEMPRE ENCENDIDA ---------- */
 const WAKE={lock:null,soportado:'wakeLock' in navigator};
@@ -4304,12 +4293,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
   navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(recargado) return; recargado=true; if(S&&S.tiles&&S.tiles.length&&!S.over) return; location.reload(); });
 }
 
-/* ---------- 19g. CAMPAÑA: LA GUERRA DE LAS TRES SAVIAS ---------- */
+/* ---------- 19g. CAMPAÑA: LA GUERRA DE TERRANIA ---------- */
 /* Cuatro escenarios encadenados por las cuatro regiones de la crónica. El jugador elige una
    facción y la lleva de punta a punta; el oro y las unidades que sobreviven pasan de un
    escenario al siguiente (ver S.esCampana y el recall de veteranos). */
 const CAMPANA = {
-  id:'tres_savias', name:'La Guerra de las Tres Savias',
+  id:'tres_savias', name:'La Guerra de Terrania',
   desc:'Cuatro batallas por las cuatro regiones de Terrania. Elegís una facción y la llevás de punta a punta: lo que sobrevive un escenario, sigue al siguiente.',
   escenarios:[
     { id:'e1', map:'borde', nombre:'I · La Franja Gris', modoVictoria:'lideres', gold:80, ia:'recluta',
@@ -4319,7 +4308,7 @@ const CAMPANA = {
     { id:'e3', map:'pantano', nombre:'III · Pantano de Ceniza', modoVictoria:'aldeas', gold:130, ia:'comandante',
       brief:'Donde cayó el reactor no se pelea por matar: se pelea por sostener la tierra que queda seca. Juntá y defendé las aldeas, no las regales.' },
     { id:'e4', map:'yunque', nombre:'IV · Paso del Yunque', modoVictoria:'corazon', gold:150, ia:'maestro',
-      brief:'La savia de hierro brilla de noche en estas vetas. Los dos rivales que te quedan van a pelear entre ellos y contra vos por el corazón de la montaña. Sostenelo hasta el final.' },
+      brief:'El hierro brilla de noche en estas vetas. Los dos rivales que te quedan van a pelear entre ellos y contra vos por el corazón de la montaña. Sostenelo hasta el final.' },
   ]
 };
 function campanaDe(perfilId){
@@ -4433,7 +4422,7 @@ e1:{
     conquistadores:[
       {v:'narr', t:'Año trece. La Franja Gris, el borde donde nada crece y donde, durante ocho años, cada mañana aparecía fruta que nadie vio dejar.'},
       {v:'arex', t:'Lo anoté así: «Salida al oeste, tres compañías, objetivo el pozo siete». No anoté que el pozo siete lo perdimos hace un mes. En el registro todavía es nuestro, y mientras sea nuestro la colonia duerme.'},
-      {v:'okoro', t:'Gobernadora, lo que hay del otro lado de esa piedra no son Terrarios. Es lo otro. La savia negra ya llegó a la Franja.'},
+      {v:'okoro', t:'Gobernadora, lo que hay del otro lado de esa piedra no son Terrarios. Es lo otro. La Marchitez ya llegó a la Franja.'},
       {v:'arex', t:'Entonces que sea corto. Si lo dejamos pedir refuerzos, en tres días tenemos cien Nara en Puerto Arex. Quitenlo de encima antes de que grite.'},
     ],
     oscura:[
@@ -4486,7 +4475,7 @@ e1:{
 e2:{
   intro:{
     conquistadores:[
-      {v:'narr', t:'El Bosque Ancestral. Cada árbol comparte raíz con el siguiente; cada raíz lleva savia verde, y la savia lleva memoria.'},
+      {v:'narr', t:'El Bosque Ancestral. Cada árbol comparte raíz con el siguiente; cada raíz lleva savia, y la savia lleva memoria.'},
       {v:'okoro', t:'Gobernadora, adentro el traductor se satura. No es que hablen todos a la vez: es que hablan uno solo y es enorme.'},
       {v:'arex', t:'¿Y qué dice?'},
       {v:'okoro', t:'Dice la fecha en que firmamos. Una y otra vez, sin parar. Trece años y sigue diciendo la fecha.'},
@@ -4558,7 +4547,7 @@ e3:{
       {v:'arex', t:'Y yo no firmé que perforáramos. Los dos tenemos una firma que nos falta, Tamsin. Junten aldeas y no las regalen.'},
     ],
     oscura:[
-      {v:'narr', t:'El Pantano de Ceniza. La grieta del reactor, el centro del mundo para los que beben savia negra.'},
+      {v:'narr', t:'El Pantano de Ceniza. La grieta del reactor, el centro del mundo para los que se hunden en la Marchitez.'},
       {v:'marchito', t:'Casa. Acá me arranqué la memoria común y me quedé con una sola idea, nítida como un clavo.'},
       {v:'nara', t:'Los dos ejércitos vienen por las aldeas secas, Marchito. No vienen por vos.'},
       {v:'marchito', t:'Vienen por la comida. Todo el mundo viene siempre por la comida, y después escribe otra cosa. Sosténganlas.'},
@@ -4580,7 +4569,7 @@ e3:{
          {v:'yris', t:'Cláusula ciento nueve: ninguna de las partes talará debajo de la línea de árboles. Cláusula ciento diez. Cláusula ciento once.'},
        ],
        oscura:[
-         {v:'marchito', t:'Esa vino sola, y vino recitando. Trescientas doce cláusulas se sabe, una por una, y ahora las dice con la boca llena de savia negra.'},
+         {v:'marchito', t:'Esa vino sola, y vino recitando. Trescientas doce cláusulas se sabe, una por una, y ahora las dice con la boca llena de Marchitez.'},
          {v:'yris', t:'Yo hablé seis horas. Anotaron todo. Después cavaron igual.'},
          {v:'marchito', t:'Bienvenida, Voz del Pacto. Acá nadie te va a pedir que traduzcas nada.'},
        ],
@@ -4605,7 +4594,7 @@ e3:{
     ],
     oscura:[
       {v:'marchito', t:'El pantano es nuestro y siempre lo fue. Lo nuevo es que ahora es nuestro también arriba.'},
-      {v:'marchito', t:'Al norte. Al Yunque, donde la savia de hierro brilla de noche y donde empezó todo esto, por una piedra que ardía el doble.'},
+      {v:'marchito', t:'Al norte. Al Yunque, donde el hierro brilla de noche y donde empezó todo esto, por una piedra que ardía el doble.'},
     ],
     terrarios:[
       {v:'sylvaan', t:'Las aldeas secas resisten. El pantano no se gana: se sostiene, y lo sostuvimos.'},
@@ -4622,20 +4611,20 @@ e3:{
 e4:{
   intro:{
     conquistadores:[
-      {v:'narr', t:'El Paso del Yunque. La única cordillera de Terrania, donde la savia de hierro asoma en vetas que brillan de noche. En el centro del paso late el Corazón de Terrania.'},
+      {v:'narr', t:'El Paso del Yunque. La única cordillera de Terrania, donde el hierro asoma en vetas que brillan de noche. En el centro del paso late el Corazón de Terrania.'},
       {v:'okoro', t:'Subí acá en el año diez buscando cobre y bajé con una piedra que ardía el doble. Escribí el informe. Subrayé la línea. Todo lo que pasó después tiene mi cara.'},
       {v:'arex', t:'Tiene la mía, Tamsin. Vos escribiste; yo fui la que no firmó ni una cosa ni la otra.'},
-      {v:'narr', t:'Del sur sube savia negra. Del bosque bajan raíces. Por primera vez en trece años, los dos vienen al mismo lugar.'},
+      {v:'narr', t:'Del sur sube Marchitez. Del bosque bajan raíces. Por primera vez en trece años, los dos vienen al mismo lugar.'},
       {v:'arex', t:'Se pusieron de acuerdo. El bosque que espera y el bosque que se arrancó, juntos, y nosotros en el medio. Sostengan el Corazón hasta el final. No hay dónde retirarse: atrás está el mar.'},
     ],
     oscura:[
-      {v:'narr', t:'El Paso del Yunque. Las vetas de savia de hierro brillan de noche, y en el centro del paso late el Corazón de Terrania.'},
+      {v:'narr', t:'El Paso del Yunque. Las vetas de hierro brillan de noche, y en el centro del paso late el Corazón de Terrania.'},
       {v:'marchito', t:'Yo estaba enraizado cerca de acá cuando las taladoras me pasaron por debajo como cuchillos. Pedí permiso para arrancarlas. Me dijeron que el bosque espera.'},
       {v:'kras', t:'Los humanos y el bosque subieron juntos, Marchito. Los vimos no pelearse.'},
       {v:'marchito', t:'Claro que sí. La que cava y la que mira cavar siempre terminan del mismo lado. Que vengan los dos. El Corazón es lo único que quiero, y lo quiero apagado.'},
     ],
     terrarios:[
-      {v:'narr', t:'El Paso del Yunque. La piedra por la que se rompió el pacto, y en el centro del paso el Corazón de Terrania, del que sale toda la savia verde del continente.'},
+      {v:'narr', t:'El Paso del Yunque. La piedra por la que se rompió el pacto, y en el centro del paso el Corazón de Terrania, del que sale toda la savia del continente.'},
       {v:'sylvaan', t:'Caminé hasta acá. Trescientos años enraizada y caminé, porque abajo hay algo que ningún brote puede sostener solo.'},
       {v:'brote', t:'Raíz Madre, suben los dos. Los humanos por el oeste y él por el sur. Y no se están atacando.'},
       {v:'sylvaan', t:'Vhorn siempre supo negociar mejor que yo. Sostengan el Corazón, brotes. Si se apaga, la memoria del bosque se apaga con él y nadie va a acordarse de por qué peleábamos.'},
@@ -4664,7 +4653,7 @@ e4:{
   final:{
     conquistadores:[
       {v:'narr', t:'El Corazón de Terrania quedó bajo bandera de la colonia. Las vetas siguen brillando de noche, y ahora brillan para los hornos de Puerto Arex.'},
-      {v:'arex', t:'Escribí la última entrada del registro hoy. Dice: «El Paso del Yunque es nuestro. La colonia tiene savia de hierro para doscientos años».'},
+      {v:'arex', t:'Escribí la última entrada del registro hoy. Dice: «El Paso del Yunque es nuestro. La colonia tiene hierro para doscientos años».'},
       {v:'arex', t:'Debajo dejé un renglón en blanco, como aquella vez. No es un olvido. Es lo único que me queda para decir que sé lo que hicimos.'},
       {v:'okoro', t:'El traductor sigue encendido en el borde de la Franja, Ilse. Por las dudas.'},
       {v:'narr', t:'Algunas mañanas, dicen en la Franja, todavía aparece fruta. Nadie ha visto quién la deja. ★ Campaña completa.'},
@@ -4672,11 +4661,11 @@ e4:{
     oscura:[
       {v:'narr', t:'El Corazón de Terrania se apagó una noche del año trece, y el bosque entero lo sintió a la vez, como se siente perder un miembro.'},
       {v:'marchito', t:'Ya está, Raíz Madre. Ya no hay memoria común. Ya nadie va a poder decirte la fecha en que firmaste.'},
-      {v:'marchito', t:'Me preguntan qué crece ahora. Lo único que la savia negra sabe hacer crecer. Más savia negra.'},
+      {v:'marchito', t:'Me preguntan qué crece ahora. Lo único que la Marchitez sabe hacer crecer. Más Marchitez.'},
       {v:'narr', t:'La Franja ardió. El bosque se marchitó. Sobre la ceniza de los dos creció algo que tiene hambre y no tiene nombre, y que algunas noches, sin saber por qué, se queda quieto trescientos años. ★ Campaña completa.'},
     ],
     terrarios:[
-      {v:'narr', t:'El Corazón de Terrania siguió latiendo, y la savia verde volvió a correr desde el Yunque hasta el mar.'},
+      {v:'narr', t:'El Corazón de Terrania siguió latiendo, y la savia volvió a correr desde el Yunque hasta el mar.'},
       {v:'sylvaan', t:'El bosque no perdona porque el bosque no tiene un ayer. Pero puede volver a firmar, y esta vez con raíz de los dos lados.'},
       {v:'sylvaan', t:'Que vaya un brote a la Franja. Que se quede un día entero frente al aparato de la ingeniera, aunque no diga nada. Los chicos de la colonia van a volver a jugar a sus pies.'},
       {v:'brote', t:'¿Y qué le digo, Raíz Madre?'},
@@ -4958,7 +4947,7 @@ avanzarCampana=function(win,humanWins){
     if(!camp||!camp.fac||!g) return;
     const ultimo=act.idx===CAMPANA.escenarios.length-1;
     const lineas=humanWins?escenaResolver(ultimo?(g.final||g.victoria):g.victoria,camp.fac):escenaResolver(g.derrota,camp.fac);
-    setTimeout(()=>{ CAMPSEL='tres'; escenaCutscene(lineas, ()=>show('campana')); },500);
+    setTimeout(()=>{ CAMPSEL=null; escenaCutscene(lineas, ()=>show('campana')); },500);
   }catch(e){}
 };
 
@@ -5081,13 +5070,13 @@ const CAMPANA_CONQ = {
         {v:'narr', t:'La voz no suena como nada que hayan escuchado. Suena como un árbol que aprendió a hablar y eligió decir eso.'},
       ]}] },
     { id:'c8', map:'rosa', nombre:'VIII · La Batalla Final', gold:150, ia:'maestro', modoVictoria:'lideres', finalMulti:true, economia:true,
-      brief:'Tres columnas de la colonia y el bosque entero de aliados, contra todo lo que la savia negra pudo levantar. Esta se juega una sola vez.',
+      brief:'Tres columnas de la colonia y el bosque entero de aliados, contra todo lo que la Marchitez pudo levantar. Esta se juega una sola vez.',
       escuadra:['lancero','lancero'],
-      mensajeVictoria:'La savia negra se repliega. Por hoy, Terrania sigue teniendo dos pueblos y no uno solo.' },
+      mensajeVictoria:'La Marchitez se repliega. Por hoy, Terrania sigue teniendo dos pueblos y no uno solo.' },
   ]
 };
 
-/* ═══ Progreso (namespace propio: p.campConq, independiente de p.camp de Tres Savias) ═══ */
+/* ═══ Progreso (namespace propio: p.campConq, independiente de p.camp de La Guerra de Terrania) ═══ */
 function campanaConqDe(perfilId){
   const p=profGet(perfilId); if(!p) return null;
   p.campConq=p.campConq||{}; p.campConq[CAMPANA_CONQ.id]=p.campConq[CAMPANA_CONQ.id]||{indice:0,oro:0,completa:false};
@@ -5095,7 +5084,7 @@ function campanaConqDe(perfilId){
 }
 function campanaConqGuardar(){ saveProfiles(); }
 
-/* ═══ Reset defensivo: toda partida nueva (skirmish, Tres Savias o Conquista) pasa por buildMap ═══ */
+/* ═══ Reset defensivo: toda partida nueva (skirmish, La Guerra de Terrania o Conquista) pasa por buildMap ═══ */
 const _conqBuildMap=buildMap;
 buildMap=function(...a){ S.conq=null; return _conqBuildMap(...a); };
 
@@ -5195,6 +5184,7 @@ document.getElementById('campConqReiniciar').onclick=()=>{
 /* ═══ Selector de campaña (envuelve el menú "campana") ═══ */
 let CAMPSEL=null;
 function renderCampanaMenu(){
+  if(CAMPSEL==='tres') CAMPSEL=null;   // la campaña La Guerra de Terrania ya no existe
   const sel=document.getElementById('campSelector');
   const tres=document.getElementById('campWrapTres'), conq=document.getElementById('campWrapConq'), terra=document.getElementById('campWrapTerra'), alianza=document.getElementById('campWrapAlianza');
   const wraps=[tres,conq,terra,alianza];
@@ -5207,7 +5197,7 @@ function renderCampanaMenu(){
   sel.classList.add('hidden');
   if(CAMPSEL==='tres'){
     wraps.forEach(w=>w.classList.add('hidden')); tres.classList.remove('hidden');
-    document.getElementById('campTitulo').textContent='La Guerra de las Tres Savias';
+    document.getElementById('campTitulo').textContent='La Guerra de Terrania';
     document.getElementById('campHint').textContent='Cuatro batallas por las cuatro regiones de Terrania. Elegís una facción y la llevás de punta a punta.';
     renderCampana();
   } else if(CAMPSEL==='conquista'){
@@ -5223,7 +5213,7 @@ function renderCampanaMenu(){
   } else {
     wraps.forEach(w=>w.classList.add('hidden')); alianza.classList.remove('hidden');
     document.getElementById('campTitulo').textContent='La Ruptura';
-    document.getElementById('campHint').textContent='La Alianza Oscura, siempre. Antes de la savia negra hubo un Terrario con otro nombre.';
+    document.getElementById('campHint').textContent='La Alianza Oscura, siempre. Antes de la Marchitez hubo un Terrario con otro nombre.';
     renderCampanaAlianza();
   }
 }
@@ -5307,7 +5297,7 @@ c3:{
 },
 c4:{
   intro:[
-    {v:'narr', t:'Años después del Pacto, la savia negra que corre por el sur encuentra por primera vez al bosque despierto.'},
+    {v:'narr', t:'Años después del Pacto, la Marchitez que corre por el sur encuentra por primera vez al bosque despierto.'},
     {v:'sylvaan', t:'Algo entró por el sur y no es Terrario ni humano. Ataca aldeas, quema claros, y no pide nada a cambio de parar.'},
     {v:'cassel', t:'Gobernadora, el Consejo de Raíces pide ayuda. Es la primera vez en doce años que lo hacen.'},
     {v:'arex', t:'Entonces vamos a dársela. Cassel, cruce con Yris hasta la frontera y sellen lo que haga falta sellar. Yo les mando una escolta hasta ahí.'},
@@ -5333,7 +5323,7 @@ c5:{
     {v:'vasko', t:'Se replegaron. No sé si ganamos o si esto recién empieza.'},
     {v:'arex', t:'Las dos cosas, General. Bienvenido a Terrania.'},
     {v:'narr', t:'Por el camino del bosque llegan dos figuras: un embajador con el uniforme hecho jirones y una Nusluz de corteza clara que camina como si nunca hubiera dejado de hacerlo.'},
-    {v:'cassel', t:'Gobernadora. El pacto contra la savia negra está firmado por los dos lados.'},
+    {v:'cassel', t:'Gobernadora. El pacto contra la Marchitez está firmado por los dos lados.'},
   ],
   derrota:[
     {v:'vasko', t:'Perdimos la costa. Retirada, Gobernadora, antes de que perdamos algo que no se recupera.'},
@@ -5379,13 +5369,13 @@ c8:{
     {v:'arex', t:'Que empiece.'},
   ],
   final:[
-    {v:'narr', t:'La savia negra se repliega hacia el sur, hacia el pantano donde nació. No está vencida. Solo está esperando, que es lo único que sabe hacer bien.'},
+    {v:'narr', t:'La Marchitez se repliega hacia el sur, hacia el pantano donde nació. No está vencida. Solo está esperando, que es lo único que sabe hacer bien.'},
     {v:'arex', t:'Anoten la fecha. Anoten que resistió doce años y que hoy, entre dos pueblos, la sacamos de la Franja.'},
     {v:'sylvaan', t:'El bosque va a recordar esto exactamente como pasó. Es lo único que sabemos hacer nosotros.'},
-    {v:'narr', t:'Faltan trece años para la próxima vez que la savia negra decida que ya esperó bastante. Esa es otra historia, y esa ya la conocen.'},
+    {v:'narr', t:'Faltan trece años para la próxima vez que la Marchitez decida que ya esperó bastante. Esa es otra historia, y esa ya la conocen.'},
   ],
   derrota:[
-    {v:'narr', t:'Las tres columnas no alcanzan a sostener el frente. La savia negra no se retira: avanza. Lo que sigue después de hoy, todavía nadie lo escribió.'},
+    {v:'narr', t:'Las tres columnas no alcanzan a sostener el frente. La Marchitez no se retira: avanza. Lo que sigue después de hoy, todavía nadie lo escribió.'},
   ],
 },
 };
@@ -5529,7 +5519,7 @@ mostrarRelevo=function(s){
   return _conqRelevo(s);
 };
 
-/* enganche con la progresión de campaña (además de la de Tres Savias, ya envuelta en 19h) */
+/* enganche con la progresión de campaña (además de la de La Guerra de Terrania, ya envuelta en 19h) */
 const _conqAvanzar=avanzarCampana;
 avanzarCampana=function(win,humanWins){
   const activo=!!S.conq;
@@ -5728,7 +5718,7 @@ MAPS.push({id:'final_terra', players:2, name:'El Claro de los Dos Hermanos',
 
 const CAMPANA_TERRA = {
   id:'sucesion', name:'La Sucesión',
-  desc:'Aendral murió y sus dos hijos se reparten lo que dejó. Nueve batallas, un solo trono, una sola savia.',
+  desc:'Aendral murió y sus dos hijos se reparten lo que dejó. Nueve batallas, un solo trono, una sola raíz.',
   escenarios:[
     { id:'t1', map:'ciudad', nombre:'I · El Duelo y la Traición', gold:60, ia:'recluta', iaModo:{perseguirObjetivos:true}, tipo:'piezas',
       brief:'Aendral murió anoche. Antes de enfriarse el cuerpo, Threndal ya tenía tomada la capital. Reconquistala y recuperá el Cáliz.',
@@ -5762,16 +5752,16 @@ const CAMPANA_TERRA = {
       brief:'Yeldra es el único pueblo que todavía no te reconoce. Ahora tampoco pelea solo: hay banderas negras entre las suyas.',
       escuadra:['brotal','brotal','pedral','ancestro'],
       multiRival:[{fac:'terrarios',ia:'comandante',nombre:'Threndal'},{fac:'oscura',ia:'comandante'}] },
-    { id:'t8', map:'consejo', nombre:'VIII · El Consejo de las Savias', gold:100, ia:'veterano', iaModo:{perseguirObjetivos:true}, rival:'oscura', tipo:'escoltar',
+    { id:'t8', map:'consejo', nombre:'VIII · El Consejo de los Tres Pueblos', gold:100, ia:'veterano', iaModo:{perseguirObjetivos:true}, rival:'oscura', tipo:'escoltar',
       brief:'Quedan pueblos que dudan. Mostrales el Cáliz en persona antes de que la Alianza Oscura llegue primero.',
       escuadra:['brotal','pedral','rodador'],
       escoltas:[{type:'rodador',nombre:'Comitiva de Ilvenn'}],
       destino:{c:33,r:5},
       mensajeVictoria:'Todos los pueblos reconocen al heredero. Solo falta Threndal.',
       eventosTurno:[{id:'t8_emboscada', turno:5, lineas:[
-        {v:'narr', t:'El Consejo de las Savias, tal como se lo recuerda hoy, casi no llega a completarse.'},
+        {v:'narr', t:'El Consejo de los Tres Pueblos, tal como se lo recuerda hoy, casi no llega a completarse.'},
       ]}] },
-    { id:'t9', map:'final_terra', nombre:'IX · Sangre de la Misma Savia', gold:150, ia:'maestro', rival:'oscura', modoVictoria:'lideres', final:true, rivalNombre:'Threndal', aliadoNombrado:{type:'ancestro',nombre:'General Gorrun'},
+    { id:'t9', map:'final_terra', nombre:'IX · Sangre de la Misma Raíz', gold:150, ia:'maestro', rival:'oscura', modoVictoria:'lideres', final:true, rivalNombre:'Threndal', aliadoNombrado:{type:'ancestro',nombre:'General Gorrun'},
       brief:'Nueve batallas después de la muerte de Aendral, los dos hermanos se enfrentan por última vez — esta vez, con Gorrun del lado de Ilvenn.',
       escuadra:['brotal','brotal','pedral'] },
   ]
@@ -6056,10 +6046,10 @@ const GUION_TERRA = {
       {v:'ilvenn', t:'Debiste pedir esto hace nueve batallas.'},
       {v:'threndal', t:'Y vos debiste ofrecerlo.'},
       {v:'narr', t:'Los Terrarios tienen, por fin, un solo líder. Lo que Ilvenn dejó en la cueva de los Hendidos no se lo devolvió nadie — pero el Cáliz, esta vez, no pesaba nada.'},
-      {v:'narr', t:'La savia negra, mientras tanto, sigue esperando su turno.'},
+      {v:'narr', t:'La Marchitez, mientras tanto, sigue esperando su turno.'},
     ],
     derrota:[
-      {v:'narr', t:'Los dos hermanos caen el mismo día. La savia negra no necesita hacer nada más: el trono ya está vacío.'},
+      {v:'narr', t:'Los dos hermanos caen el mismo día. La Marchitez no necesita hacer nada más: el trono ya está vacío.'},
     ],
   },
 };
@@ -6160,7 +6150,7 @@ loadGame=function(slot){
 /* ---------- 19k. CAMPAÑA ALIANZA OSCURA: LA RUPTURA ---------- */
 /* 'kras' ya existe en VOCES (no redefinir); el resto son nuevas. */
 Object.assign(VOCES, {
-  vrehn : {n:'Vrehn', r:'Antes de la savia negra', s:'🥀', c:'#C7455F'},
+  vrehn : {n:'Vrehn', r:'Antes de la Marchitez', s:'🥀', c:'#C7455F'},
   nyxara: {n:'Nyxara', r:'???', s:'🕸', c:'#C7455F'},
   anciano:{n:'Anciano del Bosque', r:'Pueblo del Bosque', s:'🌳', c:'#8CC23F', sinUnidad:true},
   anciana:{n:'Anciana de las Lomas', r:'Pueblo de las Lomas', s:'⛰', c:'#8CC23F', sinUnidad:true},
@@ -6352,7 +6342,7 @@ MAPS.push({id:'herida', players:2, name:'El Claro del Duelo',
 
 const CAMPANA_ALIANZA = {
   id:'ruptura_campana', name:'La Ruptura',
-  desc:'Antes de la savia negra hubo un Terrario con otro nombre. Nueve batallas hasta que ese nombre deja de importar.',
+  desc:'Antes de la Marchitez hubo un Terrario con otro nombre. Nueve batallas hasta que ese nombre deja de importar.',
   escenarios:[
     { id:'a1', map:'ruptura', nombre:'I · La Ruptura', gold:60, ia:'recluta', iaModo:{perseguirObjetivos:true}, fac:'terrarios', rival:'terrarios',
       tipo:'escoltar', rivalNombre:'Aendral', destino:{c:27,r:5},
@@ -6376,7 +6366,7 @@ const CAMPANA_ALIANZA = {
       mensajeVictoria:'Kras, Thurgo y Vessk ya no son lo que eran. Nara, Nica y Nolopmas tienen, por fin, sus primeros nombres.' },
     { id:'a4', map:'renegados', nombre:'IV · Los Renegados', gold:110, ia:'comandante', fac:'oscura', rival:'terrarios',
       tipo:'lideres', rivalNombre:'Kade',
-      brief:'Los que te seguían por lealtad vieja, y no por la savia negra, decidieron plantarse. Kade a la cabeza.',
+      brief:'Los que te seguían por lealtad vieja, y no por la Marchitez, decidieron plantarse. Kade a la cabeza.',
       escuadra:['nara','nara','nica','nolopmas'],
       mensajeVictoria:'Kade cae, y como los otros, se levanta distinto. El primer Nusluz abre los ojos sin saber bien por qué está enojado.' },
     { id:'a5', map:'cuadrilla', nombre:'V · La Cuadrilla', gold:100, ia:'comandante', fac:'oscura', rival:'conquistadores',
@@ -6400,7 +6390,7 @@ const CAMPANA_ALIANZA = {
       multiRival:[{fac:'conquistadores',ia:'comandante'},{fac:'conquistadores',ia:'comandante'},{fac:'conquistadores',ia:'comandante'}],
       brief:'Once años de mordisco chico. Es hora de un mordisco de verdad: tres colonias, el mismo día.',
       escuadra:['nara','nara','nica','nica','nolopmas'],
-      mensajeVictoria:'Tres colonias menos en el mapa de la Gobernadora Arex. La savia negra deja de ser un rumor del sur.' },
+      mensajeVictoria:'Tres colonias menos en el mapa de la Gobernadora Arex. La Marchitez deja de ser un rumor del sur.' },
     { id:'a9', map:'herida', nombre:'IX · La Herida', gold:150, ia:'maestro', fac:'oscura', rival:'terrarios',
       tipo:'lideres', final:true, rivalNombre:'Aendral',
       brief:'Dos años después de la Ruptura, Vrehn vuelve a encontrarse con Aendral. Los dos cambiaron. Solo uno lo sabe.',
@@ -6524,7 +6514,7 @@ document.getElementById('campAlianzaReiniciar').onclick=()=>{
 const GUION_ALIANZA = {
   a1:{
     intro:[
-      {v:'narr', t:'Antes de la savia negra, antes del nombre que nadie se atreve a decir en voz alta cerca del bosque, hubo un Terrario con otro nombre.'},
+      {v:'narr', t:'Antes de la Marchitez, antes del nombre que nadie se atreve a decir en voz alta cerca del bosque, hubo un Terrario con otro nombre.'},
       {v:'aendral', t:'Vrehn. Bajá el arma y esto termina acá, entre nosotros dos.'},
       {v:'vrehn', t:'Ya terminó, Aendral. Vos lo terminaste el día que le diste la espalda a lo que el bosque necesitaba de verdad.'},
       {v:'aendral', t:'Lo que el bosque necesitaba no era esto.'},
@@ -6584,7 +6574,7 @@ const GUION_ALIANZA = {
   },
   a4:{
     intro:[
-      {v:'narr', t:'Los que todavía seguían a Vrehn por lealtad vieja, y no por la savia negra, decidieron por fin que ya era suficiente.'},
+      {v:'narr', t:'Los que todavía seguían a Vrehn por lealtad vieja, y no por la Marchitez, decidieron por fin que ya era suficiente.'},
       {v:'kade', t:'Te seguí hasta acá, Vrehn. No te sigo un paso más.'},
       {v:'vrehn', t:'No te estoy pidiendo que sigas, Kade. Te estoy pidiendo que te apartes.'},
       {v:'kade', t:'No.'},
@@ -6625,18 +6615,18 @@ const GUION_ALIANZA = {
       {v:'nyxara', t:'El camino de vuelta no va a estar vacío, Vrehn. Todavía no.'},
       {v:'vrehn', t:'Nada en este planeta está vacío. Ya me acostumbré.'},
     ],
-    eventos:[{ id:'a7_corte', lineas:[{v:'narr', t:'Algo del planeta, algo que no es Terrario ni humano ni todavía savia negra, les corta el paso.'}]}],
+    eventos:[{ id:'a7_corte', lineas:[{v:'narr', t:'Algo del planeta, algo que no es Terrario ni humano ni todavía Marchitez, les corta el paso.'}]}],
     victoria:[{v:'narr', t:'Llegan a la base con menos gente de la que salió, pero llegan. Eso, para Vrehn, ya empieza a contar como ganar.'}],
     derrota:[{v:'nyxara', t:'Perdimos demasiados en el camino. La base va a tener que alcanzar con lo que queda.'}],
   },
   a8:{
     intro:[
       {v:'vrehn', t:'Once años de mordisco chico. Es hora de un mordisco de verdad.'},
-      {v:'nyxara', t:'Varias colonias a la vez, Vrehn. Ni vos tenés tanta savia negra para repartir.'},
+      {v:'nyxara', t:'Varias colonias a la vez, Vrehn. Ni vos tenés tanta Marchitez para repartir.'},
       {v:'vrehn', t:'Entonces que cada colonia sienta que la ataca solo ella. Es lo único que necesitan creer.'},
     ],
     eventos:[{ id:'a8_primera', lineas:[{v:'narr', t:'La primera colonia cae sin avisarle a las otras dos. Vrehn cuenta con exactamente eso.'}]}],
-    victoria:[{v:'narr', t:'Tres colonias menos en el mapa de la Gobernadora Arex. La savia negra deja, por primera vez, de ser un rumor del sur.'}],
+    victoria:[{v:'narr', t:'Tres colonias menos en el mapa de la Gobernadora Arex. La Marchitez deja, por primera vez, de ser un rumor del sur.'}],
     derrota:[{v:'nyxara', t:'Nos midieron mal. Las colonias resisten, y ahora saben nuestro nombre de memoria.'}],
   },
   a9:{
@@ -7350,7 +7340,7 @@ const CAMPANA_HERENCIA = {
 const GUION_HERENCIA = {
 h1:{
   intro:[
-    {v:'narr', t:'Quince años después de la savia negra. La generación que peleó esa guerra está muerta o está vieja, y el continente que ganaron quedó en manos de gente que no sabe cómo se sostiene.'},
+    {v:'narr', t:'Quince años después de la Marchitez. La generación que peleó esa guerra está muerta o está vieja, y el continente que ganaron quedó en manos de gente que no sabe cómo se sostiene.'},
     {v:'narr', t:'Casa Drevan mandó a sus dos comandantes al mismo puesto fronterizo. No se ven desde que eran cadetes.'},
     {v:'torv', t:'Marec. Estás más viejo.'},
     {v:'marec', t:'Vos estás igual, que es peor. ¿Viste el puesto?'},
@@ -10457,14 +10447,14 @@ const BASE_PINTORES={
         g.beginPath(); g.arc(X,Y,u*.62,0,6.283); g.stroke(); g.setLineDash([]); }
       if(o.dir==='S'){ g.fillStyle='rgba(40,38,36,.55)'; g.fillRect(X-u*.5,Y-u*.9,u,u*1.8); }
     } else if(f==='oscura'){
-      for(let i=0;i<3;i++){                                               // grietas con la savia negra asomando
+      for(let i=0;i<3;i++){                                               // grietas con la Marchitez asomando
         let x=X+(AZAR(o.g*7,i)-.5)*u*1.4, y=Y+(AZAR(o.g*9,i)-.5)*u*1.1;
         g.beginPath(); g.moveTo(x,y);
         for(let k=0;k<5;k++){ x+=(AZAR(o.g2*11+i,k)-.5)*u*.55; y+=(AZAR(o.g2*13+i,k)-.35)*u*.40; g.lineTo(x,y); }
         g.strokeStyle='rgba(58,46,34,.75)'; g.lineWidth=Math.max(1.2,u*.05); g.stroke();
         g.strokeStyle='rgba(135,198,79,.30)'; g.lineWidth=Math.max(.7,u*.02); g.stroke();
       }
-      if(o.dir==='SE'||o.dir==='SW'||o.g>.78){                              // charco de savia negra
+      if(o.dir==='SE'||o.dir==='SW'||o.g>.78){                              // charco de Marchitez
         const px=X+(o.g2-.5)*u*.5, py=Y+u*.28;
         g.fillStyle='#2A2230'; g.beginPath(); g.ellipse(px,py,u*.52,u*.20,0,0,7); g.fill();
         const gr=g.createRadialGradient(px-u*.1,py-u*.04,0,px,py,u*.5);
@@ -11942,8 +11932,8 @@ try{
     load:SVG('<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v4.5H8"/><path d="M10.5 9.5v5l4-2.5z"/>'),
     net:SVG('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>')
   };
-  const CLASE={single:'nv-main',multi:'nv-p',campana:'nv-p',players:'nv-s',editor:'nv-s',story:'nv-s',settings:'nv-s',salir:'nv-p'};
-  const ORDEN={net:0,load:1,single:2,multi:3,campana:4,players:5,editor:6,story:7,settings:8,salir:9};
+  const CLASE={single:'nv-main',multi:'nv-p',campana:'nv-p',load:'nv-p',players:'nv-s',editor:'nv-s',story:'nv-s',settings:'nv-s',salir:'nv-p'};
+  const ORDEN={net:0,single:1,multi:2,campana:3,load:4,editor:5,story:6,players:7,settings:8,salir:9};
   function aplicar(){
     document.querySelectorAll('#main .main-nav li').forEach(li=>{
       const b=li.querySelector('button'); if(!b) return;
@@ -11952,7 +11942,7 @@ try{
       const ico=b.querySelector('.ico'); if(ico&&ICONOS[k]&&!ico.dataset.svg){ ico.innerHTML=ICONOS[k]; ico.dataset.svg=1; }
       li.classList.add(CLASE[k]||'nv-p'); li.style.order=ORDEN[k]??5;
       if(CLASE[k]==='nv-s'&&!b.title){ const d=b.querySelector('span:not(.ico):not(.lbl)'); if(d) b.title=d.textContent; }
-      if(k==='load'||k==='net') li.classList.add('nv-aviso');
+      if(k==='net') li.classList.add('nv-aviso');
     });
   }
   const st=document.createElement('style'); st.id='menuPrincipal34';
