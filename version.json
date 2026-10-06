@@ -1,9 +1,9 @@
 {
- "version": "34.29",
+ "version": "34.30",
  "base": "34",
  "fecha": "06/10/2026",
  "notas": [
-  "Nueva civilización: los Reptiloides (nadan por cualquier agua, sin ventajas ni debilidades de terreno)"
+  "IA: el líder no sale del torreón salvo peligro o jugada clave; el Maestro recluta más y roba aldeas; los Reptiloides usan el agua"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "211eb79d88f1aadc981d24382e406fb25d86b150eb567368d8b2d391b0683706",
-   "n": 893710
+   "h": "f24f0c4651d687749497ac313d72c07445343f7e93c0d59afcadaba0b7ac2fbe",
+   "n": 895956
   },
   {
    "p": "mapas/anillo.jpg",

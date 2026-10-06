@@ -1107,12 +1107,12 @@ const ALTO = ['colina','montana'];
 /* Seis jornadas: tres con ventaja y tres neutras en el medio, como en Wesnoth.
    El día dura seis turnos, así que hay tiempo de acomodarse antes de cada empujón. */
 const PHASES = [
-  {id:'manana'  ,name:'Mañana'       ,icon:'🌅',mul:{terrarios:1.25,conquistadores:1.00,oscura:0.75}},
-  {id:'mediodia',name:'Mediodía'     ,icon:'🌤',mul:{terrarios:1.00,conquistadores:1.00,oscura:1.00}},
-  {id:'tarde'   ,name:'Tarde'        ,icon:'☀️',mul:{terrarios:0.75,conquistadores:1.25,oscura:1.00}},
-  {id:'ocaso'   ,name:'Atardecer'    ,icon:'🌇',mul:{terrarios:1.00,conquistadores:1.00,oscura:1.00}},
-  {id:'noche'   ,name:'Noche'        ,icon:'🌙',mul:{terrarios:1.00,conquistadores:0.75,oscura:1.25}},
-  {id:'profunda',name:'Noche cerrada',icon:'🌑',mul:{terrarios:1.00,conquistadores:1.00,oscura:1.00}},
+  {id:'manana'  ,name:'Mañana'       ,icon:'🌅',mul:{terrarios:1.25,conquistadores:1.00,oscura:0.75,reptiloides:1.00}},
+  {id:'mediodia',name:'Mediodía'     ,icon:'🌤',mul:{terrarios:1.00,conquistadores:1.00,oscura:1.00,reptiloides:1.00}},
+  {id:'tarde'   ,name:'Tarde'        ,icon:'☀️',mul:{terrarios:0.75,conquistadores:1.25,oscura:1.00,reptiloides:1.00}},
+  {id:'ocaso'   ,name:'Atardecer'    ,icon:'🌇',mul:{terrarios:1.00,conquistadores:1.00,oscura:1.00,reptiloides:1.00}},
+  {id:'noche'   ,name:'Noche'        ,icon:'🌙',mul:{terrarios:1.00,conquistadores:0.75,oscura:1.25,reptiloides:1.00}},
+  {id:'profunda',name:'Noche cerrada',icon:'🌑',mul:{terrarios:1.00,conquistadores:1.00,oscura:1.00,reptiloides:1.00}},
 ];
 const TEMA_DE={manana:'manana',mediodia:'manana',tarde:'tarde',ocaso:'tarde',noche:'noche',profunda:'noche'};
 
@@ -1128,14 +1128,19 @@ const FACTIONS = {
     def :{llanura:60,bosque:35,colina:60,montana:45,pantano:40,agua:20,aldea:60,fortaleza:60,puente:40,vado:25}},
   oscura:{id:'oscura', name:'La Alianza Oscura', color:'#C7455F', sigil:'☠',
     tag:'Fuertes de noche · montaña · Festín',
-    lore:'Bestias del planeta marcadas por la Marchitez. No tienen doctrina: tienen hambre. Son las unidades más baratas y rápidas del planeta, y las que menos aguantan: ganan por número, no por calidad. La Marchitez que les dio poder las dejó abiertas de par en par al daño arcano.',
+    lore:'Bestias del planeta marcadas por la Marchitez. No tienen doctrina: tienen hambre. Son las unidades más baratas del planeta, y las que menos aguantan: ganan por número, no por calidad. La Marchitez que les dio poder las dejó abiertas de par en par al daño arcano.',
     move:{llanura:1,bosque:2,colina:2,montana:1,pantano:2,agua:99,aldea:1,fortaleza:1,puente:1,vado:3},
     def :{llanura:45,bosque:55,colina:55,montana:70,pantano:65,agua:20,aldea:50,fortaleza:50,puente:35,vado:35}},
   terrarios:{id:'terrarios', name:'Los Terrarios', color:'#8CC23F', sigil:'❦',
     tag:'Fuertes de mañana · bosque · Arraigo',
-    lore:'El bosque cuando decide moverse. <b>Arraigo</b>: no comen, así que sus unidades de nivel 1 no cuestan mantenimiento y sostienen ejércitos grandes con pocas aldeas. Los más lentos y los más caros, pero los que más aguantan: cada Terrario cuesta y camina como un árbol, y en el bosque pegan un 20% más fuerte y se reponen 1 de vida por turno. En campo abierto son blancos fáciles, y el fuego los borra: pelean donde ellos eligen o no pelean.',
+    lore:'El bosque cuando decide moverse. <b>Arraigo</b>: no comen, así que sus unidades de nivel 1 no cuestan mantenimiento y sostienen ejércitos grandes con pocas aldeas. Son los que más aguantan: más vida y corteza dura, aunque la montaña y las colinas los frenan. En el bosque pegan un 20% más fuerte y se reponen 1 de vida por turno. Fuera de él no tienen ventaja, y el fuego los borra: pelean donde ellos eligen o no pelean.',
     move:{llanura:1,bosque:1,colina:2,montana:3,pantano:2,agua:99,aldea:1,fortaleza:1,puente:1,vado:3},
     def :{llanura:35,bosque:70,colina:50,montana:40,pantano:50,agua:20,aldea:45,fortaleza:50,puente:30,vado:30}},
+  reptiloides:{id:'reptiloides', name:'Los Reptiloides', color:'#27B58A', sigil:'🦎',
+    tag:'Sin debilidades · Nado',
+    lore:'Los antiguos rivales de los Terrarios. Perdieron las guerras de antaño y el bosque los expulsó a los pantanos y a las aguas; cuando la Sucesión dejó débiles a los Terrarios, volvieron fuertes. Su único secreto es el <b>Nado</b>: cruzan cualquier agua como si fuera llano, así que ningún río ni lago los frena. Fuera del agua no tienen ventajas ni debilidades: ni terreno favorito, ni jornada favorita, ni resistencia que les falte. Ganan por el camino que los demás no pueden tomar.',
+    move:{llanura:1,bosque:2,colina:2,montana:3,pantano:2,agua:1,aldea:1,fortaleza:1,puente:1,vado:1},
+    def :{llanura:50,bosque:50,colina:50,montana:50,pantano:50,agua:50,aldea:50,fortaleza:50,puente:50,vado:50}},
 };
 
 /* resistencias: % de daño reducido. Negativo = vulnerabilidad.
@@ -1212,8 +1217,8 @@ const UNITS = {
     res:{filo:40,perf:50,imp:0,fuego:-50,frio:20,arc:20}, ab:['regenera'],
     note:'Recuerda el pacto palabra por palabra. No perdona que lo hayan roto.'},
 };
-const ROSTER = {conquistadores:['lancero','tirador','motorista','guardian'],oscura:['nara','nica','nolopmas','nusluz'],terrarios:['brotal','pedral','rodador','ancestro']};
-const LEADER_OF = {conquistadores:'lider_conq',oscura:'lider_osc',terrarios:'lider_terr'};
+const ROSTER = {conquistadores:['lancero','tirador','motorista','guardian'],oscura:['nara','nica','nolopmas','nusluz'],terrarios:['brotal','pedral','rodador','ancestro'],reptiloides:['escamoso','escupidor','acechador','coloso']};
+const LEADER_OF = {conquistadores:'lider_conq',oscura:'lider_osc',terrarios:'lider_terr',reptiloides:'lider_rept'};
 /* ---------- 3b. ÁRBOL DE ASCENSOS ---------- */
 const R=(o,d)=>Object.assign({},o,d);          // resistencias: copia con cambios
 const RES={
@@ -1344,6 +1349,50 @@ patriarca:{fac:'terrarios',name:'Patriarca del Bosque',role:'Nivel 3 · desde An
 lider_terr3:{fac:'terrarios',name:'Sylvaan en Marcha',role:'Líder · nivel 3',cost:0,lvl:3,hp:92,mp:6,glyph:'🌻',leader:true,
   atk:[{n:'Raíces vivas',d:16,s:3,t:'imp',r:'melee'},{n:'Semilla pétrea',d:14,s:2,t:'imp',r:'rango'}], res:{filo:45,perf:55,imp:0,fuego:-50,frio:25,arc:25}, ab:['regenera','cura','curaveneno'], cura:8,
   note:'Se arrancó del centro del bosque para caminar hacia la guerra. <b>Cura 8</b> a los aliados adyacentes y les quita el veneno.'},
+
+/* ═══ REPTILOIDES · su único rasgo propio es nadar (agua con coste 1); resistencias parejas, sin vulnerabilidades ═══ */
+escamoso:{fac:'reptiloides',name:'Escamoso',role:'Infantería básica',cost:14,hp:42,mp:5,glyph:'🦎',
+  atk:[{n:'Garras',d:6,s:3,t:'filo',r:'melee'}], res:{filo:5,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escamoso_curtido'],
+  note:'La línea de los Reptiloides. <b>Nada</b>: el agua le cuesta 1 de movimiento, como el llano. Sin ventajas ni debilidades en ningún otro terreno.'},
+escamoso_curtido:{fac:'reptiloides',name:'Escamoso Curtido',role:'Nivel 2 · desde Escamoso',cost:0,lvl:2,hp:50,mp:5,glyph:'🦎',
+  atk:[{n:'Garras',d:8,s:3,t:'filo',r:'melee'}], res:{filo:10,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['guerrero_salamandra'],
+  note:'Escamas más duras, garras más largas. Sigue nadando donde otros se detienen.'},
+guerrero_salamandra:{fac:'reptiloides',name:'Guerrero Salamandra',role:'Nivel 3 · desde Escamoso Curtido',cost:0,lvl:3,hp:60,mp:5,glyph:'🦎',
+  atk:[{n:'Garras',d:10,s:3,t:'filo',r:'melee'}], res:{filo:15,perf:15,imp:5,fuego:0,frio:0,arc:0}, ab:[],
+  note:'El veterano del cauce. Tres zarpazos de diez, y sale del agua cuando él quiere.'},
+escupidor:{fac:'reptiloides',name:'Escupidor',role:'Distancia',cost:22,hp:36,mp:5,glyph:'🐍',
+  atk:[{n:'Colmillo',d:4,s:1,t:'filo',r:'melee'},{n:'Dardo de cresta',d:11,s:2,t:'perf',r:'rango'}], res:{filo:0,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escupidor_acido'],
+  note:'Dispara desde el agua, donde casi nadie lo alcanza. En tierra firme es frágil: protegelo o dejalo en la orilla.'},
+escupidor_acido:{fac:'reptiloides',name:'Escupidor Ácido',role:'Nivel 2 · desde Escupidor',cost:0,lvl:2,hp:42,mp:5,glyph:'🐍',
+  atk:[{n:'Colmillo',d:5,s:1,t:'filo',r:'melee'},{n:'Dardo de cresta',d:14,s:2,t:'perf',r:'rango'}], res:{filo:0,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['vibora_real'],
+  note:'Dardos más largos y más precisos. Un tirador que se esconde detrás de un río.'},
+vibora_real:{fac:'reptiloides',name:'Víbora Real',role:'Nivel 3 · desde Escupidor Ácido',cost:0,lvl:3,hp:50,mp:5,glyph:'🐍',
+  atk:[{n:'Colmillo',d:6,s:1,t:'filo',r:'melee'},{n:'Dardo de cresta',d:17,s:2,t:'perf',r:'rango'}], res:{filo:5,perf:15,imp:0,fuego:0,frio:0,arc:0}, ab:[],
+  note:'Diecisiete por dos desde la orilla opuesta. Para llegar a ella hay que nadar, y solo ellos nadan.'},
+acechador:{fac:'reptiloides',name:'Acechador',role:'Exploración',cost:19,hp:37,mp:8,glyph:'🐊',
+  atk:[{n:'Garras',d:6,s:2,t:'filo',r:'melee'}], res:{filo:0,perf:0,imp:0,fuego:0,frio:0,arc:0}, ab:['hostigador'], next:['cayman_cazador'],
+  note:'<b>Hostigador</b>: ignora la zona de control. Con el <b>Nado</b> cruza ríos y lagos a toda velocidad: nadie roba aldeas del otro lado del agua como él.'},
+cayman_cazador:{fac:'reptiloides',name:'Caimán Cazador',role:'Nivel 2 · desde Acechador',cost:0,lvl:2,hp:43,mp:9,glyph:'🐊',
+  atk:[{n:'Garras',d:8,s:2,t:'filo',r:'melee'}], res:{filo:5,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:['hostigador'], next:['sombra_pantano'],
+  note:'Nueve de movimiento y las garras más largas. Llega por donde nadie vigila.'},
+sombra_pantano:{fac:'reptiloides',name:'Sombra del Pantano',role:'Nivel 3 · desde Caimán Cazador',cost:0,lvl:3,hp:50,mp:9,glyph:'🐊',
+  atk:[{n:'Garras',d:9,s:3,t:'filo',r:'melee'}], res:{filo:10,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:['hostigador'],
+  note:'Tres golpes y ninguna orilla es segura. Sigue siendo <b>hostigador</b>.'},
+coloso:{fac:'reptiloides',name:'Coloso Cocodrilo',role:'Élite',cost:34,hp:66,mp:4,glyph:'🐢',
+  atk:[{n:'Mordida',d:14,s:2,t:'filo',r:'melee'}], res:{filo:30,perf:30,imp:0,fuego:0,frio:0,arc:0}, ab:['escudo'], next:['coloso_ancestral'],
+  note:'Un muro de escamas con <b>escudo</b> (−10% de acierto para quien lo ataca). Lento, pero también nada: puede cerrar un vado él solo.'},
+coloso_ancestral:{fac:'reptiloides',name:'Coloso Ancestral',role:'Nivel 2 · desde Coloso Cocodrilo',cost:0,lvl:2,hp:74,mp:4,glyph:'🐢',
+  atk:[{n:'Mordida',d:16,s:2,t:'filo',r:'melee'}], res:{filo:35,perf:35,imp:5,fuego:0,frio:0,arc:0}, ab:['escudo'], escudo:15, next:['gran_leviatan'],
+  note:'Escudo <b>−15%</b>. Un siglo de escamas.'},
+gran_leviatan:{fac:'reptiloides',name:'Gran Leviatán',role:'Nivel 3 · desde Coloso Ancestral',cost:0,lvl:3,hp:88,mp:4,glyph:'🐢',
+  atk:[{n:'Mordida',d:19,s:2,t:'filo',r:'melee'}], res:{filo:40,perf:40,imp:10,fuego:0,frio:0,arc:0}, ab:['escudo'], escudo:15,
+  note:'Lo más grande que sale del agua. Escudo <b>−15%</b>, y sin un solo punto débil.'},
+lider_rept:{fac:'reptiloides',name:'Ssira, Reina del Cauce',role:'Líder',cost:0,hp:70,mp:6,lvl:2,glyph:'👑',leader:true,
+  atk:[{n:'Garra real',d:12,s:3,t:'filo',r:'melee'},{n:'Dardo real',d:10,s:2,t:'perf',r:'rango'}], res:{filo:20,perf:20,imp:10,fuego:0,frio:0,arc:0}, ab:[], next:['lider_rept3'],
+  note:'Guió a su pueblo fuera del exilio. Nada: donde ella cruza, cruza el ejército.'},
+lider_rept3:{fac:'reptiloides',name:'Ssira, Marea Viva',role:'Líder · nivel 3',cost:0,lvl:3,hp:86,mp:6,glyph:'👑',leader:true,
+  atk:[{n:'Garra real',d:14,s:3,t:'filo',r:'melee'},{n:'Dardo real',d:12,s:2,t:'perf',r:'rango'}], res:{filo:25,perf:25,imp:15,fuego:5,frio:5,arc:5}, ab:[],
+  note:'La reina que volvió del agua. Sin debilidades, y con todo el cauce a su favor.'},
 });
 const NEXT={lancero:['lancero_linea','asaltante'],tirador:['francotirador','artillero'],motorista:['corredor'],guardian:['pretoriano_mayor'],
   nara:['nara_colmillo','nara_hinchado'],nica:['nica_astado'],nolopmas:['nolopmas_chupasangre'],nusluz:['nusluz_igneo','nusluz_venenoso'],
@@ -1365,6 +1414,7 @@ const NOMBRES={
   conquistadores:{a:['Val','Mar','Tor','Ren','Sil','Cas','Bru','Nad','Orl','Iri','Dan','Cla','Fen','Alba','Rom','Ser','Ver','Lud','Mir','Teo'],b:['ce','dán','ver','sio','na','ric','mel','tor','lia','far','nes','rio','vin','della','sar','món','lena','wick','ka','doro']},
   oscura:{a:['Grak','Vhor','Mur','Zek','Thra','Nub','Skor','Uld','Kra','Gnar','Vex','Brog','Hul','Zar','Mok','Drez','Yrg','Hask','Tul','Vorn'],b:['nak','ug','ash','rok','zul','gor','mak','esh','urg','tak','ruk','zir','oth','ban','kul','arg','dur','noz','ghal','ik']},
   terrarios:{a:['Sil','Thal','Rui','Lum','Ber','Nar','Oro','Vel','Ael','Mir','Cae','Tir','Ysa','Bran','Lir','Eno','Sar','Quel','Fael','Dren'],b:['vandel','mir','anel','endil','wen','loth','riel','dorn','thas','quen','mael','vain','ael','dor','sela','rian','wyn','thil','ora','vand']},
+  reptiloides:{a:['Ssa','Ish','Kess','Zhi','Sul','Ras','Ves','Nak','Thes','Isk','Ssor','Hesh','Zil','Ska','Mes','Ixa','Seth','Cho','Vis','Tsa'],b:['ra','ssa','ith','ak','esh','ira','oss','ek','ala','ix','uur','esk','yl','ath','iss','or','zha','ush','ana','ethi']},
 };
 function nombreDe(fid){ const N=NOMBRES[fid]||NOMBRES.conquistadores; return N.a[rnd(N.a.length)]+N.b[rnd(N.b.length)]; }
 function rollTraits(type){
@@ -2296,6 +2346,56 @@ function sunflower(g,x,y,r,n){ for(let i=0;i<n;i++){ const a=i/n*Math.PI*2; ell(
 ICONS.lider_terr=g=>{ roots(g,50,92,52); trunk(g,50,72,28,40,PAL.barkL); leafS(g,38,62,16,-Math.PI*0.85); leafS(g,62,62,16,-Math.PI*0.15); sunflower(g,50,36,26,12); };
 ICONS.lider_terr3=g=>{ glow(g,50,44,48,PAL.flower,0.4); roots(g,50,94,60); line(g,[[30,94],[22,84]],PAL.barkD,3); line(g,[[70,94],[78,84]],PAL.barkD,3); trunk(g,50,72,32,44,PAL.barkL); leafS(g,36,60,18,-Math.PI*0.85); leafS(g,64,60,18,-Math.PI*0.15); leafS(g,30,72,14,-Math.PI*0.95); leafS(g,70,72,14,-Math.PI*0.05); sunflower(g,50,34,30,16); [[20,56],[80,54]].forEach(([x,y])=>{glow(g,x,y,8,PAL.sap,0.8); circ(g,x,y,2.6,PAL.sap,null);}); };
 
+/* ═══════════ REPTILOIDES ═══════════ */
+const RP={g:'#3FA57A',gL:'#7ED6A4',gD:'#1E5B45',belly:'#E6DFA8',eye:'#FFD84A',gold:'#E0B84A',water:'#7FD3E8'};
+function rOjos(g,x,y,sp,r){ [-1,1].forEach(k=>{ circ(g,x+k*sp,y,r,RP.eye,OUT,1.6); ell(g,x+k*sp,y,r*0.28,r*0.8,OUT,null,0); }); }
+function rCuerpo(g,x,y,w,o={}){
+  poly(g,[[x-w/2,y+26],[x-w*0.44,y],[x-w*0.2,y-8],[x+w*0.2,y-8],[x+w*0.44,y],[x+w/2,y+26]],o.fill||RP.gD,OUT,2.4);
+  for(let i=-2;i<=2;i++) circ(g,x+i*w*0.16,y+6+Math.abs(i)*2,2,RP.g,null);
+  if(o.placas){ for(let i=-1;i<=1;i++) arcS(g,x+i*w*0.22,y+14,w*0.1,Math.PI*1.05,Math.PI*1.95,RP.gold,2.2); }
+}
+function rCabeza(g,x,y,w,h,o={}){
+  if(o.capucha){ ell(g,x,y+4,w*1.05,h*1.0,RP.gD); ell(g,x,y+6,w*0.84,h*0.82,RP.g,OUT,1.8); }
+  if(o.cresta){ [-2,-1,0,1,2].forEach(i=>poly(g,[[x+i*w*0.24-5,y-h*0.46],[x+i*w*0.24,y-h*(0.9+(2-Math.abs(i))*0.12)],[x+i*w*0.24+5,y-h*0.46]],o.cresCol||RP.gD,OUT,1.6)); }
+  ell(g,x,y,w*0.62,h*0.55,RP.g,OUT,2.4);
+  ell(g,x,y+h*0.26,w*0.42,h*0.3,RP.gL,OUT,1.8);
+  circ(g,x-w*0.1,y+h*0.2,1.5,OUT,null); circ(g,x+w*0.1,y+h*0.2,1.5,OUT,null);
+  rOjos(g,x,y-h*0.26,w*0.34,w*0.11);
+  if(o.dientes){ for(let i=-2;i<=2;i++) poly(g,[[x+i*w*0.09-2,y+h*0.46],[x+i*w*0.09,y+h*0.58],[x+i*w*0.09+2,y+h*0.46]],RP.belly,OUT,1); }
+  if(o.brillo) glow(g,x,y-h*0.26,w*0.9,RP.eye,0.35);
+}
+function rGarras(g,x,y,k){ for(let i=0;i<3;i++) line(g,[[x+i*6*k,y],[x+i*6*k+7*k,y-16]],OUT,5), line(g,[[x+i*6*k,y],[x+i*6*k+7*k,y-16]],RP.belly,2.6); }
+function rCroc(g,x,y,e,o={}){   // cocodrilo de perfil, cabeza a la izquierda
+  ell(g,x+14*e,y+4*e,26*e,15*e,RP.g,OUT,2.4);
+  for(let i=0;i<5;i++) poly(g,[[x+(2+i*8)*e,y-8*e],[x+(6+i*8)*e,y-(16+(o.cresta?5:0))*e],[x+(10+i*8)*e,y-8*e]],RP.gD,OUT,1.4);
+  poly(g,[[x-6*e,y-4*e],[x-38*e,y-1*e],[x-38*e,y+8*e],[x-6*e,y+12*e]],RP.g,OUT,2.4);
+  line(g,[[x-37*e,y+8*e],[x-6*e,y+11*e]],OUT,2);
+  for(let i=0;i<6;i++) poly(g,[[x-(34-i*5.4)*e,y+8*e],[x-(32-i*5.4)*e,y+14*e],[x-(30-i*5.4)*e,y+9*e]],RP.belly,OUT,0.9);
+  circ(g,x-2*e,y-5*e,5*e,RP.eye,OUT,1.6); ell(g,x-2*e,y-5*e,1.5*e,4*e,OUT,null,0);
+  if(o.brillo) glow(g,x-2*e,y-5*e,16*e,RP.eye,0.45);
+  poly(g,[[x+36*e,y+4*e],[x+54*e,y+12*e],[x+36*e,y+14*e]],RP.gD,OUT,2);
+}
+function rCaparazon(g,x,y,e,o={}){
+  ell(g,x,y,34*e,26*e,RP.gD,OUT,2.6);
+  for(let i=-1;i<=1;i++) for(let j=-1;j<=0;j++) poly(g,[[x+i*20*e-8*e,y+j*14*e],[x+i*20*e-3*e,y+j*14*e-9*e],[x+i*20*e+5*e,y+j*14*e-9*e],[x+i*20*e+10*e,y+j*14*e],[x+i*20*e+5*e,y+j*14*e+9*e],[x+i*20*e-3*e,y+j*14*e+9*e]],RP.g,OUT,1.6);
+  if(o.puas) for(let i=-2;i<=2;i++) poly(g,[[x+i*14*e-4,y-24*e],[x+i*14*e,y-(34+(2-Math.abs(i))*3)*e],[x+i*14*e+4,y-24*e]],RP.belly,OUT,1.4);
+}
+function rOla(g,y,w){ arcS(g,50,y,w,Math.PI*1.1,Math.PI*1.9,RP.water,2.4); }
+ICONS.escamoso=g=>{ rCuerpo(g,50,64,50); rCabeza(g,50,40,36,30,{}); rGarras(g,24,88,1); };
+ICONS.escamoso_curtido=g=>{ rCuerpo(g,50,64,56,{placas:true}); rCabeza(g,50,38,38,31,{cresta:true,dientes:true}); rGarras(g,22,88,1); };
+ICONS.guerrero_salamandra=g=>{ glow(g,50,50,44,RP.gold,0.2); rCuerpo(g,50,64,60,{fill:RP.g,placas:true}); rCabeza(g,50,36,40,32,{cresta:true,cresCol:RP.gold,dientes:true,brillo:true}); rGarras(g,20,88,1); rGarras(g,62,88,1); };
+ICONS.escupidor=g=>{ rCuerpo(g,44,66,42); rCabeza(g,44,42,34,28,{}); glow(g,76,50,12,RP.gL,0.7); circ(g,76,50,5,'#C8F27A',OUT,1.6); circ(g,88,44,2.6,'#C8F27A',null); };
+ICONS.escupidor_acido=g=>{ rCuerpo(g,44,66,44); rCabeza(g,44,42,36,30,{capucha:true}); glow(g,78,50,16,RP.gL,0.8); circ(g,78,50,6,'#C8F27A',OUT,1.6); circ(g,90,43,3,'#C8F27A',null); circ(g,86,58,2.4,'#C8F27A',null); };
+ICONS.vibora_real=g=>{ glow(g,46,46,44,RP.gL,0.25); rCuerpo(g,44,68,48,{placas:true}); rCabeza(g,44,42,40,32,{capucha:true,cresta:true,cresCol:RP.gold,brillo:true}); glow(g,80,50,18,RP.gL,0.9); circ(g,80,50,7,'#C8F27A',OUT,1.6); circ(g,92,42,3,'#C8F27A',null); circ(g,88,60,2.6,'#C8F27A',null); };
+ICONS.acechador=g=>{ rOla(g,84,26); rCroc(g,60,56,1,{}); };
+ICONS.cayman_cazador=g=>{ rOla(g,86,30); rCroc(g,60,54,1.04,{cresta:true}); };
+ICONS.sombra_pantano=g=>{ glow(g,50,52,46,RP.gD,0.45); rOla(g,88,32); rCroc(g,60,54,1.08,{cresta:true,brillo:true}); };
+ICONS.coloso=g=>{ rCaparazon(g,50,62,1,{}); rCabeza(g,50,30,26,22,{dientes:true}); };
+ICONS.coloso_ancestral=g=>{ rCaparazon(g,50,62,1.06,{puas:true}); rCabeza(g,50,28,28,24,{cresta:true,dientes:true}); };
+ICONS.gran_leviatan=g=>{ glow(g,50,52,48,RP.eye,0.22); rCaparazon(g,50,62,1.12,{puas:true}); rCabeza(g,50,26,30,26,{cresta:true,cresCol:RP.gold,dientes:true,brillo:true}); };
+ICONS.lider_rept=g=>{ rCuerpo(g,50,68,52,{placas:true}); rCabeza(g,50,42,38,31,{cresta:true,cresCol:RP.gold,dientes:true}); poly(g,[[36,24],[40,12],[46,22],[50,8],[54,22],[60,12],[64,24]],RP.gold,OUT,1.8); circ(g,50,20,3,'#E85A7A',OUT,1.2); };
+ICONS.lider_rept3=g=>{ glow(g,50,48,48,RP.water,0.35); rCuerpo(g,50,68,58,{fill:RP.g,placas:true}); rCabeza(g,50,42,40,32,{capucha:true,cresta:true,cresCol:RP.gold,dientes:true,brillo:true}); poly(g,[[34,22],[38,6],[45,20],[50,2],[55,20],[62,6],[66,22]],RP.gold,OUT,1.8); circ(g,50,16,3.6,'#E85A7A',OUT,1.2); rOla(g,92,32); };
+
 /* ---------- caché de íconos ---------- */
 const ICON_CACHE=new Map();
 function iconCanvas(type,px){
@@ -3113,8 +3213,8 @@ function syncTopbar(){ document.getElementById('btnSound').textContent=SND.on?'�
 const AI_LEVELS={
   recluta:   {name:'Recluta',    goldMul:0.75, income:-1, smart:false, look:false, sloppy:35, desc:'Se distrae: un tercio de las veces elige mal el ataque. Arranca con menos oro. Para aprender el juego.'},
   veterano:  {name:'Veterano',   goldMul:1.0,  income:0,  smart:true,  look:false, sloppy:0,  desc:'La IA a pleno: elige cada ataque por daño esperado y respuesta, toma y guarda aldeas, protege a su líder.'},
-  comandante:{name:'Comandante', goldMul:1.4,  income:4,  smart:true,  look:true,  sloppy:0,  desc:'La misma cabeza con más recursos: arranca con 40% más de oro y cobra 4 más por turno. Te obliga a jugar mejor que ella.'},
-  maestro:   {name:'Maestro',    goldMul:1.15, income:2,  smart:true,  look:true,  sloppy:0,  deep:true, desc:'Antes de mover, calcula de verdad qué le podés hacer vos el turno que viene a cada unidad rival (no una estimación: simula el combate real) y elige la posición donde pierde menos. Casi no depende del oro extra: gana por cabeza.'},
+  comandante:{name:'Comandante', goldMul:1.4,  income:4,  smart:true,  look:true,  sloppy:0,  desc:'La misma cabeza con más recursos: arranca con 40% más de oro y cobra 4 más por turno. Cuida a su líder: lo deja en el torreón salvo peligro o jugada clave. Te obliga a jugar mejor que ella.'},
+  maestro:   {name:'Maestro',    goldMul:1.15, income:2,  smart:true,  look:true,  sloppy:0,  deep:true, desc:'Además recluta más soldados, usa el oro hasta el final y sale a robar aldeas con sus exploradores. Antes de mover, calcula de verdad qué le podés hacer vos el turno que viene a cada unidad rival (no una estimación: simula el combate real) y elige la posición donde pierde menos. Casi no depende del oro extra: gana por cabeza.'},
 };
 const aiLevel=s=>AI_LEVELS[s.ai]||AI_LEVELS.veterano;
 const aiF=(L,k)=>L.smart&&!!(L.flags&&L.flags[k]);
@@ -3136,7 +3236,7 @@ const maxHit=u=>Math.max(...def(u).atk.map(a=>a.d*a.s));
 
 function aiRecruitPick(s,L){
   const roster=ROSTER[s.fac], mine=S.units.filter(u=>u.alive&&u.side===s.i&&!u.leader);
-  const afford=t=>UNITS[t].cost<=s.gold-4;
+  const afford=t=>UNITS[t].cost<=s.gold-(L.deep?0:4);
   if(aiF(L,'spam')){ const t=roster[mine.length%5===4?3:0]; return afford(t)?t:(afford(roster[0])?roster[0]:null); }
   if(aiF(L,'rangedheavy')){ const wish=[0,1,1,0,3,1,2,1][mine.length%8]; let pick=roster[wish]; if(!afford(pick)) pick=roster.slice().sort((a,b)=>UNITS[a].cost-UNITS[b].cost).find(afford); return pick; }
   if(!aiF(L,'recruit')){ const wish=[0,1,0,2,3,1,0,2][mine.length%8]; let pick=roster[wish]; if(!afford(pick)) pick=roster.slice().sort((a,b)=>UNITS[a].cost-UNITS[b].cost).find(afford); return pick; }
@@ -3197,7 +3297,7 @@ async function aiTurnInner(s,my){
   while(canRecruitFrom(s)&&freeCastleTiles(s).length&&guard++<8){
     if(s.gold<0) break;
     const upk=S.units.filter(u=>u.alive&&u.side===s.i&&!u.leader).reduce((a,u)=>a+u.lvl,0);
-    if(upk>(s.vils||0)+3&&s.gold<40) break;                 // no reclutar hasta la ruina
+    if(upk>(s.vils||0)+(L.deep?7:3)&&s.gold<(L.deep?20:40)) break;                 // no reclutar hasta la ruina (el Maestro aguanta más soldados)
     const pick=aiRecruitPick(s,L); if(!pick) break;
     const spots=freeCastleTiles(s),[c,r]=spots[rnd(spots.length)];
     const u=spawn(pick,s.i,c,r); u.mp=0;u.acted=true; s.gold-=UNITS[pick].cost; s.st.recruited++; s.st.gold+=UNITS[pick].cost;
@@ -3231,9 +3331,22 @@ async function aiTurnInner(s,my){
   if(my!==AI_RUN) return;
   S.aiK=null; S.busy=false; draw(); if(!S.over){ nextSide(); if(NET.on&&NET.host) NET.enviar(); }
 }
+/* el líder de la IA se queda en el torreón: ataca desde donde está, pegado a su torreón, o cuando la jugada vale la pena
+   (mata y casi no se expone). Si el torreón corre peligro puede salir hasta 2 casillas a defenderlo. */
+function aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgo){        // (oc,or) = donde está de verdad; u.c/u.r valen la casilla que se está probando
+  const k=s.keep; if(!k) return true;
+  if(c===oc&&r===or) return true;
+  const dk=hexDist(c,r,k.c,k.r);
+  if(dk<=1) return true;
+  if(dk<=2&&S.units.some(f=>f.alive&&!allied(f.side,u.side)&&!f.leader&&hexDist(f.c,f.r,k.c,k.r)<=3)) return true;
+  if(kill&&dk<=3&&riesgo<u.hp*0.35) return true;
+  return false;
+}
+const esReptil=u=>fac(u).id==='reptiloides';
 function aiBestAttack(u,s,L){
   const reach=computeReach(u), tod=phaseMul(u); let best=null;
-  const mapas=L.deep?mapaAmenazaReal(u):null;
+  const esRep=esReptil(u)&&L.smart;
+  const mapas=(L.deep||esRep)?mapaAmenazaReal(u):null;
   for(const k of reach.best.keys()){
     const [c,r]=k.split(',').map(Number);
     if(unitAt(c,r)&&!(c===u.c&&r===u.r)) continue;
@@ -3250,7 +3363,9 @@ function aiBestAttack(u,s,L){
         if(aiF(L,'focus')){ sc+=(1-e.hp/e.maxhp)*22; if(isRanged(e)&&!P.dAtk) sc+=10; if(P.dAtk===null) sc+=8; }
         if(aiF(L,'jornada')){ if(tod<1&&!kill) sc-=7; if(tod>1) sc+=8; }
         if(aiF(L,'retreat')&&u.hp<u.maxhp*0.3&&!kill&&P.expD>u.hp*0.5) sc-=20;
-        if(L.look&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
+        if((L.look||esRep)&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
+        if(esRep&&isRanged(u)){ const tt=tileAt(c,r); if(tt.t==='agua'||tt.t==='vado') sc+=12; }
+        if(L.smart&&u.leader&&!aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgoEn(u,c,r,L,mapas))) continue;
         if(!best||sc>best.sc) best={sc,c,r,e,a,u,mp:reach.best.get(k),reach};
       }
     }
@@ -3290,13 +3405,14 @@ function amenazaRealEn(u,c,r,mapas){
   golpes.sort((a,b)=>b-a);
   return golpes.reduce((tot,d,i)=>tot+d*(i===0?1:0.55**i),0);       // el primer golpe pesa entero, los demás cada vez menos
 }
-function riesgoEn(u,c,r,L,mapas){ return (L.deep&&mapas)?amenazaRealEn(u,c,r,mapas):threatAt(u,c,r); }
+function riesgoEn(u,c,r,L,mapas){ return mapas?amenazaRealEn(u,c,r,mapas):threatAt(u,c,r); }
 async function aiUnit(u,s,L){
   const reach=computeReach(u);
   const foes=aiVisibleFoes(s,S.aiK);
   const myLeader=S.units.find(x=>x.alive&&x.side===u.side&&x.leader);
   const tod=phaseMul(u);
-  const mapas=L.deep?mapaAmenazaReal(u):null;
+  const esRep=esReptil(u)&&L.smart;
+  const mapas=(L.deep||esRep)?mapaAmenazaReal(u):null;
   let best=null; const options=[];
   for(const k of reach.best.keys()){
     const [c,r]=k.split(',').map(Number);
@@ -3319,7 +3435,10 @@ async function aiUnit(u,s,L){
         }
         if(aiF(L,'jornada')){ if(tod<1&&!kill) sc-=7; if(tod>1) sc+=8; }
         if(aiF(L,'retreat')&&u.hp<u.maxhp*0.3&&!kill&&P.expD>u.hp*0.5) sc-=20;
-        if(L.look&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
+        if((L.look||esRep)&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
+        if(esRep&&isRanged(u)){ const tt=tileAt(c,r); if(tt.t==='agua'||tt.t==='vado') sc+=12; }       // Nado: dispara desde donde no lo alcanzan a pie
+        if(L.deep&&!u.leader){ const tv=tileAt(c,r); if(tv.t==='aldea'&&(tv.owner<0||!allied(tv.owner,u.side))) sc+=10; }   // atacar y de paso tomar la aldea
+        if(L.smart&&u.leader&&!aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgoEn(u,c,r,L,mapas))) continue;
         if(sc>0&&!e.leader) options.push({sc,c,r,e,a});
         if(!best||sc>best.sc) best={sc,c,r,e,a};
       }
@@ -3333,17 +3452,18 @@ async function aiUnit(u,s,L){
   }
   /* líder: en el torreón, salvo que tenga que volver */
   if(u.leader){
-    if(aiF(L,'leader')){ const k=S.sides[u.side].keep; const kk=key(k.c,k.r); if(!(u.c===k.c&&u.r===k.r)&&reach.best.has(kk)&&!unitAt(k.c,k.r)) await moveUnit(u,k.c,k.r,reach.best.get(kk),reach); }
+    if(L.smart){ const k=S.sides[u.side].keep; const kk=key(k.c,k.r); if(!(u.c===k.c&&u.r===k.r)&&reach.best.has(kk)&&!unitAt(k.c,k.r)) await moveUnit(u,k.c,k.r,reach.best.get(kk),reach); }
     u.acted=true; return;
   }
   /* retirada de heridos */
-  if(aiF(L,'retreat')&&!iaModoCampana().agresiva&&u.hp<u.maxhp*0.3){
+  if((aiF(L,'retreat')||esRep)&&!iaModoCampana().agresiva&&u.hp<u.maxhp*(esRep?0.4:0.3)&&foes.length){
     let bm=null;
     for(const k of reach.best.keys()){ const [c,r]=k.split(',').map(Number); if(unitAt(c,r)&&!(c===u.c&&r===u.r)) continue;
       const t=tileAt(c,r); let sc=0; const nearest=Math.min(...foes.map(f=>hexDist(f.c,f.r,c,r)));
       sc+=nearest*5; if(t.t==='aldea') sc+=30; if(has(u,'regenera')&&t.t==='bosque') sc+=22; if(has(u,'regenera_pantano')&&t.t==='pantano') sc+=22;
       const oc=u.c,or=u.r;u.c=c;u.r=r; sc+=defenseOf(u)*0.3; u.c=oc;u.r=or;
-      if(L.look) sc-=riesgoEn(u,c,r,L,mapas)*0.3;
+      if(esRep&&(t.t==='agua'||t.t==='vado')) sc+=25;                                  // Nado: se mete al agua, donde nadie lo sigue
+      if(L.look||esRep) sc-=riesgoEn(u,c,r,L,mapas)*0.3;
       if(!bm||sc>bm.sc) bm={sc,c,r}; }
     if(bm&&(bm.c!==u.c||bm.r!==u.r)) await moveUnit(u,bm.c,bm.r,reach.best.get(key(bm.c,bm.r)),reach);
     u.acted=true; return;
@@ -3369,14 +3489,21 @@ async function aiUnit(u,s,L){
     if(IM2.defender&&miKeep&&hexDist(c,r,miKeep.c,miKeep.r)>IM2.defender&&!foes.some(f=>hexDist(f.c,f.r,miKeep.c,miKeep.r)<=IM2.defender+1)) continue;
     const t=tileAt(c,r);
     let sc=-1e9; for(const [gc,gr,w] of goals) sc=Math.max(sc,(60-hexDist(c,r,gc,gr))*w);
-    if(t.t==='aldea'&&(t.owner<0||!allied(t.owner,u.side))) sc+=30;
+    if(t.t==='aldea'&&(t.owner<0||!allied(t.owner,u.side))){
+      sc+=30;
+      if(L.deep){                                   // Maestro: roba aldeas, y más las del rival que están sin guardia
+        if(t.owner>=0) sc+=15;
+        if(has(u,'hostigador')&&!foes.some(f=>!f.leader&&hexDist(f.c,f.r,c,r)<=3)) sc+=20;
+      }
+    }
     else if(t.t==='aldea'&&t.owner>=0&&allied(t.owner,u.side)&&threatened(t)) sc+=18;
     if(u.hp<u.maxhp*0.5&&t.t==='aldea'&&(t.owner===u.side||t.owner<0)) sc+=20;
     if(leaderInDanger&&hexDist(c,r,myLeader.c,myLeader.r)<=1) sc+=16;
     if(aiF(L,'cohesion')){ const ally=S.units.some(x=>x.alive&&x!==u&&allied(x.side,u.side)&&!x.leader&&hexDist(x.c,x.r,c,r)<=2); if(!ally) sc-=12; }
     const oc=u.c,or=u.r;u.c=c;u.r=r; sc+=defenseOf(u)*(aiF(L,'terrain')?0.25:0.12); u.c=oc;u.r=or;
     if(aiF(L,'jornada')&&tod<1){ const nearest=Math.min(...foes.map(f=>hexDist(f.c,f.r,c,r))); if(nearest<=2) sc-=5; }    // en mala jornada no te arrimás tanto
-    if(L.look) sc-=riesgoEn(u,c,r,L,mapas)*0.2;
+    if(esRep){ if(t.t==='agua'||t.t==='vado') sc+=isRanged(u)?8:3; }                // Nado: el agua es su camino
+    if(L.look||esRep) sc-=riesgoEn(u,c,r,L,mapas)*0.2;
     if(!bm||sc>bm.sc) bm={sc,c,r};
   }
   if(bm&&(bm.c!==u.c||bm.r!==u.r)) await moveUnit(u,bm.c,bm.r,reach.best.get(key(bm.c,bm.r)),reach);
@@ -3714,6 +3841,14 @@ const LORE = [
  `Los <b>Nara</b> eran jabalíes de pantano. Son la carne de la Alianza, baratos y muchos, peligrosos solo en manada. Los <b>Nica</b> eran las bestias de cuerno de las cumbres del Yunque: ahora son máquinas de embestir que ganan o mueren en el primer golpe. Los <b>Nolopmas</b> eran planeadores nocturnos de las cuevas, tímidos comedores de insectos; hoy planean a ras del suelo, más rápidos que cualquier cosa con patas, y se alimentan de lo que muerden. Y los <b>Nusluz</b> fueron Terrarios: cazadores del bosque que bajaron al pantano a buscar a Vhorn, lo encontraron y se hundieron con él en la Marchitez. Son los únicos de la Alianza que recuerdan lo que eran, y por eso son los más crueles.`,
  `Pelean de noche, en la montaña y en el pantano. Ganan por número y por brutalidad. Y tienen una sola grieta: la Marchitez no soporta la fuerza viva del bosque, y las espinas de un Rodador les hacen mucho más daño que a cualquier otro.`],
  see:['vhorn','pantano','unidades-oscura']},
+{id:'reptiloides', title:'Los Reptiloides', sub:'Los que volvieron del agua',
+ epi:['Nos echaron al pantano para que nos pudriéramos. Aprendimos a respirar el pantano.','Ssira'],
+ body:[
+ `Los Reptiloides fueron, antes de la colonia y antes de la Marchitez, los rivales más viejos de los Terrarios. Las guerras de aquel tiempo las ganó el bosque: los venció, los expulsó de las tierras firmes y los empujó hacia los pantanos y las aguas, donde nadie quería vivir.`,
+ `Nadie los contó en la Sucesión. Mientras el bosque se desgarraba por dentro y los Terrarios quedaban débiles, los Reptiloides salieron de las orillas, más fuertes de lo que nadie recordaba. No traen una doctrina nueva ni un truco de terreno: traen el agua.`,
+ `Su única ventaja es <b>nadar</b>. Un río que detiene a todos los demás ejércitos es, para ellos, un camino. Fuera del agua no tienen ventajas ni debilidades: ni terreno favorito, ni jornada favorita, ni resistencia que les falte. Los <b>Escamosos</b> hacen la línea, los <b>Escupidores</b> disparan desde la otra orilla, los <b>Acechadores</b> cruzan lagos para robar aldeas y el <b>Coloso Cocodrilo</b> cierra un vado él solo.`,
+ `Los manda <b>Ssira, Reina del Cauce</b>. Dicen que nunca olvidó el exilio y que por eso no pelea por tierra: pelea por el camino.`],
+ see:['sylvaan','unidades-reptiloides','terrarios']},
 ]},
 {cat:'Personajes', entries:[
 {id:'arex', title:'Gobernadora Ilse Arex', sub:'Los Conquistadores',
@@ -3762,6 +3897,7 @@ const LORE = [
 {id:'unidades-conquistadores', title:'Unidades de los Conquistadores', sub:'Compendio', gen:'conquistadores'},
 {id:'unidades-terrarios', title:'Unidades de los Terrarios', sub:'Compendio', gen:'terrarios'},
 {id:'unidades-oscura', title:'Unidades de la Alianza Oscura', sub:'Compendio', gen:'oscura'},
+{id:'unidades-reptiloides', title:'Unidades de los Reptiloides', sub:'Compendio', gen:'reptiloides'},
 ]},
 {cat:'Cómo se pelea', entries:[
 {id:'reglas', title:'Cómo se pelea en Terrania', sub:'Reglas', gen:'reglas'},
@@ -3797,9 +3933,9 @@ function buildLoreIndex(){
   });
 }
 function codexHtml(fid){
-  const F=FACTIONS[fid], phase=PHASES.find(p=>p.mul[F.id]>1);
+  const F=FACTIONS[fid], phase=PHASES.find(p=>p.mul[F.id]>1)||null;
   const bestT=Object.entries(F.def).filter(([k])=>!['aldea','fortaleza','agua'].includes(k)).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([k])=>TERRAIN[k].name).join(' y ');
-  let html=`<div class="fgroup" style="--c:${F.color}"><p>${F.lore}<br><span style="color:var(--bone)">Jornada favorable: ${phase.icon} ${phase.name}.</span> Mejor terreno: ${bestT}.</p><div class="ucards">`;
+  let html=`<div class="fgroup" style="--c:${F.color}"><p>${F.lore}<br>${phase?`<span style="color:var(--bone)">Jornada favorable: ${phase.icon} ${phase.name}.</span> Mejor terreno: ${bestT}.`:'<span style="color:var(--bone)">Sin jornada ni terreno favoritos: nadan, y nada más.</span>'}</p><div class="ucards">`;
   [LEADER_OF[F.id],...ROSTER[F.id]].forEach(t=>{const d=UNITS[t];
     html+=`<div class="ucard"><h4>${iconImg(t,48)} <span>${d.name}</span></h4><div class="role">${d.role}${d.cost?' · '+d.cost+' de oro':' · no reclutable'}${d.ab.length?' · '+d.ab.join(', '):''}</div>
       <div class="stat"><span>Vida</span><span>${d.hp}</span></div><div class="stat"><span>Movimiento</span><span>${d.mp}</span></div>
@@ -3976,10 +4112,10 @@ async function resumenBalanceGlobal(){
     if(!await NET.init()){ el.textContent='Sin conexión.'; return; }
     const snap=await NET.fb.get(NET.fb.query(NET.fb.ref(NET.db,'estadisticas/partidas'),NET.fb.limitToLast(500)));
     if(!snap.exists()){ el.textContent='Todavía no hay partidas registradas.'; return; }
-    const regs=Object.values(snap.val()); const w={conquistadores:0,oscura:0,terrarios:0}, jug={conquistadores:0,oscura:0,terrarios:0};
+    const regs=Object.values(snap.val()); const w={conquistadores:0,oscura:0,terrarios:0,reptiloides:0}, jug={conquistadores:0,oscura:0,terrarios:0,reptiloides:0};
     regs.forEach(r=>{ (r.facciones||[]).forEach(f=>{ if(f in jug) jug[f]++; }); (r.ganadores||[]).forEach(f=>{ if(f in w) w[f]++; }); });
     const pct=f=>jug[f]?Math.round(w[f]/jug[f]*100)+'%':'—';
-    el.innerHTML=`<b>${regs.length}</b> partidas de personas registradas · gana Conquistadores ${pct('conquistadores')} de las veces que juega, Alianza ${pct('oscura')}, Terrarios ${pct('terrarios')}.`;
+    el.innerHTML=`<b>${regs.length}</b> partidas de personas registradas · gana Conquistadores ${pct('conquistadores')} de las veces que juega, Alianza ${pct('oscura')}, Terrarios ${pct('terrarios')}, Reptiloides ${pct('reptiloides')}.`;
   }catch(e){ el.textContent='No se pudo leer (¿faltan las reglas de /estadisticas?).'; }
 }
 /* Aviso cuando te toca en una partida en línea y la app no está a la vista (pestaña de fondo o app
@@ -4363,7 +4499,7 @@ function campanaDe(perfilId){
 function campanaGuardar(){ saveProfiles(); }
 /* enemigos de cada escenario, según la facción que eligió el jugador (las otras dos, rotando protagonismo) */
 function enemigosDeEscenario(facJugador,indice){
-  const otras=Object.keys(FACTIONS).filter(f=>f!==facJugador);
+  const otras=Object.keys(FACTIONS).filter(f=>f!==facJugador&&f!=='reptiloides');
   if(indice===0) return [otras[0]];                       // escenario 1: un solo rival
   if(indice===1) return [otras[0],otras[1]];               // escenario 2: los dos, cada uno su bando
   if(indice===2) return [otras[1],otras[0]];               // escenario 3: mismos dos, distinto orden de mapa
@@ -8453,6 +8589,7 @@ const HER_DEFENSAS={
   oscura        :{llanura:50,bosque:40,colina:45,montana:75,pantano:70,agua:20,aldea:45,fortaleza:50,puente:35,vado:25},
   /* el bosque: el terreno más común de los tres, así que bonificación algo menor */
   terrarios     :{llanura:50,bosque:56,colina:45,montana:45,pantano:45,agua:20,aldea:45,fortaleza:50,puente:35,vado:25},
+  reptiloides   :{llanura:50,bosque:50,colina:50,montana:50,pantano:50,agua:50,aldea:50,fortaleza:50,puente:50,vado:50},
 };
 for(const f in HER_DEFENSAS){ if(FACTIONS[f]) FACTIONS[f].def=HER_DEFENSAS[f]; }
 /* el texto de los Conquistadores decía "llanura y colinas": la llanura ya no es de nadie */
@@ -8769,6 +8906,8 @@ const PAL={
                  acento:'#D2452C',suelo:'#7E8A4A',pelo:'#38241A',pant:'#4A3A2A',bota:'#33261A'},
  oscura:{piel:'#7D6C86',ropa:'#3E3350',ropa2:'#241C30',metal:'#7C7890',metal2:'#4E4A62',
          acento:'#87C64F',suelo:'#5E6A46',pelo:'#160F1E',pant:'#1E1728',bota:'#120C18'},
+ reptiloides:{piel:'#4FA67A',ropa:'#2E7A5C',ropa2:'#1E5B45',metal:'#B9C9A8',metal2:'#7C8F6E',
+              acento:'#E6D45A',suelo:'#4A7A5A',pelo:'#1E5B45',pant:'#245F48',bota:'#1B4636'},
  terrarios:{piel:'#7E6238',ropa:'#4E7C34',ropa2:'#3A5C26',metal:'#9A8250',metal2:'#6B5836',
             acento:'#AFD65E',suelo:'#6E8A46',pelo:'#2F4A1E',pant:'#3E5C28',bota:'#2A3E18'},
 };
@@ -8805,6 +8944,23 @@ const LISTA=[
   ancho:1.22, criatura:1, cuernos:3, cola:1, podrido:1, encorvado:.26,
   manto:'#2E2A1C', coronaHueso:1,
   tinte:{ropa:'#453C2E',ropa2:'#282116',piel:'#7E7458',acento:'#9CCB3E'}},
+
+ /* Reptiloides */
+ {id:'escamoso', fac:'reptiloides',   nom:'Escamoso',        rig:'biped', arma:'zarpa',  esc:1.02,
+  ancho:1.0, criatura:1, cola:1, esbelto:0,
+  tinte:{ropa:'#2E7A5C',ropa2:'#1E5B45',piel:'#4FA67A',acento:'#E6D45A'}},
+ {id:'escupidor',fac:'reptiloides',   nom:'Escupidor',       rig:'biped', arma:'zarpa',  esc:1.00,
+  ancho:0.82, criatura:1, cola:1, esbelto:1, capucha:'#2E7A5C', dist:1, tiro:'flecha',
+  tinte:{ropa:'#3C8F6A',ropa2:'#25674D',piel:'#6CC08E',acento:'#E6D45A'}},
+ {id:'acechador',fac:'reptiloides',   nom:'Acechador',       rig:'biped', arma:'zarpa',  esc:0.96,
+  ancho:0.84, criatura:1, cola:1, esbelto:1, encorvado:.34,
+  tinte:{ropa:'#3C8F6A',ropa2:'#25674D',piel:'#5DBA8A',acento:'#E6D45A'}},
+ {id:'coloso',   fac:'reptiloides',   nom:'Coloso Cocodrilo',rig:'biped', arma:'zarpa',  esc:1.22,
+  ancho:1.5, criatura:1, robusto:1, cola:1, placasHueso:1,
+  tinte:{ropa:'#27624A',ropa2:'#17432F',piel:'#3A8F69',acento:'#E6D45A'}},
+ {id:'ssira',    fac:'reptiloides',   nom:'Ssira, Reina del Cauce',rig:'biped',arma:'zarpa',esc:1.20,
+  ancho:1.1, criatura:1, cola:1, cuernos:1, coronaHueso:1, manto:'#1E5B45',
+  tinte:{ropa:'#2E7A5C',ropa2:'#1E5B45',piel:'#5DBA8A',acento:'#F2D64E'}},
 
  /* Terrarios */
  {id:'brotal',   fac:'terrarios',     nom:'Brotal',          rig:'planta',arma:'zarcillos',esc:0.95},
@@ -9333,6 +9489,10 @@ function arma(g,u,P,m,p,t,anim,f){
         g.quadraticCurveTo(i*4.5,-6,i*4,-13); g.stroke(); }
       if(anim==='atacar'&&f>SOL-0.04&&f<SOL+0.16){
         g.globalAlpha=0.55; elip(g,0,-16,6,8,P.acento); g.globalAlpha=1; }
+    } else if(u.fac==='reptiloides'){                    // mano abierta que escupe un dardo
+      g.strokeStyle=tono(P.piel,-10); g.lineWidth=2.4; g.lineCap='round';
+      for(let i=-1;i<=1;i++){ g.beginPath(); g.moveTo(i*2.4,2); g.quadraticCurveTo(i*4,-6,i*3.4,-12); g.stroke(); }
+      if(anim==='atacar'&&f>SOL-0.04&&f<SOL+0.16){ g.globalAlpha=0.6; elip(g,0,-15,5,7,'#C8F27A'); g.globalAlpha=1; }
     } else {                                             // rama que suelta la semilla
       cap(g,0,4,0,-12,3.6,P.piel);
       for(let i=-1;i<=1;i+=2) cap(g,0,-10,i*5,-16,2.2,P.ropa2);
@@ -9813,7 +9973,7 @@ function paletaDe(u,colBando){
   if(colBando) P.acento=colBando;              // la banda lleva el color del bando
   return P;
 }
-const TIRO_FAC={conquistadores:'bala', oscura:'flecha', terrarios:'piedra'};
+const TIRO_FAC={conquistadores:'bala', oscura:'flecha', terrarios:'piedra', reptiloides:'flecha'};
 
 /* ═══ Reacciones del que recibe el ataque ═══
    El motor ya decide si el golpe entra o no; acá sólo se muestra: el que se cubre con su
@@ -9835,7 +9995,7 @@ function sangreDe(u){
   if(u.rig==='moto') return {c:['#FFD770','#FF9A3C','#FFF0BE'],tipo:'chispa'};
   if(u.rig==='planta'||u.rig==='arbol'||u.rig==='bola'||u.fac==='terrarios')
                   return {c:['#A9D45A','#7DA83A','#6B4A28'],tipo:'savia'};
-  if(u.criatura||u.fac==='oscura')
+  if(u.criatura||u.fac==='oscura'||u.fac==='reptiloides')
                   return {c:['#5E8F2B','#34561A','#22350F'],tipo:'icor'};
   return {c:['#B3201F','#8E1717','#D63A30'],tipo:'sangre'};
 }
@@ -11352,6 +11512,11 @@ const VIVO_RAIZ={
   rodador_zarzal:'rodador',tormenta_zarzas:'rodador',
   ancestro_venerable:'ancestro',patriarca:'ancestro',
   lider_terr:'sylvaan',lider_terr3:'sylvaan',
+  escamoso_curtido:'escamoso',guerrero_salamandra:'escamoso',
+  escupidor_acido:'escupidor',vibora_real:'escupidor',
+  cayman_cazador:'acechador',sombra_pantano:'acechador',
+  coloso_ancestral:'coloso',gran_leviatan:'coloso',
+  lider_rept:'ssira',lider_rept3:'ssira',
 };
 
 /* ───────── 1. el suelo vivo reemplaza el horneado plano ───────── */
@@ -11658,6 +11823,11 @@ drawUnitSprite=function(g,tipo,x,y,px,col){
   if(!VIVO.on||!u||u.type!==tipo) return _vivoSprite.apply(this,arguments);
   try{
     const now=performance.now(), t=(now-VIVO.t0)/1000;
+    try{ const tt=tileAt(u.c,u.r);                      // Nado: ondas alrededor del reptiloide que está en el agua
+      if(tt&&(tt.t==='agua'||tt.t==='vado')&&UNITS[tipo]&&UNITS[tipo].fac==='reptiloides'){
+        const k=(now/1100)%1; g.save(); g.lineWidth=2;
+        for(let i=0;i<2;i++){ const q=(k+i*0.5)%1; g.globalAlpha=0.6*(1-q); g.strokeStyle='#D8F6FF'; g.beginPath(); g.ellipse(x,y+px*0.02,px*(0.24+q*0.3),px*(0.07+q*0.08),0,0,7); g.stroke(); }
+        g.restore(); } }catch(e){}
     let anim='quieto', f=0, mira=u._mira||1, rxv=null, reb=null;
     const ak=VIVO.atk.get(u.id), o=FX.off.get(u.id), fl=FX.flash.get(u.id), r=VIVO.rx.get(u.id);
     const sp=FX.speed||1, rig=VIVO_ARTE.figuraDe(tipo).rig;
