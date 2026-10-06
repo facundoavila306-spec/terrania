@@ -1122,12 +1122,12 @@ const DMGCOL = {filo:'#E8E8E8',perf:'#F2D774',imp:'#B9B0A0',fuego:'#FF8A3D',frio
 
 const FACTIONS = {
   conquistadores:{id:'conquistadores', name:'Los Conquistadores', color:'#5AA7D8', sigil:'⚙',
-    tag:'Fuertes de tarde · llanura y colinas · Industria',
+    tag:'Fuertes de tarde · llanura · Industria',
     lore:'Descendientes de la nave Perseverancia. Pelean con disciplina, pólvora de riel y fuego incendiario. Su ejército es el más caro de Terrania, pero cada pieza cumple un rol exacto: la línea aguanta, el tirador borra blancos y quema bosque, la moto roba aldeas. <b>Industria</b>: suman 1 de oro extra por cada cuatro aldeas, hasta 2.',
     move:{llanura:1,bosque:2,colina:1,montana:2,pantano:2,agua:99,aldea:1,fortaleza:1,puente:1,vado:3},
     def :{llanura:60,bosque:35,colina:60,montana:45,pantano:40,agua:20,aldea:60,fortaleza:60,puente:40,vado:25}},
   oscura:{id:'oscura', name:'La Alianza Oscura', color:'#C7455F', sigil:'☠',
-    tag:'Fuertes de noche · montaña y pantano · trepan',
+    tag:'Fuertes de noche · montaña · trepan',
     lore:'Bestias del planeta marcadas por la Marchitez. No tienen doctrina: tienen hambre. Son las unidades más baratas y rápidas del planeta, y las que menos aguantan: ganan por número, no por calidad. La Marchitez que les dio poder las dejó abiertas de par en par al daño arcano.',
     move:{llanura:1,bosque:2,colina:2,montana:1,pantano:2,agua:99,aldea:1,fortaleza:1,puente:1,vado:3},
     def :{llanura:45,bosque:55,colina:55,montana:70,pantano:65,agua:20,aldea:50,fortaleza:50,puente:35,vado:35}},
@@ -1145,7 +1145,7 @@ const UNITS = {
   lancero:{fac:'conquistadores',name:'Lancero Ligero',role:'Infantería básica',cost:14,hp:42,mp:5,glyph:'🔱',
     atk:[{n:'Lanza de riel',d:6,s:3,t:'perf',r:'melee'}],
     res:{filo:10,perf:0,imp:0,fuego:0,frio:0,arc:0}, ab:['falange'],
-    note:'Barato y rápido en llanura. <b>Falange</b>: si forma un grupo pegado de 3 o más lanceros, recibe −20% de daño. Muere solo; en grupo aguanta. No puede responder a distancia: acercalo o cubrilo.'},
+    note:'Barato y rápido en llanura. <b>Falange</b>: si forma un grupo pegado de 3 o más lanceros, pega +20%. Muere solo; en grupo aguanta. No puede responder a distancia: acercalo o cubrilo.'},
   tirador:{fac:'conquistadores',name:'Tirador de Precisión',role:'Distancia',cost:23,hp:34,mp:5,glyph:'🎯',
     atk:[{n:'Culatazo',d:4,s:1,t:'imp',r:'melee'},{n:'Rifle de riel',d:12,s:2,t:'perf',r:'rango',sp:'certero'},{n:'Munición incendiaria',d:9,s:2,t:'fuego',r:'rango'}],
     res:{filo:0,perf:0,imp:-10,fuego:0,frio:0,arc:0}, ab:[],
@@ -1231,7 +1231,7 @@ Object.assign(UNITS,{
 /* ═══ CONQUISTADORES ═══ */
 lancero_linea:{fac:'conquistadores',name:'Lancero de Línea',role:'Nivel 2 · desde Lancero Ligero',cost:0,lvl:2,hp:50,mp:5,glyph:'🔱',
   atk:[{n:'Lanza de riel',d:8,s:3,t:'perf',r:'melee'}], res:R(RES.lan,{filo:15}), ab:['falange'], next:['capitan_lanzas'],
-  note:'La columna vertebral de la colonia. <b>Falange</b>: con 3 o más lanceros pegados recibe −20% de daño.'},
+  note:'La columna vertebral de la colonia. <b>Falange</b>: con 3 o más lanceros pegados pega +20%.'},
 capitan_lanzas:{fac:'conquistadores',name:'Capitán de Lanzas',role:'Nivel 3 · desde Lancero de Línea',cost:0,lvl:3,hp:62,mp:5,glyph:'⚜',
   atk:[{n:'Lanza de mando',d:10,s:3,t:'perf',r:'melee'}], res:R(RES.lan,{filo:20,perf:10}), ab:['falange','liderazgo'],
   note:'<b>Liderazgo</b>: los aliados adyacentes de menor nivel hacen +25% de daño. Un capitán rodeado de reclutas vale por una compañía.'},
@@ -1661,9 +1661,11 @@ function dmgBreakdown(att,dfn,a,charge){
   const m=phaseMul(att); if(m!==1){ d*=m; parts.push([PHASES[S.phase].name, m>1?'+25%':'−25%']); }
   const res=(def(dfn).res[a.t]??0)+(hasTrait(dfn,'tenaz')?10:0); if(res){ d*=(100-res)/100; parts.push(['Resistencia a '+DMG[a.t], (res>0?'−':'+')+Math.abs(res)+'%']); }
   if(fac(att).id==='terrarios'&&tileAt(att.c,att.r).t==='bosque'){ d*=1.2; parts.push(['Raíces del bosque','+20%']); }
+  if(fac(att).id==='conquistadores'&&tileAt(att.c,att.r).t==='llanura'){ d*=1.2; parts.push(['Campo abierto','+20%']); }
+  if(fac(att).id==='oscura'&&tileAt(att.c,att.r).t==='montana'){ d*=1.2; parts.push(['Dueños de la montaña','+20%']); }
   if(a.r==='rango'&&esGuardia(dfn)){ d*=0.8; parts.push(['Blindaje del guardián','−20%']); }
   if(guardiasJuntos(dfn)){ d*=0.85; parts.push(['Guardias juntos','−15%']); }
-  if(falange(dfn)){ d*=0.8; parts.push(['Falange del defensor','−20%']); }
+  if(falange(att)){ d*=1.2; parts.push(['Falange','+20%']); }
   if(att.slowed){ d*=0.5; parts.push(['Ralentizado','−50%']); }
   if(charge==='att'){ d*=1.75; parts.push(['Carga','+75%']); }
   if(charge==='def'){ d*=1.5; parts.push(['Recibe la carga','+50%']); }
