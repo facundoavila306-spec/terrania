@@ -1,9 +1,9 @@
 {
- "version": "34.34",
+ "version": "34.35",
  "base": "34",
  "fecha": "06/10/2026",
  "notas": [
-  "Música de combate solo cuando atacás o te atacan (en red, cada uno la suya). El Lancero lleva un tridente bien visible"
+  "Tridente del Lancero mas grande y visible. Base de los Reptiloides: una cueva con arco dorado rodeada de agua"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "d138fc0afae4878375ce8f0bb75f7730b1e15bceba775e2a05b5a7b26a56cbe3",
-   "n": 919542
+   "h": "9a4c7fef9b94903e2e251d8854b0ea3ec3d3723dbd50dd67039ebcf3ce8ac9e9",
+   "n": 928270
   },
   {
    "p": "mapas/anillo.jpg",
