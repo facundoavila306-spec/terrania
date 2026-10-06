@@ -1,9 +1,9 @@
 {
- "version": "34.18",
+ "version": "34.19",
  "base": "34",
  "fecha": "06/10/2026",
  "notas": [
-  "Falange: −20% de daño con 3 o más lanceros pegados"
+  "Guardián Pretoriano: 67 de vida, 10 de daño, blindaje contra ataques a distancia y bonus de defensa si hay otro Guardián pegado"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "245ed4543524f7c085521c851a52f9985a0bee4cea8480e7d87509473f4dcd34",
-   "n": 873133
+   "h": "8ac1b33d4257bd414a4d545bd000cfc69dd512a2b5e42db895abbddb662d1adf",
+   "n": 873760
   },
   {
    "p": "mapas/anillo.jpg",

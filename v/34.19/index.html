@@ -1144,8 +1144,8 @@ const UNITS = {
   /* ═══ CONQUISTADORES ═══ */
   lancero:{fac:'conquistadores',name:'Lancero Ligero',role:'Infantería básica',cost:14,hp:42,mp:5,glyph:'🔱',
     atk:[{n:'Lanza de riel',d:6,s:3,t:'perf',r:'melee'}],
-    res:{filo:10,perf:0,imp:0,fuego:0,frio:0,arc:0}, ab:['formacion'],
-    note:'Barato y rápido en llanura. <b>Formación</b>: +15% defensa por cada aliado adyacente (máx. +30%). Muere solo; en grupo aguanta. No puede responder a distancia: acercalo o cubrilo.'},
+    res:{filo:10,perf:0,imp:0,fuego:0,frio:0,arc:0}, ab:['falange'],
+    note:'Barato y rápido en llanura. <b>Falange</b>: si forma un grupo pegado de 3 o más lanceros, recibe −20% de daño. Muere solo; en grupo aguanta. No puede responder a distancia: acercalo o cubrilo.'},
   tirador:{fac:'conquistadores',name:'Tirador de Precisión',role:'Distancia',cost:23,hp:34,mp:5,glyph:'🎯',
     atk:[{n:'Culatazo',d:4,s:1,t:'imp',r:'melee'},{n:'Rifle de riel',d:12,s:2,t:'perf',r:'rango',sp:'certero'},{n:'Munición incendiaria',d:9,s:2,t:'fuego',r:'rango'}],
     res:{filo:0,perf:0,imp:-10,fuego:0,frio:0,arc:0}, ab:[],
@@ -1155,10 +1155,10 @@ const UNITS = {
     atk:[{n:'Cadena de riel',d:6,s:2,t:'filo',r:'melee'}],
     res:{filo:0,perf:-10,imp:-10,fuego:10,frio:0,arc:0}, ab:['hostigador'],
     note:'<b>Hostigador</b>: ignora la zona de control enemiga y se mete entre líneas. Vuela en llanura y colina, se arrastra en bosque y barro. Roba aldeas y remata heridos; no lo pongas a sostener una línea.'},
-  guardian:{fac:'conquistadores',name:'Guardián Pretoriano',role:'Élite',cost:35,hp:62,mp:4,glyph:'🛡',
-    atk:[{n:'Bastón de arco',d:9,s:3,t:'imp',r:'melee',sp:'ralentiza'}],
+  guardian:{fac:'conquistadores',name:'Guardián Pretoriano',role:'Élite',cost:35,hp:67,mp:4,glyph:'🛡',
+    atk:[{n:'Bastón de arco',d:10,s:3,t:'imp',r:'melee',sp:'ralentiza'}],
     res:{filo:25,perf:30,imp:10,fuego:-20,frio:10,arc:0}, ab:['escudo'],
-    note:'Muro andante con <b>escudo</b>: −10% de acierto para quien lo ataca. <b>Ralentiza</b>: quien recibe un golpe pega y se mueve a la mitad en su turno.'},
+    note:'Muro andante con <b>escudo</b>: −10% de acierto para quien lo ataca. <b>Ralentiza</b>: quien recibe un golpe pega y se mueve a la mitad en su turno. <b>Blindaje</b>: recibe −20% de daño de ataques a distancia. <b>Guardias juntos</b>: con otro Guardián pegado, recibe −15% de daño.'},
 
   /* ═══ ALIANZA OSCURA ═══ */
   nara:{fac:'oscura',name:'Nara',role:'Infantería básica',cost:8,hp:33,mp:5,glyph:'🐗',
@@ -1230,10 +1230,10 @@ const MOVE_ROD ={llanura:1,bosque:1,colina:2,montana:4,pantano:2,agua:99,aldea:1
 Object.assign(UNITS,{
 /* ═══ CONQUISTADORES ═══ */
 lancero_linea:{fac:'conquistadores',name:'Lancero de Línea',role:'Nivel 2 · desde Lancero Ligero',cost:0,lvl:2,hp:50,mp:5,glyph:'🔱',
-  atk:[{n:'Lanza de riel',d:8,s:3,t:'perf',r:'melee'}], res:R(RES.lan,{filo:15}), ab:['formacion'], formacion:20, next:['capitan_lanzas'],
-  note:'La columna vertebral de la colonia. <b>Formación</b> mejorada: +20% de defensa por aliado adyacente (máx. +40%).'},
+  atk:[{n:'Lanza de riel',d:8,s:3,t:'perf',r:'melee'}], res:R(RES.lan,{filo:15}), ab:['falange'], next:['capitan_lanzas'],
+  note:'La columna vertebral de la colonia. <b>Falange</b>: con 3 o más lanceros pegados recibe −20% de daño.'},
 capitan_lanzas:{fac:'conquistadores',name:'Capitán de Lanzas',role:'Nivel 3 · desde Lancero de Línea',cost:0,lvl:3,hp:62,mp:5,glyph:'⚜',
-  atk:[{n:'Lanza de mando',d:10,s:3,t:'perf',r:'melee'}], res:R(RES.lan,{filo:20,perf:10}), ab:['formacion','liderazgo'], formacion:20,
+  atk:[{n:'Lanza de mando',d:10,s:3,t:'perf',r:'melee'}], res:R(RES.lan,{filo:20,perf:10}), ab:['falange','liderazgo'],
   note:'<b>Liderazgo</b>: los aliados adyacentes de menor nivel hacen +25% de daño. Un capitán rodeado de reclutas vale por una compañía.'},
 asaltante:{fac:'conquistadores',name:'Asaltante',role:'Nivel 2 · desde Lancero Ligero',cost:0,lvl:2,hp:46,mp:6,glyph:'⚡',
   atk:[{n:'Bayoneta eléctrica',d:7,s:4,t:'filo',r:'melee'}], res:RES.lan, ab:[], next:['rompefilas'],
@@ -1638,6 +1638,19 @@ function computeReach(u){
 }
 
 /* --- daño y acierto, con desglose para el diálogo --- */
+const FALANGE_TIPOS=['lancero','lancero_linea','capitan_lanzas'];
+function falange(u){
+  if(!u||!FALANGE_TIPOS.includes(u.type)) return false;
+  const seen=new Set([u.c+','+u.r]), cola=[u];
+  while(cola.length){ const x=cola.pop();
+    for(const [nc,nr] of neighbors(x.c,x.r)){ const k=nc+','+nr; if(seen.has(k)) continue;
+      const o=unitAt(nc,nr); if(o&&o.side===u.side&&FALANGE_TIPOS.includes(o.type)){ seen.add(k); cola.push(o); } } }
+  return seen.size>=3;
+}
+const GUARDIAS=['guardian','pretoriano_mayor','muralla'];
+const esGuardia=u=>!!u&&GUARDIAS.includes(u.type);
+function guardiasJuntos(u){ if(!esGuardia(u)) return false;
+  for(const [nc,nr] of neighbors(u.c,u.r)){ const o=unitAt(nc,nr); if(o&&o!==u&&o.side===u.side&&esGuardia(o)) return true; } return false; }
 function dmgBreakdown(att,dfn,a,charge){
   const parts=[]; let base=a.d+((a.r==='melee'&&hasTrait(att,'fuerte'))?1:0);
   if(a.sp==='horda'){ let n=0; for(const [nc,nr] of neighbors(att.c,att.r)){const o=unitAt(nc,nr); if(o&&o.type==='nara'&&o.side===att.side) n++;} if(n){base+=Math.min(n,3);parts.push(['Horda','+'+Math.min(n,3)]);} }
@@ -1648,6 +1661,9 @@ function dmgBreakdown(att,dfn,a,charge){
   const m=phaseMul(att); if(m!==1){ d*=m; parts.push([PHASES[S.phase].name, m>1?'+25%':'−25%']); }
   const res=(def(dfn).res[a.t]??0)+(hasTrait(dfn,'tenaz')?10:0); if(res){ d*=(100-res)/100; parts.push(['Resistencia a '+DMG[a.t], (res>0?'−':'+')+Math.abs(res)+'%']); }
   if(fac(att).id==='terrarios'&&tileAt(att.c,att.r).t==='bosque'){ d*=1.2; parts.push(['Raíces del bosque','+20%']); }
+  if(a.r==='rango'&&esGuardia(dfn)){ d*=0.8; parts.push(['Blindaje del guardián','−20%']); }
+  if(guardiasJuntos(dfn)){ d*=0.85; parts.push(['Guardias juntos','−15%']); }
+  if(falange(dfn)){ d*=0.8; parts.push(['Falange del defensor','−20%']); }
   if(att.slowed){ d*=0.5; parts.push(['Ralentizado','−50%']); }
   if(charge==='att'){ d*=1.75; parts.push(['Carga','+75%']); }
   if(charge==='def'){ d*=1.5; parts.push(['Recibe la carga','+50%']); }
