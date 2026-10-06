@@ -1352,13 +1352,13 @@ lider_terr3:{fac:'terrarios',name:'Sylvaan en Marcha',role:'Líder · nivel 3',c
 
 /* ═══ REPTILOIDES · su único rasgo propio es nadar (agua con coste 1); resistencias parejas, sin vulnerabilidades ═══ */
 escamoso:{fac:'reptiloides',name:'Escamoso',role:'Infantería básica',cost:14,hp:42,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:6,s:3,t:'filo',r:'melee'}], res:{filo:5,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escamoso_curtido'],
+  atk:[{n:'Tridente',d:6,s:3,t:'filo',r:'melee'}], res:{filo:5,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escamoso_curtido'],
   note:'La línea de los Reptiloides. <b>Nada</b>: el agua le cuesta 1 de movimiento, como el llano. Sin ventajas ni debilidades en ningún otro terreno.'},
 escamoso_curtido:{fac:'reptiloides',name:'Escamoso Curtido',role:'Nivel 2 · desde Escamoso',cost:0,lvl:2,hp:50,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:8,s:3,t:'filo',r:'melee'}], res:{filo:10,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['guerrero_salamandra'],
+  atk:[{n:'Tridente',d:8,s:3,t:'filo',r:'melee'}], res:{filo:10,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['guerrero_salamandra'],
   note:'Escamas más duras, garras más largas. Sigue nadando donde otros se detienen.'},
 guerrero_salamandra:{fac:'reptiloides',name:'Guerrero Salamandra',role:'Nivel 3 · desde Escamoso Curtido',cost:0,lvl:3,hp:60,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:10,s:3,t:'filo',r:'melee'}], res:{filo:15,perf:15,imp:5,fuego:0,frio:0,arc:0}, ab:[],
+  atk:[{n:'Tridente',d:10,s:3,t:'filo',r:'melee'}], res:{filo:15,perf:15,imp:5,fuego:0,frio:0,arc:0}, ab:[],
   note:'El veterano del cauce. Tres zarpazos de diez, y sale del agua cuando él quiere.'},
 escupidor:{fac:'reptiloides',name:'Escupidor',role:'Distancia',cost:22,hp:36,mp:5,glyph:'🐍',
   atk:[{n:'Colmillo',d:4,s:1,t:'filo',r:'melee'},{n:'Dardo de cerbatana',d:11,s:2,t:'perf',r:'rango'}], res:{filo:0,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escupidor_acido'],
@@ -2060,7 +2060,9 @@ const MUSIC={on:true,vol:0.5,playing:false,phase:null,pending:null,timer:null,ne
 (function(){
   const _s=show; show=function(id){ const r=_s.apply(this,arguments);
     try{ if(id!=='game'&&id!=='cutscene'&&MUSIC.playing) MUSIC.setPhase('menu'); }catch(e){} return r; };
-  const _a=doAttack; doAttack=async function(){ try{ MUSIC.combate(); }catch(e){} return _a.apply(this,arguments); };
+  /* el tema de combate suena sólo si el combate te toca a vos: atacás o te atacan (en red, cada uno oye el suyo) */
+  const esMio=u=>{ try{ if(!u) return false; if(NET.on) return u.side===NET.me; const sd=S.sides[u.side]; return !!(sd&&sd.human); }catch(e){ return false; } };
+  const _a=doAttack; doAttack=async function(att,dfn){ try{ if(esMio(att)||esMio(dfn)) MUSIC.combate(); }catch(e){} return _a.apply(this,arguments); };
   /* el navegador no deja sonar nada antes del primer gesto: al primer toque arranca el tema del menú */
   const primero=()=>{ document.removeEventListener('pointerdown',primero,true); document.removeEventListener('keydown',primero,true);
     try{ if(CFG.music&&!MUSIC.playing){ SND.init(); MUSIC.start(MUSIC.temaActual()); } }catch(e){} };
@@ -9018,7 +9020,7 @@ const LISTA=[
   tinte:{ropa:'#453C2E',ropa2:'#282116',piel:'#7E7458',acento:'#9CCB3E'}},
 
  /* Reptiloides */
- {id:'escamoso', fac:'reptiloides',   nom:'Escamoso',        rig:'biped', arma:'zarpa',  esc:1.02,
+ {id:'escamoso', fac:'reptiloides',   nom:'Escamoso',        rig:'biped', arma:'tridente',  esc:1.02,
   ancho:1.0, criatura:0, reptil:'escamoso',
   tinte:{ropa:'#7A5A34',ropa2:'#4E3820',piel:'#4FA67A',acento:'#E6D45A'}},
  {id:'escupidor',fac:'reptiloides',   nom:'Escupidor',       rig:'biped', arma:'cerbatana',esc:1.02,
@@ -9064,7 +9066,7 @@ const IMPACTO=[0.46,0.56], SOL=0.10, VUELO=0.19;   // suelta enseguida y la flec
    Antes todas las unidades hacían el mismo movimiento. Ahora cada arma tiene el suyo:
    la lanza estoca, el bastón machaca de arriba abajo, el sable taja en diagonal,
    el hacha carga y descarga con todo el cuerpo, y las garras dan dos zarpazos. */
-const ESTILO_DE={lanza:'estocada', baston:'machaque', sable:'tajo', hacha:'hachazo',
+const ESTILO_DE={lanza:'estocada', tridente:'estocada', baston:'machaque', sable:'tajo', hacha:'hachazo',
                  zarpa:'zarpazo', garras:'zarpazo', colmillos:'estocada', cadena:'latigazo'};
 const VENTANA={estocada:[0.40,0.50], machaque:[0.49,0.60], tajo:[0.45,0.55],
                hachazo:[0.52,0.63], zarpazo:[0.36,0.46], latigazo:[0.47,0.58]};
@@ -9105,7 +9107,7 @@ const CURVA={estocada:cEstocada, machaque:cMachaque, tajo:golpe, hachazo:cHachaz
              zarpazo:cZarpazo, latigazo:cLatigazo};
 
 /* ángulo del arma (0 = vertical, + = punta hacia adelante) al cubrirse de un golpe */
-const GUARDIA={lanza:0.95, baston:1.50, sable:1.00, hacha:0.62, rifle:1.30, arco:0.12,
+const GUARDIA={lanza:0.95, tridente:0.95, baston:1.50, sable:1.00, hacha:0.62, rifle:1.30, arco:0.12,
                zarpa:0.25, garras:0.25, colmillos:0.25, cadena:1.2};
 
 /* ───────── rig bípedo ───────── */
@@ -9575,7 +9577,22 @@ function arma(g,u,P,m,p,t,anim,f){
     }
     return;
   }
-  if(a==='lanza'){
+  if(a==='tridente'){
+    /* asta larga con un tridente de metal bien visible: tres puntas y cinta de la facción */
+    cap(g,0,22,0,-38,4.4,'#6B4A2A');
+    g.save(); g.translate(0,-33); g.scale(1.45,1.45); g.translate(0,33);
+    g.lineCap='round'; g.lineJoin='round';
+    for(const [col,w] of [['#2B3238',5.2],['#E2E9EE',2.8]]){
+      g.strokeStyle=col; g.lineWidth=w;
+      g.beginPath(); g.moveTo(-8,-47); g.lineTo(-8,-37); g.quadraticCurveTo(-8,-31,0,-31); g.quadraticCurveTo(8,-31,8,-37); g.lineTo(8,-47); g.stroke();
+      g.beginPath(); g.moveTo(0,-34); g.lineTo(0,-54); g.stroke();
+    }
+    for(const x of [-8,0,8]){ const y=x?-47:-54; g.beginPath(); g.moveTo(x-3,y+1); g.lineTo(x,y-7); g.lineTo(x+3,y+1); g.closePath();
+      g.fillStyle='#E2E9EE'; g.fill(); g.strokeStyle='#2B3238'; g.lineWidth=1.2; g.stroke(); }
+    cap(g,0,-31,0,-28,5.6,P.metal2);
+    g.restore();
+    g.strokeStyle=P.acento; g.lineWidth=2.6; g.beginPath(); g.moveTo(0,-30); g.quadraticCurveTo(5+sen(t*3)*1.5,-22,3,-15); g.stroke();
+  } else if(a==='lanza'){
     cap(g,0,20,0,-31,3.4,'#6B4A2A');
     g.fillStyle=P.metal; g.beginPath(); g.moveTo(0,-42); g.lineTo(3.6,-28); g.lineTo(-3.6,-28); g.fill();
     cap(g,0,-25,0,-22,5.6,P.metal2);
@@ -10304,7 +10321,7 @@ const TIRO_FAC={conquistadores:'bala', oscura:'flecha', terrarios:'piedra', rept
    arma (chispas del choque), el que esquiva, el que recibe el golpe (sangre, savia, astillas
    o chispas según de qué esté hecho) y la flecha que queda clavada en el cuerpo o en el suelo. */
 const CUERPO_Y={biped:-46,bestia:-22,lagarto:-11,alado:-16,planta:-22,bola:-13,arbol:-34,moto:-24};
-const ARMAS_DE_MANO=['lanza','baston','sable','hacha','rifle','arco','cerbatana'];
+const ARMAS_DE_MANO=['lanza','tridente','baston','sable','hacha','rifle','arco','cerbatana'];
 function esArmado(tipo){ const u=figuraDe(tipo); return !!u&&u.rig==='biped'&&ARMAS_DE_MANO.indexOf(u.arma)>=0; }
 function escalaDe(tipo){ const u=figuraDe(tipo); return u?(u.esc||1)*ESCRIG[u.rig]:1; }
 function tiroDe(tipo){ const u=figuraDe(tipo); return u?(u.tiro||TIRO_FAC[u.fac]||'flecha'):'flecha'; }
@@ -10903,7 +10920,7 @@ function baseDe(c,r){
     const k=m.keeps[i];
     if(hexDist(k.c,k.r,c,r)>1) continue;
     const sd=S.sides&&S.sides[i]; if(!sd||!sd.fac) return null;
-    if(sd.fac!=='conquistadores'&&sd.fac!=='oscura'&&sd.fac!=='terrarios') return null;
+    if(sd.fac!=='conquistadores'&&sd.fac!=='oscura'&&sd.fac!=='terrarios'&&sd.fac!=='reptiloides') return null;
     return {fac:sd.fac, kc:k.c, kr:k.r, centro:(k.c===c&&k.r===r)};
   }
   return null;
@@ -10925,6 +10942,12 @@ function piezasBase(est,b,c,r,p,s){
     else if(dir==='S') P('b_puerta',0,0.55);
     else if(dir==='NE'||dir==='NW') P('b_costillas',0,0.42);
     else P('b_espinas',0,0.40);
+  } else if(b.fac==='reptiloides'){
+    if(dir==='C') P('b_cueva',0,0.58);
+    else if(dir==='N') P('b_rocas',0,0.40,{grande:1});
+    else if(dir==='NE'||dir==='NW') P('b_rocas',(g-.5)*0.3,0.42);
+    else if(dir==='S') P('b_pasos',0,0.50);
+    else P('b_juncos',(g-.5)*0.3,0.40);
   } else {
     if(dir==='C') P('b_corazon',0,0.55);
     else if(dir==='S') P('b_arco',0,0.62);
@@ -10933,6 +10956,7 @@ function piezasBase(est,b,c,r,p,s){
   }
 }
 
+const cap2=(g,x1,y1,x2,y2,w,col)=>{ g.strokeStyle=col; g.lineWidth=Math.max(1,w); g.lineCap='round'; g.beginPath(); g.moveTo(x1,y1); g.lineTo(x2,y2); g.stroke(); };
 const hexV=(g,x,y,r)=>{ g.beginPath(); for(let i=0;i<6;i++){ const a=Math.PI/3*i; const px=x+r*Math.cos(a), py=y+r*Math.sin(a); i?g.lineTo(px,py):g.moveTo(px,py); } g.closePath(); };
 const mezcla=(a,b,t)=>{ const A=parseInt(a.slice(1),16), B=parseInt(b.slice(1),16);
   const f=(sh)=>Math.round(((A>>sh)&255)*(1-t)+((B>>sh)&255)*t);
@@ -10953,6 +10977,27 @@ const BASE_PINTORES={
         const x=X+Math.cos(a)*d, y=Y+Math.sin(a)*d*.9, k=AZAR(o.g2*17,i+60);
         g.fillStyle=k>.5?'rgba(150,138,118,.45)':'rgba(24,20,16,.35)'; g.beginPath(); g.ellipse(x,y,u*(.03+k*.05),u*(.02+k*.03),0,0,7); g.fill(); }
       g.restore(); return;
+    }
+    if(f==='reptiloides'){
+      /* el torreón está en un lago: agua verdosa alrededor y piedra mojada y barro en el centro */
+      g.save(); hexV(g,X,Y,u*1.0); g.clip();
+      const cen=o.dir==='C';
+      const gr=g.createRadialGradient(X,Y,u*.1,X,Y,u*1.1);
+      if(cen){ gr.addColorStop(0,'#5A6652'); gr.addColorStop(1,'#46503F'); } else { gr.addColorStop(0,'#2F8890'); gr.addColorStop(1,'#236670'); }
+      g.fillStyle=gr; g.fillRect(X-u*1.1,Y-u*1.1,u*2.2,u*2.2);
+      if(!cen){
+        g.lineCap='round';
+        for(let i=0;i<7;i++){ const x=X+(AZAR(o.g*31,i)-.5)*u*1.6, y=Y+(AZAR(o.g2*29,i)-.5)*u*1.3, w=u*(.18+AZAR(o.g*5,i+9)*.2);
+          g.strokeStyle='rgba(205,242,242,.30)'; g.lineWidth=Math.max(1,u*.035); g.beginPath(); g.ellipse(x,y,w,w*.32,0,3.4,6.0); g.stroke(); }
+        g.fillStyle='rgba(12,40,48,.20)'; g.beginPath(); g.ellipse(X-u*.2,Y+u*.3,u*.6,u*.2,0,0,7); g.fill();
+      } else {
+        for(let i=0;i<14;i++){ const a=AZAR(o.g*91,i)*6.283, d=Math.sqrt(AZAR(o.g*53,i+30))*u*.95;
+          g.fillStyle=AZAR(o.g2*17,i+60)>.5?'rgba(180,190,160,.35)':'rgba(30,38,26,.35)';
+          g.beginPath(); g.ellipse(X+Math.cos(a)*d,Y+Math.sin(a)*d*.88,u*.08,u*.04,0,0,7); g.fill(); }
+      }
+      g.restore();
+      hexV(g,X,Y,u*.985); g.strokeStyle='rgba(16,48,52,.30)'; g.lineWidth=Math.max(1,u*.05); g.stroke();
+      return;
     }
     g.save();
     hexV(g,X,Y,u*1.0);
@@ -11361,6 +11406,82 @@ const BASE_PINTORES={
     for(const [dx,col] of [[-.28,'#F2E6A0'],[.22,'#D8B8F0'],[0,'#C6E88A']]){
       g.fillStyle=col; g.beginPath(); g.arc(X+dx*u,Y-1.05*u,.05*u,0,7); g.fill();
       g.fillStyle='rgba(198,232,138,.25)'; g.beginPath(); g.arc(X+dx*u,Y-1.05*u,.14*u,0,7); g.fill(); }
+  },
+  /* ───────── REPTILOIDES: la cueva del lago ───────── */
+  b_cueva(g,o,som){
+    const u=o.s, X=o.x, Y=o.y;
+    som(X+u*.3,Y+u*.12,u*2.0,u*.40);
+    const mont=()=>{ g.beginPath(); g.moveTo(X-1.55*u,Y); g.quadraticCurveTo(X-1.40*u,Y-1.30*u,X-.30*u,Y-1.58*u);
+      g.quadraticCurveTo(X+.95*u,Y-1.62*u,X+1.55*u,Y); g.closePath(); };
+    mont(); let gr=g.createLinearGradient(X,Y-1.6*u,X,Y); gr.addColorStop(0,'#8A9484'); gr.addColorStop(1,'#4F5A4C'); g.fillStyle=gr; g.fill();
+    g.save(); mont(); g.clip();
+    g.fillStyle='rgba(0,0,0,.20)'; g.fillRect(X+.2*u,Y-1.7*u,1.5*u,1.8*u);                       // lado en sombra
+    g.strokeStyle='rgba(30,40,28,.45)'; g.lineWidth=Math.max(1,u*.035);
+    for(let i=0;i<6;i++){ g.beginPath(); g.arc(X+(i-2.5)*.55*u,Y+.1*u,(.9+(i%3)*.25)*u,3.6,5.8); g.stroke(); }   // estratos de roca
+    g.fillStyle='#4F8F3E'; g.globalAlpha=.75;
+    for(let i=0;i<10;i++){ const a=3.3+AZAR(o.g*13,i)*2.6, d=(.75+AZAR(o.g*7,i)*.55)*u; g.beginPath(); g.ellipse(X+Math.cos(a)*d*1.15,Y+Math.sin(a)*d*.95,u*.12,u*.06,0,0,7); g.fill(); }
+    g.globalAlpha=1; g.restore();
+    mont(); g.strokeStyle='rgba(10,22,18,.9)'; g.lineWidth=Math.max(1,u*.045); g.stroke();
+    /* boca de la cueva: negra, con agua adentro y el brillo del oro */
+    const boca=()=>{ g.beginPath(); g.moveTo(X-.52*u,Y); g.lineTo(X-.52*u,Y-.50*u); g.quadraticCurveTo(X,Y-1.15*u,X+.52*u,Y-.50*u); g.lineTo(X+.52*u,Y); g.closePath(); };
+    boca(); g.fillStyle='#050D10'; g.fill();
+    g.save(); boca(); g.clip();
+    let gl=g.createRadialGradient(X,Y-.1*u,0,X,Y-.1*u,.75*u); gl.addColorStop(0,'rgba(224,184,74,.70)'); gl.addColorStop(.5,'rgba(224,184,74,.22)'); gl.addColorStop(1,'rgba(224,184,74,0)');
+    g.fillStyle=gl; g.fillRect(X-u,Y-1.3*u,2*u,1.4*u);
+    g.fillStyle='rgba(60,170,180,.55)'; g.fillRect(X-.6*u,Y-.16*u,1.2*u,.2*u);                  // agua que entra
+    g.fillStyle='#E0B84A';                                                                       // monedas y escamas de oro
+    for(let i=0;i<7;i++){ g.beginPath(); g.ellipse(X+(AZAR(o.g*3,i)-.5)*.8*u,Y-(.05+AZAR(o.g*5,i)*.22)*u,u*.05,u*.03,0,0,7); g.fill(); }
+    g.restore();
+    boca(); g.strokeStyle='rgba(8,18,16,.95)'; g.lineWidth=Math.max(1,u*.045); g.stroke();
+    g.strokeStyle='#E0B84A'; g.lineWidth=Math.max(1.2,u*.07); g.lineCap='round';                  // arco dorado sobre la entrada
+    g.beginPath(); g.moveTo(X-.60*u,Y-.05*u); g.lineTo(X-.60*u,Y-.52*u); g.quadraticCurveTo(X,Y-1.28*u,X+.60*u,Y-.52*u); g.lineTo(X+.60*u,Y-.05*u); g.stroke();
+    g.strokeStyle='rgba(255,236,160,.6)'; g.lineWidth=Math.max(.8,u*.025);
+    g.beginPath(); g.moveTo(X-.62*u,Y-.08*u); g.lineTo(X-.62*u,Y-.52*u); g.quadraticCurveTo(X,Y-1.31*u,X+.62*u,Y-.52*u); g.stroke();
+    /* cresta de oro encima y dos antorchas verdes */
+    g.fillStyle='#E0B84A'; g.strokeStyle='rgba(10,22,18,.9)'; g.lineWidth=Math.max(1,u*.03);
+    for(let i=-2;i<=2;i++){ const hx=X+i*.16*u, hy=Y-1.28*u+Math.abs(i)*.07*u, ha=(.30-Math.abs(i)*.05)*u;
+      g.beginPath(); g.moveTo(hx-.07*u,hy); g.lineTo(hx,hy-ha); g.lineTo(hx+.07*u,hy); g.closePath(); g.fill(); g.stroke(); }
+    for(const sx of [-1,1]){ const px=X+sx*.80*u; cap2(g,px,Y,px,Y-.62*u,u*.06,'#5B4128');
+      const fg=g.createRadialGradient(px,Y-.7*u,0,px,Y-.7*u,.26*u); fg.addColorStop(0,'rgba(200,242,122,.95)'); fg.addColorStop(1,'rgba(200,242,122,0)');
+      g.fillStyle=fg; g.beginPath(); g.arc(px,Y-.7*u,.26*u,0,7); g.fill(); }
+    /* ondas pegadas al pie */
+    g.strokeStyle='rgba(205,242,242,.55)'; g.lineWidth=Math.max(1,u*.035);
+    for(let i=0;i<3;i++){ g.beginPath(); g.ellipse(X,Y+.04*u,(1.5+i*.12)*u,(.12+i*.03)*u,0,.15,3.0); g.stroke(); }
+  },
+  b_rocas(g,o,som){
+    const u=o.s, X=o.x, Y=o.y, k=o.grande?1.35:1;
+    som(X+u*.25,Y+u*.08,u*1.1*k,u*.2);
+    const roca=(dx,dy,w,h,col)=>{ g.beginPath(); g.moveTo(X+(dx-w)*u,Y+dy*u); g.lineTo(X+(dx-w*.7)*u,Y+(dy-h*.8)*u); g.lineTo(X+(dx-w*.1)*u,Y+(dy-h)*u);
+      g.lineTo(X+(dx+w*.6)*u,Y+(dy-h*.75)*u); g.lineTo(X+(dx+w)*u,Y+dy*u); g.closePath(); g.fillStyle=col; g.fill();
+      g.fillStyle='rgba(255,255,255,.18)'; g.beginPath(); g.moveTo(X+(dx-w)*u,Y+dy*u); g.lineTo(X+(dx-w*.7)*u,Y+(dy-h*.8)*u); g.lineTo(X+(dx-w*.1)*u,Y+(dy-h)*u); g.lineTo(X+(dx-w*.15)*u,Y+dy*u); g.closePath(); g.fill();
+      g.strokeStyle='rgba(12,24,20,.85)'; g.lineWidth=Math.max(1,u*.035); g.stroke(); };
+    roca(-.30*k,0,.38*k,.80*k,'#6C7868'); roca(.28*k,.02,.34*k,.62*k,'#5C685A'); roca(.0,.08,.30*k,.40*k,'#78846F');
+    g.fillStyle='#4F8F3E'; g.beginPath(); g.ellipse(X-.3*k*u,Y-.78*k*u,.14*u,.06*u,-.1,0,7); g.fill();
+    g.strokeStyle='rgba(205,242,242,.5)'; g.lineWidth=Math.max(1,u*.03); g.beginPath(); g.ellipse(X,Y+.12*u,.75*k*u,.1*u,0,.2,2.9); g.stroke();
+  },
+  b_juncos(g,o,som){
+    const u=o.s, X=o.x, Y=o.y;
+    g.fillStyle='rgba(60,130,60,.85)';
+    for(let i=0;i<3;i++){ const px=X+(-.45+i*.42+AZAR(o.g*3,i)*.1)*u, py=Y+(.05+AZAR(o.g2*7,i)*.15)*u;   // nenúfares
+      g.beginPath(); g.ellipse(px,py,.17*u,.07*u,0,0,7); g.fill(); g.strokeStyle='rgba(20,60,30,.7)'; g.lineWidth=Math.max(.8,u*.02); g.stroke(); }
+    g.lineCap='round';
+    for(let i=0;i<8;i++){ const bx=X+(-.5+i*.14)*u, h=(.45+AZAR(o.g*9,i)*.45)*u, sw=(AZAR(o.g2*5,i)-.5)*.16*u;
+      g.strokeStyle=i%2?'#4E7F3A':'#6E9A3E'; g.lineWidth=Math.max(1,u*.04); g.beginPath(); g.moveTo(bx,Y); g.quadraticCurveTo(bx+sw*.4,Y-h*.6,bx+sw,Y-h); g.stroke();
+      if(i%3===0){ g.strokeStyle='#6B4A2A'; g.lineWidth=Math.max(1.2,u*.07); g.beginPath(); g.moveTo(bx+sw,Y-h); g.lineTo(bx+sw,Y-h-.14*u); g.stroke(); } }
+    g.strokeStyle='rgba(205,242,242,.5)'; g.lineWidth=Math.max(1,u*.03); g.beginPath(); g.ellipse(X,Y+.1*u,.6*u,.09*u,0,.2,2.9); g.stroke();
+  },
+  b_pasos(g,o,som){
+    const u=o.s, X=o.x, Y=o.y;
+    /* piedras de paso hacia la boca de la cueva y un estandarte dorado */
+    for(let i=0;i<4;i++){ const px=X+(i%2?.12:-.12)*u, py=Y-(.05+i*.30)*u+.10*u, w=(.28-i*.025)*u;
+      g.fillStyle='rgba(8,30,34,.35)'; g.beginPath(); g.ellipse(px+.03*u,py+.05*u,w,w*.42,0,0,7); g.fill();
+      g.fillStyle=i%2?'#7C8874':'#6A7664'; g.beginPath(); g.ellipse(px,py,w,w*.42,0,0,7); g.fill();
+      g.strokeStyle='rgba(12,24,20,.8)'; g.lineWidth=Math.max(1,u*.03); g.stroke(); }
+    const mx=X+.62*u; cap2(g,mx,Y+.05*u,mx,Y-1.0*u,u*.06,'#5B4128');
+    g.fillStyle='#2F8F6A'; g.beginPath(); g.moveTo(mx,Y-1.0*u); g.lineTo(mx+.46*u,Y-.9*u); g.lineTo(mx+.34*u,Y-.74*u); g.lineTo(mx+.46*u,Y-.58*u); g.lineTo(mx,Y-.62*u); g.closePath(); g.fill();
+    g.strokeStyle='rgba(10,22,18,.9)'; g.lineWidth=Math.max(1,u*.03); g.stroke();
+    g.fillStyle='#E0B84A'; g.beginPath(); g.arc(mx+.17*u,Y-.78*u,.07*u,0,7); g.fill();
+    g.strokeStyle='rgba(205,242,242,.5)'; g.lineWidth=Math.max(1,u*.03); g.beginPath(); g.ellipse(mx,Y+.08*u,.3*u,.06*u,0,.2,2.9); g.stroke();
   },
   b_menhir(g,o,som){
     const u=o.s, X=o.x, Y=o.y;
