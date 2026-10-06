@@ -47,7 +47,7 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;letter-sp
 .main-nav button .lbl{font-family:'Fraunces';font-size:19px;font-weight:600;color:var(--ink)}
 .main-nav button span:not(.ico):not(.lbl){font-family:'Barlow';font-size:12.5px;color:var(--dim);font-weight:400;line-height:1.4}
 .main-nav button:hover,.main-nav button:focus-visible{border-color:var(--bone);background:var(--panel2);outline:none;transform:translateY(-1px)}
-.main-nav li:first-child:not([style*="none"]) button,.main-nav li#btnResumeNet button,.main-nav li#btnContinue button{border-color:var(--bone);background:color-mix(in srgb,var(--bone) 10%,var(--panel))}
+.main-nav li:first-child:not([style*="none"]) button,.main-nav li#btnResumeNet button,.main-nav li#__x button{border-color:var(--bone);background:color-mix(in srgb,var(--bone) 10%,var(--panel))}
 .main-nav button:hover span{color:var(--bone)}
 .main-foot{position:absolute;left:clamp(24px,8vw,120px);bottom:26px;color:var(--dim);font-size:13px}
 @media(max-width:600px){.main-nav button{grid-template-columns:1fr;gap:2px;padding:10px 14px}}
@@ -595,16 +595,16 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
   <div class="acctpill" id="acctPill" style="display:none"></div>
   <div class="main-wrap">
     <div class="main-title">
-      <h1>La Batalla<span class="sub2">por</span> Terrania<span class="sub">Un planeta. Una sola guerra.</span></h1>
+      <h1>La Batalla<span class="sub2">por</span> Terrania</h1>
       <ul class="main-nav">
         <li id="btnResumeNet" style="display:none"><button data-net="1"><span class="ico">🌐</span><span class="lbl">Volver a la sala</span><span id="netBadge"></span></button></li>
-        <li id="btnContinue" style="display:none"><button data-load="1"><span class="ico">↺</span><span class="lbl">Continuar</span><span>Retomar una partida guardada</span></button></li>
-        <li><button data-go="players"><span class="ico">👤</span><span class="lbl">Jugadores</span><span id="profPill">Elegir jugador</span></button></li>
-        <li><button data-go="single"><span class="ico">⚔</span><span class="lbl">Un jugador</span><span>Escaramuza contra la IA en doce mapas</span></button></li>
+        <li><button data-go="single"><span class="ico">⚔</span><span class="lbl">Un jugador</span><span>Escaramuza contra la IA</span></button></li>
         <li><button data-go="multi"><span class="ico">🤝</span><span class="lbl">Multijugador</span><span>En el mismo dispositivo o en línea</span></button></li>
+        <li><button data-go="campana"><span class="ico">🔥</span><span class="lbl">Campaña</span><span>Cuatro campañas con historia propia</span></button></li>
+        <li id="btnContinue"><button data-load="1"><span class="ico">↺</span><span class="lbl">Cargar partida</span><span>Retomar una partida guardada</span></button></li>
         <li><button data-go="editor"><span class="ico">🗺</span><span class="lbl">Editor de mapas</span><span>Diseñá tu propio campo de batalla</span></button></li>
-        <li><button data-go="campana"><span class="ico">🔥</span><span class="lbl">Campaña</span><span>Cuatro batallas encadenadas por Terrania</span></button></li>
         <li><button data-go="story"><span class="ico">📖</span><span class="lbl">Historia</span><span>La crónica de Terrania, las facciones y las reglas</span></button></li>
+        <li><button data-go="players"><span class="ico">👤</span><span class="lbl">Jugadores</span><span id="profPill">Elegir jugador</span></button></li>
         <li><button data-go="settings"><span class="ico">⚙</span><span class="lbl">Configuración</span><span>Sonido, animaciones y tablero</span></button></li>
         <li id="liSalirJuego" class="hidden"><button type="button" id="btnSalirJuego" data-menu="salir"><span class="ico">⏻</span><span class="lbl">Salir del juego</span><span>Cerrar la aplicación</span></button></li>
       </ul>
@@ -833,7 +833,6 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
   <div class="pane-head"><button class="back" data-go="main">← Menú</button><h2 id="campTitulo">Campañas</h2><p class="hint" id="campHint">Elegí qué campaña jugar.</p></div>
 
   <div id="campSelector" class="fac-list" style="margin-bottom:20px">
-    <button data-camp-sel="tres" class="fac" style="--c:#D9C79B"><span class="sigil">❦</span><span><strong>La Guerra de Terrania</strong><span>Elegí una facción. Cuatro batallas por las cuatro regiones de Terrania.</span></span></button>
     <button data-camp-sel="conquista" class="fac" style="--c:#5AA7D8"><span class="sigil">⚙</span><span><strong>La Odisea de la Perseverancia</strong><span>Los Conquistadores, siempre. Desde el naufragio hasta la guerra por Terrania.</span></span></button>
     <button data-camp-sel="sucesion" class="fac" style="--c:#8CC23F"><span class="sigil">🌱</span><span><strong>La Sucesión</strong><span>Los Terrarios, siempre. Dos hermanos, un solo trono, nueve batallas.</span></span></button>
     <button data-camp-sel="ruptura" class="fac" style="--c:#C7455F"><span class="sigil">🥀</span><span><strong>La Ruptura</strong><span>La Alianza Oscura, siempre. Un Terrario con otro nombre, nueve batallas.</span></span></button>
@@ -4225,7 +4224,7 @@ function slotLabel(slot){ const g=readSave(slot); if(!g) return null; const M=MA
   return `${mision?'<span class="tiny" style="color:var(--bone)">'+mision+'</span>':''}<b>${M?M.name:g.map}</b> · turno ${g.turn} · ${g.sides.length} bandos${eqs.length<g.sides.length?' ('+eqs.map(t=>g.sides.filter((x,i)=>(x.team||i+1)===t).length).join(' vs ')+')':''}<br><span class="tiny">${d.toLocaleDateString()} ${d.toLocaleTimeString().slice(0,5)}${slot==='auto'?' · guardado automático':''}</span>`; }
 function openSlots(mode){
   const dlg=document.getElementById('saveDlg'), rows=document.getElementById('saveRows');
-  document.getElementById('saveTitle').textContent=mode==='save'?'Guardar partida':'Continuar partida';
+  document.getElementById('saveTitle').textContent=mode==='save'?'Guardar partida':'Cargar partida';
   rows.innerHTML='';
   SAVE_SLOTS.forEach(slot=>{
     if(mode==='save'&&slot==='auto') return;
@@ -4245,7 +4244,7 @@ function refreshNetResume(){
   const v=NET.guardada(); li.style.display=v?'':'none';
   if(v) document.getElementById('netBadge').textContent=`Sala ${v.code} · retomar donde quedó`;
 }
-function refreshContinue(){ const b=document.getElementById('btnContinue'); if(!b) return; const any=SAVE_SLOTS.some(sl=>readSave(sl)); b.style.display=any?'':'none'; }
+function refreshContinue(){ const b=document.getElementById('btnContinue'); if(!b) return; const any=SAVE_SLOTS.some(sl=>readSave(sl)); b.style.display=''; b.querySelector('span:last-child').textContent=any?'Retomar una partida guardada':'Todavía no hay partidas guardadas'; }
 
 /* ---------- 19d. PANTALLA SIEMPRE ENCENDIDA ---------- */
 const WAKE={lock:null,soportado:'wakeLock' in navigator};
@@ -4948,7 +4947,7 @@ avanzarCampana=function(win,humanWins){
     if(!camp||!camp.fac||!g) return;
     const ultimo=act.idx===CAMPANA.escenarios.length-1;
     const lineas=humanWins?escenaResolver(ultimo?(g.final||g.victoria):g.victoria,camp.fac):escenaResolver(g.derrota,camp.fac);
-    setTimeout(()=>{ CAMPSEL='tres'; escenaCutscene(lineas, ()=>show('campana')); },500);
+    setTimeout(()=>{ CAMPSEL=null; escenaCutscene(lineas, ()=>show('campana')); },500);
   }catch(e){}
 };
 
@@ -5185,6 +5184,7 @@ document.getElementById('campConqReiniciar').onclick=()=>{
 /* ═══ Selector de campaña (envuelve el menú "campana") ═══ */
 let CAMPSEL=null;
 function renderCampanaMenu(){
+  if(CAMPSEL==='tres') CAMPSEL=null;   // la campaña La Guerra de Terrania ya no existe
   const sel=document.getElementById('campSelector');
   const tres=document.getElementById('campWrapTres'), conq=document.getElementById('campWrapConq'), terra=document.getElementById('campWrapTerra'), alianza=document.getElementById('campWrapAlianza');
   const wraps=[tres,conq,terra,alianza];
@@ -11932,8 +11932,8 @@ try{
     load:SVG('<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v4.5H8"/><path d="M10.5 9.5v5l4-2.5z"/>'),
     net:SVG('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>')
   };
-  const CLASE={single:'nv-main',multi:'nv-p',campana:'nv-p',players:'nv-s',editor:'nv-s',story:'nv-s',settings:'nv-s',salir:'nv-p'};
-  const ORDEN={net:0,load:1,single:2,multi:3,campana:4,players:5,editor:6,story:7,settings:8,salir:9};
+  const CLASE={single:'nv-main',multi:'nv-p',campana:'nv-p',load:'nv-p',players:'nv-s',editor:'nv-s',story:'nv-s',settings:'nv-s',salir:'nv-p'};
+  const ORDEN={net:0,single:1,multi:2,campana:3,load:4,editor:5,story:6,players:7,settings:8,salir:9};
   function aplicar(){
     document.querySelectorAll('#main .main-nav li').forEach(li=>{
       const b=li.querySelector('button'); if(!b) return;
@@ -11942,7 +11942,7 @@ try{
       const ico=b.querySelector('.ico'); if(ico&&ICONOS[k]&&!ico.dataset.svg){ ico.innerHTML=ICONOS[k]; ico.dataset.svg=1; }
       li.classList.add(CLASE[k]||'nv-p'); li.style.order=ORDEN[k]??5;
       if(CLASE[k]==='nv-s'&&!b.title){ const d=b.querySelector('span:not(.ico):not(.lbl)'); if(d) b.title=d.textContent; }
-      if(k==='load'||k==='net') li.classList.add('nv-aviso');
+      if(k==='net') li.classList.add('nv-aviso');
     });
   }
   const st=document.createElement('style'); st.id='menuPrincipal34';
