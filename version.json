@@ -1,9 +1,9 @@
 {
- "version": "34.32",
+ "version": "34.33",
  "base": "34",
  "fecha": "06/10/2026",
  "notas": [
-  "Menú de campañas: ahora se puede bajar para ver las misiones siguientes en el celular"
+  "Reptiloides con figuras propias: Acechador lagartija que se arrastra, Coloso musculoso con dos hachas, Escupidor con cerbatana"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "06acf23d6a2ddf9114fda714bbf0563b7a60287a67929c9684aaf5af797f6751",
-   "n": 899216
+   "h": "2ecd9adbfbdb1ebcb3aa842b997c5ca6ef489740ddada094581a0e6d8aa171ea",
+   "n": 918246
   },
   {
    "p": "mapas/anillo.jpg",
