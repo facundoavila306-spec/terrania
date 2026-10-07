@@ -1,9 +1,9 @@
 {
- "version": "34.43",
+ "version": "34.44",
  "base": "34",
  "fecha": "07/10/2026",
  "notas": [
-  "Menu principal: Un jugador y Multijugador a lo ancho, el resto en dos columnas"
+  "Menu dentro de la partida: se puede ir al menu principal y volver a la partida en pausa"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "a7ccbcc21941d81d11ab5dc868fc272f23c4168a70708321e20862e8743c2659",
-   "n": 985154
+   "h": "d4909ab95cfd3305fdd33236664d691a9d6b42773bbbccbd51c08992784f7de2",
+   "n": 986763
   },
   {
    "p": "mapas/anillo.jpg",

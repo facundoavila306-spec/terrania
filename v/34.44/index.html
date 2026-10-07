@@ -640,6 +640,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
       <h1>La Batalla<span class="sub2">por</span> Terrania</h1>
       <ul class="main-nav">
         <li id="btnResumeNet" style="display:none"><button data-net="1"><span class="ico">🌐</span><span class="lbl">Volver a la sala</span><span id="netBadge"></span></button></li>
+        <li id="liVolverPartida" style="display:none"><button type="button" id="btnVolverPartida" data-menu="volver"><span class="ico">▶</span><span class="lbl">Volver a la partida</span><span id="volverSub"></span></button></li>
         <li><button data-go="single"><span class="ico">⚔</span><span class="lbl">Un jugador</span><span>Escaramuza contra la IA</span></button></li>
         <li><button data-go="multi"><span class="ico">🤝</span><span class="lbl">Multijugador</span><span>En el mismo dispositivo o en línea</span></button></li>
         <li><button data-go="campana"><span class="ico">🔥</span><span class="lbl">Campaña</span><span>Cuatro campañas con historia propia</span></button></li>
@@ -1035,7 +1036,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
     <button class="icobtn" id="btnRotar" title="Girar la pantalla">⟳</button>
     <button class="icobtn" id="btnZoomOut">−</button>
     <button class="icobtn" id="btnZoomIn">+</button>
-    <button class="icobtn" id="btnQuit">Salir</button>
+    <button class="icobtn" id="btnQuit">Menú</button>
     <button class="icobtn" id="btnMenu" title="Más opciones">⋮</button>
     <button id="endTurn">Terminar turno</button>
     <div id="toolMenu" class="hidden"></div>
@@ -3354,7 +3355,7 @@ document.getElementById('endTurn').onclick=()=>{
 };
 (function(){
   const menu=document.getElementById('toolMenu');
-  const items=[['btnSave','💾 Guardar partida'],['btnMusic','🎵 Música'],['btnSound','🔊 Sonido'],['btnSpeed','▶ Velocidad'],['btnZoomIn','＋ Acercar'],['btnZoomOut','− Alejar'],['btnHelp','? Atajos'],['btnQuit','⏏ Salir al menú']];
+  const items=[['btnSave','💾 Guardar partida'],['btnMusic','🎵 Música'],['btnSound','🔊 Sonido'],['btnSpeed','▶ Velocidad'],['btnZoomIn','＋ Acercar'],['btnZoomOut','− Alejar'],['btnHelp','? Atajos'],['btnQuit','☰ Menú principal']];
   function build(){ menu.innerHTML='';
     items.forEach(([id,txt])=>{ const src=document.getElementById(id); if(!src) return;
       const b=document.createElement('button');
@@ -3416,7 +3417,14 @@ document.getElementById('btnRotar').onclick=()=>{
 };
 document.getElementById('btnZoomIn').onclick=()=>{S.hex=Math.min(56,S.hex+4);resizeCanvas();draw();};
 document.getElementById('btnZoomOut').onclick=()=>{S.hex=Math.max(10,S.hex-4);resizeCanvas();draw();};
-document.getElementById('btnQuit').onclick=()=>{ if(NET.on) NET.dejarAbierta(); wakeApagar(); const eraCampana=!!(S.campana||S.conq||S.terra||S.alianza); if(S.conq) CAMPSEL='conquista'; else if(S.terra) CAMPSEL='sucesion'; else if(S.alianza) CAMPSEL='ruptura'; else if(S.campana) CAMPSEL='tres'; S.campana=null; S.conq=null; S.terra=null; S.alianza=null; if(EDIT._probando){ EDIT._probando=false; show('editor'); } else show(eraCampana?'campana':'main'); };
+/* Menú dentro de la partida: la partida queda en pausa y se vuelve con «Volver a la partida». En red, en el probador del editor y en el tutorial se sale de verdad. */
+let PAUSA=false;
+const puedePausar=()=>!NET.on&&!EDIT._probando&&!(typeof TUT!=='undefined'&&TUT.on)&&!S.over&&S.tiles.length>0;
+function salirDePartida(){ PAUSA=false; if(NET.on) NET.dejarAbierta(); wakeApagar(); const eraCampana=!!(S.campana||S.conq||S.terra||S.alianza); if(S.conq) CAMPSEL='conquista'; else if(S.terra) CAMPSEL='sucesion'; else if(S.alianza) CAMPSEL='ruptura'; else if(S.campana) CAMPSEL='tres'; S.campana=null; S.conq=null; S.terra=null; S.alianza=null; if(EDIT._probando){ EDIT._probando=false; show('editor'); } else show(eraCampana?'campana':'main'); }
+document.getElementById('btnQuit').onclick=()=>{ if(puedePausar()){ PAUSA=true; wakeApagar(); if(CFG.music) MUSIC.start('menu'); document.getElementById('toolMenu').classList.add('hidden'); show('main'); } else salirDePartida(); };
+function hayPartidaPausada(){ return PAUSA&&puedePausar(); }
+function refreshVolver(){ const li=document.getElementById('liVolverPartida'); if(!li) return; const ok=hayPartidaPausada(); li.style.display=ok?'':'none'; if(ok){ const sd=S.sides[S.cur]; document.getElementById('volverSub').textContent=`Turno ${S.turn} · ${PHASES[S.phase].name} · juega ${sd.colorName||'el bando '+(S.cur+1)}`; } }
+document.getElementById('btnVolverPartida').onclick=()=>{ SND.init(); if(!hayPartidaPausada()){ PAUSA=false; refreshVolver(); return; } PAUSA=false; show('game'); try{ resizeCanvas(); }catch(e){} if(CFG.music) MUSIC.start(TEMA_DE[PHASES[S.phase].id]); wakeEncender(); try{ refreshUI(); draw(); }catch(e){} };
 document.getElementById('btnAgain').onclick=()=>{document.getElementById('over').classList.add('hidden'); const eraCampana=!!(S.campana||S.conq||S.terra||S.alianza); if(S.conq) CAMPSEL='conquista'; else if(S.terra) CAMPSEL='sucesion'; else if(S.alianza) CAMPSEL='ruptura'; else if(S.campana) CAMPSEL='tres'; S.campana=null; S.conq=null; S.terra=null; S.alianza=null; show(eraCampana?'campana':'main');};
 document.getElementById('btnSound').onclick=()=>{CFG.sound=!CFG.sound; applyCfg(); saveCfg(); if(SND.on){SND.init();SND.play('select');}};
 const SPEEDS=[[1,'▶ ×1'],[2.2,'⏩ ×2'],[0,'⏭ Al instante']];
@@ -3478,6 +3486,7 @@ function aiRecruitPick(s,L){
 }
 let AI_RUN=0;
 async function aiTurn(s){
+  if(typeof PAUSA!=='undefined'&&PAUSA){ setTimeout(()=>aiTurn(s),300); return; }
   if(typeof TUT!=='undefined'&&TUT.on&&TUT.pasivo){ setTimeout(()=>{ S.busy=false; nextSide(); },450); return; }
   const my=++AI_RUN; S.aiBeat=performance.now();
   try{ await aiTurnInner(s,my); }
@@ -3861,7 +3870,8 @@ const SCREENS=['main','players','solo','single','multi','lobby','netcfg','story'
 function show(id){
   setTimeout(()=>{ try{ aplicarOrientacionSegunPantalla(); }catch(e){} },60);
   SCREENS.forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==id));
-  if(id==='main'){ drawBg(); refreshContinue(); refreshNetResume(); refreshAcctPill(); }
+  if(id==='game') PAUSA=false;
+  if(id==='main'){ drawBg(); refreshContinue(); refreshNetResume(); refreshAcctPill(); try{ refreshVolver(); }catch(e){} }
   if(id==='single') buildSetup();
   if(id==='players'){ buildProfiles(); }
   if(id==='multi'){ netEstado(); renderMisSalas(); refreshSeedSlots(); }
@@ -4628,7 +4638,7 @@ function tutTerminar(completo,volver){
   const k=MAPS.findIndex(m=>m.tut); if(k>=0) MAPS.splice(k,1);
   if(TUT.bk){ Object.assign(SETUP,TUT.bk); TUT.bk=null; }
   try{ const n=document.getElementById('tutNuevo'); if(n&&completo) n.remove(); }catch(e){}
-  if(volver||!completo){ try{ if(!document.getElementById('game').classList.contains('hidden')) document.getElementById('btnQuit').click(); }catch(e){} }
+  if(volver||!completo){ try{ if(!document.getElementById('game').classList.contains('hidden')) salirDePartida(); }catch(e){} }
   try{ toast(completo?'¡Capítulo completo!':'Academia cerrada. La encontrás en el menú cuando quieras.'); }catch(e){}
   if(volver){ setTimeout(()=>{ show('solo'); tutAcademia(); },250); }
 }
@@ -13180,8 +13190,8 @@ try{
     load:SVG('<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v4.5H8"/><path d="M10.5 9.5v5l4-2.5z"/>'),
     net:SVG('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>')
   };
-  const CLASE={single:'nv-main',multi:'nv-p',campana:'nv-s',load:'nv-s',players:'nv-s',editor:'nv-s',story:'nv-s',settings:'nv-s',salir:'nv-p'};
-  const ORDEN={net:0,single:1,multi:2,campana:3,load:4,editor:5,story:6,players:7,settings:8,salir:9};
+  const CLASE={volver:'nv-main',single:'nv-main',multi:'nv-p',campana:'nv-s',load:'nv-s',players:'nv-s',editor:'nv-s',story:'nv-s',settings:'nv-s',salir:'nv-p'};
+  const ORDEN={volver:-1,net:0,single:1,multi:2,campana:3,load:4,editor:5,story:6,players:7,settings:8,salir:9};
   function aplicar(){
     document.querySelectorAll('#main .main-nav li').forEach(li=>{
       const b=li.querySelector('button'); if(!b) return;
