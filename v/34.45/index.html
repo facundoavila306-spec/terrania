@@ -1852,10 +1852,10 @@ async function kill(dead,killer){
   log(`☠ <b>${unitName(dead)}</b> (${def(dead).name}) cae.`);
   floatText(dead,'☠',DMGCOL.filo,1.5);
   gainXP(killer,dead.lvl*8);
-  /* Festín (Alianza Oscura): al matar, el Oscuro recupera la mitad de la vida que le falta (una vez por turno) */
+  /* Festín (Alianza Oscura): al matar, el Oscuro recupera un tercio de la vida que le falta (una vez por turno) */
   if(killer&&killer.alive&&killer.side!==dead.side&&fac(killer).id==='oscura'){
     const marca=S.turn+':'+S.cur; const falta=killer.maxhp-killer.hp;
-    if(falta>0&&killer._festin!==marca){ killer._festin=marca; const c=Math.max(1,Math.ceil(falta/2)); killer.hp=Math.min(killer.maxhp,killer.hp+c);
+    if(falta>0&&killer._festin!==marca){ killer._festin=marca; const c=Math.max(1,Math.ceil(falta/3)); killer.hp=Math.min(killer.maxhp,killer.hp+c);
       floatText(killer,'+'+c+' Festín','#C7455F',0.9); log(`🍖 <b>${unitName(killer)}</b> hace un festín y recupera ${c} de vida.`); }
   }
   if(FX.speed>0){ await wait(420/FX.speed); }
@@ -3438,7 +3438,7 @@ const AI_LEVELS={
   recluta:   {name:'Recluta',    goldMul:0.75, income:-1, smart:false, look:false, sloppy:35, desc:'Se distrae: un tercio de las veces elige mal el ataque. Arranca con menos oro. Para aprender el juego.'},
   veterano:  {name:'Veterano',   goldMul:1.0,  income:0,  smart:true,  look:false, sloppy:0,  desc:'La IA a pleno: elige cada ataque por daño esperado y respuesta, toma y guarda aldeas, protege a su líder.'},
   comandante:{name:'Comandante', goldMul:1.4,  income:4,  smart:true,  look:true,  sloppy:0,  desc:'La misma cabeza con más recursos: arranca con 40% más de oro y cobra 4 más por turno. Cuida a su líder: lo deja en el torreón salvo peligro o jugada clave. Te obliga a jugar mejor que ella.'},
-  maestro:   {name:'Maestro',    goldMul:1.15, income:2,  smart:true,  look:true,  sloppy:0,  deep:true, desc:'Además recluta más soldados, usa el oro hasta el final y sale a robar aldeas con sus exploradores. Antes de mover, calcula de verdad qué le podés hacer vos el turno que viene a cada unidad rival (no una estimación: simula el combate real) y elige la posición donde pierde menos. Casi no depende del oro extra: gana por cabeza.'},
+  maestro:   {name:'Maestro',    goldMul:1.5, income:5,  smart:true,  look:true,  sloppy:0,  deep:true, desc:'Además recluta más soldados, usa el oro hasta el final y sale a robar aldeas con sus exploradores. Antes de mover, calcula de verdad qué le podés hacer vos el turno que viene a cada unidad rival (no una estimación: simula el combate real) y elige la posición donde pierde menos. Arranca con 50% más de oro y cobra 5 más por turno: es la IA más dura, y le gana a la Comandante.'},
 };
 const aiLevel=s=>AI_LEVELS[s.ai]||AI_LEVELS.veterano;
 const aiF=(L,k)=>L.smart&&!!(L.flags&&L.flags[k]);
@@ -4573,7 +4573,7 @@ const TUT_CAPS=[
     secreto:'Son baratos pero frágiles, y la Marchitez te dejó abierto al <b>daño arcano</b> (−30%). Compensás con cantidad: dos Naras por cada soldado del rival.'},
    {t:'Festín',txt:'Tu <b>Nara herida</b> (marcada) tiene 11 de vida. Mandala a <b>matar al Brotal debilitado</b> que tiene cerca.',hexFn:()=>TUT.objetivo&&TUT.objetivo.alive?{c:TUT.objetivo.c,r:TUT.objetivo.r}:(TUT.herida&&TUT.herida.alive?{c:TUT.herida.c,r:TUT.herida.r}:null),
     cond:()=>TUT.ev.some(e=>e.k==='kill'&&e.killer&&e.killer.side===0&&e.dead.type==='brotal'),
-    secretoFn:()=>`<b>Festín</b>: al matar, recuperás la <b>mitad de la vida que te falta</b> (una vez por turno).${TUT.herida?` Tu Nara quedó en <b>${TUT.herida.hp}</b> de vida.`:''} Las bajas ajenas te mantienen en pie.`},
+    secretoFn:()=>`<b>Festín</b>: al matar, recuperás un <b>tercio de la vida que te falta</b> (una vez por turno).${TUT.herida?` Tu Nara quedó en <b>${TUT.herida.hp}</b> de vida.`:''} Las bajas ajenas te mantienen en pie.`},
    {t:'Esperá a la noche',txt:'Tu hora es la <b>noche</b> (+25% de daño; de mañana rendís −25%). Terminá turnos hasta que arriba diga <b>Noche</b> 🌙.',pulso:'#endTurn',
     cond:()=>PHASES[S.phase]&&PHASES[S.phase].id==='noche'&&S.cur===0&&!S.busy,
     secreto:'De noche pegás <b>+25%</b>. Planificá la ofensiva para que el choque caiga en la oscuridad y retirate cuando amanezca.'},
