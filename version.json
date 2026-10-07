@@ -1,9 +1,9 @@
 {
- "version": "34.45",
+ "version": "34.46",
  "base": "34",
  "fecha": "07/10/2026",
  "notas": [
-  "Festin cura un tercio de lo que falta (antes la mitad) y la IA Maestro pasa a ser la mas dura: 50% mas de oro y +5 por turno"
+  "IA propia de los Reptiloides: aprovecha la hora mala del rival y se refugia en el agua cuando esta en su hora fuerte"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "0dd85ee8663b8b42d74678b431f629658e24d6ec7754fc98828962d7c85a5b14",
-   "n": 986817
+   "h": "9c9fdb602fbc9d1d7ddd474bbb25b95c9be02d931539f1919c9cb3abdf1a8348",
+   "n": 988199
   },
   {
    "p": "mapas/anillo.jpg",

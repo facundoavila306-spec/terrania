@@ -3569,6 +3569,13 @@ function aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgo){        // (oc,or) = dond
   return false;
 }
 const esReptil=u=>fac(u).id==='reptiloides';
+/* IA propia de los Reptiloides: no tienen bonus propios, así que juegan a aprovechar la debilidad ajena.
+   Postura según la jornada de los rivales cercanos: si están en su hora fuerte se cuidan (se apoyan en el agua, donde nadie los sigue);
+   si están en su hora mala salen a pegarles. */
+function repPostura(u,foes){ let f=0,d=0; for(const x of foes){ if(x.leader||hexDist(x.c,x.r,u.c,u.r)>7) continue; const m=phaseMul(x); if(m>1.01) f++; else if(m<0.99) d++; } return f>d?'cauto':d>f?'agresivo':'normal'; }
+const repAgua=t=>t.t==='agua'||t.t==='vado';
+function repAtaqueExtra(u,e,c,r,kill){ let b=0; const te=phaseMul(e); if(te<0.99) b+=10; else if(te>1.01&&!kill) b-=14;      // pega cuando el rival está en su hora mala; no se mete en su hora fuerte
+  if(!kill&&repAgua(tileAt(c,r))&&!repAgua(tileAt(e.c,e.r))) b+=6; return b; }          // y de paso pega desde el agua, donde después no lo alcanzan a pie
 function aiBestAttack(u,s,L){
   const reach=computeReach(u), tod=phaseMul(u); let best=null;
   const esRep=esReptil(u)&&L.smart;
@@ -3591,6 +3598,7 @@ function aiBestAttack(u,s,L){
         if(aiF(L,'retreat')&&u.hp<u.maxhp*0.3&&!kill&&P.expD>u.hp*0.5) sc-=20;
         if((L.look||esRep)&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
         if(esRep&&isRanged(u)){ const tt=tileAt(c,r); if(tt.t==='agua'||tt.t==='vado') sc+=12; }
+        if(esRep&&!u.leader) sc+=repAtaqueExtra(u,e,c,r,kill);
         if(L.smart&&u.leader&&!aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgoEn(u,c,r,L,mapas))) continue;
         if(!best||sc>best.sc) best={sc,c,r,e,a,u,mp:reach.best.get(k),reach};
       }
@@ -3663,6 +3671,7 @@ async function aiUnit(u,s,L){
         if(aiF(L,'retreat')&&u.hp<u.maxhp*0.3&&!kill&&P.expD>u.hp*0.5) sc-=20;
         if((L.look||esRep)&&!kill) sc-=riesgoEn(u,c,r,L,mapas)*0.25;
         if(esRep&&isRanged(u)){ const tt=tileAt(c,r); if(tt.t==='agua'||tt.t==='vado') sc+=12; }       // Nado: dispara desde donde no lo alcanzan a pie
+        if(esRep&&!u.leader) sc+=repAtaqueExtra(u,e,c,r,kill);
         if(L.deep&&!u.leader){ const tv=tileAt(c,r); if(tv.t==='aldea'&&(tv.owner<0||!allied(tv.owner,u.side))) sc+=10; }   // atacar y de paso tomar la aldea
         if(L.smart&&u.leader&&!aiLiderPuedeAtacar(u,s,c,r,oc,or,kill,riesgoEn(u,c,r,L,mapas))) continue;
         if(sc>0&&!e.leader) options.push({sc,c,r,e,a});
@@ -3682,14 +3691,15 @@ async function aiUnit(u,s,L){
     u.acted=true; return;
   }
   /* retirada de heridos */
-  if((aiF(L,'retreat')||esRep)&&!iaModoCampana().agresiva&&u.hp<u.maxhp*(esRep?0.4:0.3)&&foes.length){
+  const repHuir=esRep&&foes.length&&repPostura(u,foes)==='cauto'&&riesgoEn(u,u.c,u.r,L,mapas)>u.hp*0.5;       // en la hora fuerte del rival, si lo van a masacrar, se mete al agua
+  if(((aiF(L,'retreat')||esRep)&&!iaModoCampana().agresiva&&u.hp<u.maxhp*(esRep?0.4:0.3)&&foes.length)||repHuir){
     let bm=null;
     for(const k of reach.best.keys()){ const [c,r]=k.split(',').map(Number); if(unitAt(c,r)&&!(c===u.c&&r===u.r)) continue;
       const t=tileAt(c,r); let sc=0; const nearest=Math.min(...foes.map(f=>hexDist(f.c,f.r,c,r)));
       sc+=nearest*5; if(t.t==='aldea') sc+=30; if(has(u,'regenera')&&t.t==='bosque') sc+=22; if(has(u,'regenera_pantano')&&t.t==='pantano') sc+=22;
       const oc=u.c,or=u.r;u.c=c;u.r=r; sc+=defenseOf(u)*0.3; u.c=oc;u.r=or;
-      if(esRep&&(t.t==='agua'||t.t==='vado')) sc+=25;                                  // Nado: se mete al agua, donde nadie lo sigue
-      if(L.look||esRep) sc-=riesgoEn(u,c,r,L,mapas)*0.3;
+      if(esRep&&(t.t==='agua'||t.t==='vado')) sc+=40;                                  // Nado: se mete al agua, donde nadie lo sigue
+      if(L.look||esRep) sc-=riesgoEn(u,c,r,L,mapas)*(esRep?0.5:0.3);
       if(!bm||sc>bm.sc) bm={sc,c,r}; }
     if(bm&&(bm.c!==u.c||bm.r!==u.r)) await moveUnit(u,bm.c,bm.r,reach.best.get(key(bm.c,bm.r)),reach);
     u.acted=true; return;
@@ -3708,7 +3718,7 @@ async function aiUnit(u,s,L){
   if(IM2.defender&&miKeep) goals.push([miKeep.c,miKeep.r,1.2]);
   const threatened=t=>foes.some(f=>hexDist(f.c,f.r,t.c,t.r)<=4);
   const leaderInDanger=aiF(L,'leader')&&myLeader&&foes.some(f=>hexDist(f.c,f.r,myLeader.c,myLeader.r)<=4);
-  let bm=null;
+  let bm=null; const poRep=esRep?repPostura(u,foes):'normal';
   for(const k of reach.best.keys()){
     const [c,r]=k.split(',').map(Number);
     if(unitAt(c,r)&&!(c===u.c&&r===u.r)) continue;
@@ -3728,8 +3738,8 @@ async function aiUnit(u,s,L){
     if(aiF(L,'cohesion')){ const ally=S.units.some(x=>x.alive&&x!==u&&allied(x.side,u.side)&&!x.leader&&hexDist(x.c,x.r,c,r)<=2); if(!ally) sc-=12; }
     const oc=u.c,or=u.r;u.c=c;u.r=r; sc+=defenseOf(u)*(aiF(L,'terrain')?0.25:0.12); u.c=oc;u.r=or;
     if(aiF(L,'jornada')&&tod<1){ const nearest=Math.min(...foes.map(f=>hexDist(f.c,f.r,c,r))); if(nearest<=2) sc-=5; }    // en mala jornada no te arrimás tanto
-    if(esRep){ if(t.t==='agua'||t.t==='vado') sc+=isRanged(u)?8:3; }                // Nado: el agua es su camino
-    if(L.look||esRep) sc-=riesgoEn(u,c,r,L,mapas)*0.2;
+    if(esRep){ if(t.t==='agua'||t.t==='vado') sc+=(isRanged(u)?8:3)+(poRep==='cauto'?10:0); }                // Nado: el agua es su camino (y su refugio)
+    if(L.look||esRep) sc-=riesgoEn(u,c,r,L,mapas)*(poRep==='cauto'?0.55:poRep==='agresivo'?0.1:0.2);
     if(!bm||sc>bm.sc) bm={sc,c,r};
   }
   if(bm&&(bm.c!==u.c||bm.r!==u.r)) await moveUnit(u,bm.c,bm.r,reach.best.get(key(bm.c,bm.r)),reach);
