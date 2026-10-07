@@ -566,6 +566,11 @@ button,input,select,textarea{border-radius:7px}
 #tutBox button.tutGo{background:var(--bone);color:#16130c;border-color:var(--bone);font-weight:700}
 @keyframes tutPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,230,196,.0)}50%{box-shadow:0 0 0 6px rgba(242,230,196,.55)}}
 .tutPulse{animation:tutPulse 1.1s infinite}
+#solo .soloBtn{display:grid;grid-template-columns:48px 1fr;column-gap:16px;align-items:center;text-align:left;width:100%;padding:16px 18px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--ink);cursor:pointer}
+#solo .soloBtn:hover{background:rgba(255,255,255,.09);border-color:var(--bone)}
+#solo .soloBtn .ico{grid-row:1/3;font-size:28px;text-align:center}
+#solo .soloBtn .lbl{font-family:Georgia,serif;font-size:21px;color:var(--bone)}
+#solo .soloBtn span:last-child{font-size:13.5px;opacity:.8}
 </style>
 </head>
 <body>
@@ -650,14 +655,22 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
   </div>
 </section>
 
+<!-- ══════════════ UN JUGADOR: ELEGÍ QUÉ JUGAR ══════════════ -->
+<section id="solo" class="screen hidden">
+<div class="pane" style="max-width:640px">
+  <div class="pane-head"><button class="back" data-go="main">← Menú</button><h2>Un jugador</h2></div>
+  <ul class="soloList" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px">
+    <li><button type="button" id="btnEscaramuza" class="soloBtn"><span class="ico">⚔</span><span class="lbl">Escaramuza</span><span>Elegí mapa, facciones y dificultad contra la IA</span></button></li>
+    <li><button type="button" id="btnTutorial" class="soloBtn"><span class="ico">🎓</span><span class="lbl">Academia <span id="tutNuevo" style="font-size:11px;color:var(--bone)">· nuevo</span></span><span>Aprendé jugando: lo básico y los secretos de cada facción</span></button></li>
+    <li><button type="button" id="btnDiario" class="soloBtn"><span class="ico">📅</span><span class="lbl">Desafío del día</span><span id="diarioSub">Mismo mapa y reglas para todos, con ranking</span></button></li>
+  </ul>
+</div>
+</section>
+
 <!-- ══════════════ UN JUGADOR / PARTIDA ══════════════ -->
 <section id="single" class="screen hidden">
 <div class="pane">
   <div class="pane-head"><button class="back" data-go="main">← Menú</button><h2 id="singleTitle">Un jugador</h2><p class="hint" id="singleHint"></p></div>
-  <div id="atajosSolo" style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px">
-    <button type="button" id="btnTutorial" class="ghost" style="flex:1 1 220px;margin:0;text-align:left"><b>🎓 Academia</b> <span id="tutNuevo" style="font-size:11px;color:var(--bone)">· nuevo</span><br><span class="tiny">Aprendé jugando: lo básico y los secretos de cada facción</span></button>
-    <button type="button" id="btnDiario" class="ghost" style="flex:1 1 220px;margin:0;text-align:left"><b>📅 Desafío del día</b><br><span class="tiny" id="diarioSub">Mismo mapa y reglas para todos, con ranking</span></button>
-  </div>
   <div class="setup">
     <div>
       <div class="field"><h3>Campo de batalla</h3><div id="mapPreview"></div><div class="maps" id="mapList"></div></div>
@@ -3777,7 +3790,7 @@ function ensureSlots(){
 }
 function buildSetup(){
   const single=SETUP.mode==='single';
-  document.getElementById('atajosSolo').style.display=single?'flex':'none';
+  document.querySelector('#single .back').dataset.go=single?'solo':'main';
   document.getElementById('singleTitle').textContent=single?'Un jugador':'Multijugador en este dispositivo';
   document.getElementById('singleHint').textContent=single?'Elegí el mapa; después, para cada bando, su facción y si lo jugás vos o la IA. Las facciones pueden repetirse.':'Cada bando puede ser una persona o la IA; al terminar un turno se pasa el dispositivo. Las facciones pueden repetirse.';
   ensureSlots();
@@ -3844,7 +3857,7 @@ function buildSetup(){
   st.disabled=humans===0||eq.length<2;
   st.textContent=eq.length<2?'Todos los bandos están en el mismo equipo':(humans===0?'Elegí al menos un bando humano':'Desplegar ejército');
 }
-const SCREENS=['main','players','single','multi','lobby','netcfg','story','settings','game','editor','campana','cutscene'];
+const SCREENS=['main','players','solo','single','multi','lobby','netcfg','story','settings','game','editor','campana','cutscene'];
 function show(id){
   setTimeout(()=>{ try{ aplicarOrientacionSegunPantalla(); }catch(e){} },60);
   SCREENS.forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==id));
@@ -3862,7 +3875,8 @@ function show(id){
   const el=document.getElementById(id); if(el.scrollTop) el.scrollTop=0;
 }
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ SND.init(); if(CFG.music) MUSIC.start('menu'); if(b.dataset.go==='story'&&b.dataset.tab) openLore(b.dataset.tab); show(b.dataset.go); });
-document.querySelector('[data-go="single"]').onclick=()=>{ SND.init(); if(SETUP.mode!=='single'){SETUP.mode='single'; SETUP.slots.forEach((x,i)=>x.human=i===0);} show('single'); };
+document.querySelector('[data-go="single"]').onclick=()=>{ SND.init(); if(CFG.music) MUSIC.start('menu'); show('solo'); };
+document.getElementById('btnEscaramuza').onclick=()=>{ SND.init(); if(SETUP.mode!=='single'){SETUP.mode='single'; SETUP.slots.forEach((x,i)=>x.human=i===0);} show('single'); };
 document.getElementById('btnHotseat').onclick=()=>{ SETUP.mode='hotseat'; SETUP.slots.forEach(x=>x.human=true); show('single'); };
 document.getElementById('btnStart').onclick=()=>{
   SND.init();
@@ -4616,7 +4630,7 @@ function tutTerminar(completo,volver){
   try{ const n=document.getElementById('tutNuevo'); if(n&&completo) n.remove(); }catch(e){}
   if(volver||!completo){ try{ if(!document.getElementById('game').classList.contains('hidden')) document.getElementById('btnQuit').click(); }catch(e){} }
   try{ toast(completo?'¡Capítulo completo!':'Academia cerrada. La encontrás en el menú cuando quieras.'); }catch(e){}
-  if(volver){ setTimeout(tutAcademia,250); }
+  if(volver){ setTimeout(()=>{ show('solo'); tutAcademia(); },250); }
 }
 function drawTut(now,size){
   if(!TUT.on||!TUT.hexFn) return; const h=TUT.hexFn(); if(!h) return;
@@ -13010,7 +13024,7 @@ VIVO.chequearHora=function(){
    El horneado comparte el módulo VIVO_MAPA con la partida: después de cada uno se marca
    LAYER.dirty para que la partida vuelva a hornear lo suyo. */
 const TEMA=(function(){
-  const PANTALLAS=['main','players','single','multi','lobby','netcfg','story','settings','campana'];
+  const PANTALLAS=['main','players','solo','single','multi','lobby','netcfg','story','settings','campana'];
   const VER='t1';
   const mem=new Map();
   let ocupado=false;
