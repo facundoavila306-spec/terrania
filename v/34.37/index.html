@@ -182,8 +182,9 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;letter-sp
 .ghost:hover{color:var(--ink);border-color:var(--bone)}
 
 /* --- multijugador --- */
-.profrow{display:grid;grid-template-columns:1fr auto;gap:6px;background:var(--panel);border:1px solid var(--line);border-left:4px solid transparent}
+.profrow{display:grid;grid-template-columns:1fr auto auto;gap:6px;background:var(--panel);border:1px solid var(--line);border-left:4px solid transparent}
 .profrow.on{border-left-color:var(--bone);background:var(--panel2)}
+.profrow .pstat{background:transparent;border:0;padding:0 8px;font-size:20px;cursor:pointer}
 .profrow .pmain{background:transparent;border:0;text-align:left;padding:12px 14px;color:var(--ink)}
 .profrow .pmain b{display:block;font-size:17px;font-family:'Fraunces';font-weight:600}
 .profrow .pmain span{display:block;margin-top:2px}
@@ -633,6 +634,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
       </div>
       <div class="field"><h3>Niebla de guerra</h3>
         <div class="toggle" id="fogSel" style="width:100%"><button data-f="1" style="flex:1">Con niebla</button><button data-f="0" style="flex:1">Todo visible</button></div>
+        <div class="toggle" id="climaSel" style="width:100%;margin-top:8px"><button data-f="1" style="flex:1">Con clima</button><button data-f="0" style="flex:1">Siempre despejado</button></div>
         <p class="tiny" style="margin:8px 0 0;line-height:1.5">Con niebla solo ves lo que alcanzan tus unidades y tus aldeas. Los exploradores valen oro, y una unidad que descubre enemigos en su camino se frena.</p>
       </div>
       <div class="field"><h3>Dificultad de la IA</h3>
@@ -1352,13 +1354,13 @@ lider_terr3:{fac:'terrarios',name:'Sylvaan en Marcha',role:'Líder · nivel 3',c
 
 /* ═══ REPTILOIDES · su único rasgo propio es nadar (agua con coste 1); resistencias parejas, sin vulnerabilidades ═══ */
 escamoso:{fac:'reptiloides',name:'Escamoso',role:'Infantería básica',cost:14,hp:42,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:6,s:3,t:'filo',r:'melee'}], res:{filo:5,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escamoso_curtido'],
+  atk:[{n:'Tridente',d:6,s:3,t:'filo',r:'melee'}], res:{filo:5,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escamoso_curtido'],
   note:'La línea de los Reptiloides. <b>Nada</b>: el agua le cuesta 1 de movimiento, como el llano. Sin ventajas ni debilidades en ningún otro terreno.'},
 escamoso_curtido:{fac:'reptiloides',name:'Escamoso Curtido',role:'Nivel 2 · desde Escamoso',cost:0,lvl:2,hp:50,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:8,s:3,t:'filo',r:'melee'}], res:{filo:10,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['guerrero_salamandra'],
+  atk:[{n:'Tridente',d:8,s:3,t:'filo',r:'melee'}], res:{filo:10,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['guerrero_salamandra'],
   note:'Escamas más duras, garras más largas. Sigue nadando donde otros se detienen.'},
 guerrero_salamandra:{fac:'reptiloides',name:'Guerrero Salamandra',role:'Nivel 3 · desde Escamoso Curtido',cost:0,lvl:3,hp:60,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:10,s:3,t:'filo',r:'melee'}], res:{filo:15,perf:15,imp:5,fuego:0,frio:0,arc:0}, ab:[],
+  atk:[{n:'Tridente',d:10,s:3,t:'filo',r:'melee'}], res:{filo:15,perf:15,imp:5,fuego:0,frio:0,arc:0}, ab:[],
   note:'El veterano del cauce. Tres zarpazos de diez, y sale del agua cuando él quiere.'},
 escupidor:{fac:'reptiloides',name:'Escupidor',role:'Distancia',cost:22,hp:36,mp:5,glyph:'🐍',
   atk:[{n:'Colmillo',d:4,s:1,t:'filo',r:'melee'},{n:'Dardo de cerbatana',d:11,s:2,t:'perf',r:'rango'}], res:{filo:0,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escupidor_acido'],
@@ -1503,10 +1505,26 @@ function hexDist(c1,r1,c2,r2){ const a=toCube(c1,r1),b=toCube(c2,r2); return Mat
 const tileAt=(c,r)=>inGrid(c,r)?S.tiles[r*S.w+c]:null;
 const unitAt=(c,r)=>S.units.find(u=>u.alive&&u.c===c&&u.r===r)||null;
 /* --- niebla: casillas visibles para el bando que juega --- */
+/* ---------- CLIMA ----------
+   Cambia cada tres turnos y sale de la semilla de la partida, así todos los jugadores (y la partida guardada)
+   ven el mismo cielo sin mandar nada por la red. Los efectos entran en el desglose de daño y de acierto. */
+const CLIMAS={
+  despejado:{id:'despejado',name:'Despejado',icon:'',fuego:1,rango:0,vis:0,txt:'El cielo se despejó.'},
+  lluvia:   {id:'lluvia',   name:'Lluvia',   icon:'🌧',fuego:0.75,rango:0,vis:0,txt:'El fuego pierde un 25% de daño.'},
+  niebla:   {id:'niebla',   name:'Niebla',   icon:'🌫',fuego:1,rango:-10,vis:2,txt:'Se ve menos lejos y los ataques a distancia aciertan un 10% menos.'},
+  tormenta: {id:'tormenta', name:'Tormenta', icon:'⛈',fuego:0.6,rango:-10,vis:1,txt:'El fuego pierde un 40%, se ve menos lejos y la distancia acierta un 10% menos.'}};
+function climaIniciar(on,semilla){ S.climaOn=!!on; S.climaSeed=(semilla!=null)?semilla:Math.floor(Math.random()*1e9); }
+function climaHash(a,b){ let h=(a^0x9E3779B9)>>>0; h=Math.imul(h^(b+0x7F4A7C15),2246822519)>>>0; h=Math.imul(h^(h>>>13),3266489917)>>>0; return (h^(h>>>16))>>>0; }
+function climaDe(turno){
+  if(!S.climaOn||S.climaSeed==null||S.esCampana) return CLIMAS.despejado;
+  const b=Math.floor(((turno||S.turn)-1)/3); if(b<1) return CLIMAS.despejado;     // los primeros turnos, cielo limpio
+  const r=climaHash(S.climaSeed,b)%100;
+  return r<48?CLIMAS.despejado:r<70?CLIMAS.lluvia:r<86?CLIMAS.niebla:CLIMAS.tormenta;
+}
 function computeVis(side){
   const vis=new Set();
   const team=teamOf(side);
-  for(const u of S.units){ if(!u.alive||teamOf(u.side)!==team) continue; const rng=(def(u).mp||5)+1;
+  for(const u of S.units){ if(!u.alive||teamOf(u.side)!==team) continue; const rng=Math.max(2,(def(u).mp||5)+1-climaDe().vis);
     for(let c=Math.max(0,u.c-rng-1);c<=Math.min(S.w-1,u.c+rng+1);c++) for(let r=Math.max(0,u.r-rng-1);r<=Math.min(S.h-1,u.r+rng+1);r++) if(hexDist(u.c,u.r,c,r)<=rng) vis.add(key(c,r)); }
   for(const t of S.tiles){ if(t.t==='aldea'&&t.owner>=0&&teamOf(t.owner)===team){ vis.add(key(t.c,t.r)); for(const [c,r] of neighbors(t.c,t.r)) if(inB(c,r)) vis.add(key(c,r)); } }
   for(const sd of teamSides(team)){ const k=sd.keep; if(!k) continue; for(let c=k.c-2;c<=k.c+2;c++) for(let r=k.r-2;r<=k.r+2;r++) if(inB(c,r)&&hexDist(k.c,k.r,c,r)<=2) vis.add(key(c,r)); }
@@ -1709,6 +1727,7 @@ function dmgBreakdown(att,dfn,a,charge){
       if(has(o,'liderazgo')||(has(o,'liderazgo_manada')&&att.type.startsWith('nara'))) lider=true;}
     if(lider){ d*=1.25; parts.push(['Liderazgo','+25%']); } }
   const m=phaseMul(att); if(m!==1){ d*=m; parts.push([PHASES[S.phase].name, m>1?'+25%':'−25%']); }
+  { const cl=climaDe(); if(a.t==='fuego'&&cl.fuego<1){ d*=cl.fuego; parts.push([cl.name,'−'+Math.round((1-cl.fuego)*100)+'%']); } }
   const res=(def(dfn).res[a.t]??0)+(hasTrait(dfn,'tenaz')?10:0); if(res){ d*=(100-res)/100; parts.push(['Resistencia a '+DMG[a.t], (res>0?'−':'+')+Math.abs(res)+'%']); }
   if(fac(att).id==='terrarios'&&tileAt(att.c,att.r).t==='bosque'){ d*=1.2; parts.push(['Raíces del bosque','+20%']); }
   if(fac(att).id==='conquistadores'&&tileAt(att.c,att.r).t==='colina'){ d*=1.2; parts.push(['Dueños de las colinas','+20%']); }
@@ -1728,6 +1747,7 @@ function hitBreakdown(att,dfn,a){
   { const ta=tileAt(att.c,att.r).t, td=t.t;
     if(ALTO.includes(ta)&&!ALTO.includes(td)){ ch+=10; parts.push(['Desde la altura','+10%']); }
     if(ta==='pantano'&&td!=='pantano'&&fac(att).id==='conquistadores'){ ch-=10; parts.push(['Hundido en el barro','−10%']); } }
+  { const cl=climaDe(); if(a.r==='rango'&&cl.rango){ ch+=cl.rango; parts.push([cl.name,cl.rango+'%']); } }
   if(a.sp==='certero'&&ch<70){ ch=70; parts.push(['Certero','mín. 70%']); }
   return {ch:Math.max(15,Math.min(95,ch)),parts};
 }
@@ -1771,7 +1791,7 @@ async function doAttack(att,dfn,aAtk){
   gainXP(att,dfn.lvl); gainXP(dfn,att.lvl);
 }
 async function kill(dead,killer){
-  dead.alive=false; SND.play('kill'); refreshVis();
+  dead.alive=false; SND.play('kill'); SND.unidad(dead,'muerte'); refreshVis();
   S.sides[dead.side].st.losses++; if(killer&&killer.side!==dead.side){ S.sides[killer.side].st.kills++; killer.kills=(killer.kills||0)+1; }
   log(`☠ <b>${unitName(dead)}</b> (${def(dead).name}) cae.`);
   floatText(dead,'☠',DMGCOL.filo,1.5);
@@ -1842,7 +1862,7 @@ async function moveUnit(u,c,r,mpLeft,reach){
       if(blocker&&blocker.side!==u.side){ stopped=true; break; }            // emboscada: alguien oculto en el camino
       if(FX.speed>0){
         const a=hexPix(u.c,u.r,S.hex), b=hexPix(pc,pr,S.hex), t0=performance.now();
-        SND.play('step');
+        SND.unidad(u,'paso',(tileAt(pc,pr)||{}).t);
         await new Promise(res=>{ const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/per); u.anim={x:a.x+(b.x-a.x)*p,y:a.y+(b.y-a.y)*p-Math.sin(p*Math.PI)*S.hex*0.12}; draw(); if(p<1) requestAnimationFrame(tick); else res(); }; tick(); });
       }
       mp-=moveCost(u,tileAt(pc,pr)); u.c=pc;u.r=pr;
@@ -1910,7 +1930,7 @@ async function strikeFx(from,to,a,hit,dmg){
     await wait(200/sp);
   }
   if(hit){
-    SND.play(a.t);
+    SND.play(a.t); SND.unidad(to,'golpe'); SND.unidad(from,'ataque');
     FX.flash.set(to.id,{t0:performance.now(),t1:performance.now()+260/sp,col:DMGCOL[a.t]});
     floatText(to,'−'+dmg,DMGCOL[a.t]);
   } else {
@@ -1969,6 +1989,39 @@ const SND={on:true,vol:0.8,ctx:null,
       case 'profunda':
         this.noise(1.7,'lowpass',380,900,0.11*v,0); this.tone(210,330,1.1,'sine',0.045*v,0.45); this.tone(330,190,0.9,'sine',0.04*v,1.55); break;
     }
+  },
+  /* sonidos propios de cada bando: golpe recibido, grito al atacar, paso y muerte.
+     kind: 'golpe' | 'ataque' | 'paso' | 'muerte' */
+  unidad(u,kind,tile){
+    if(!this.on||FX.speed===0||!u) return; this.init(); if(!this.ctx) return;
+    let f=''; try{ f=fac(u).id; }catch(e){}
+    const agua=tile&&(tile==='agua'||tile==='vado'||tile==='pantano');
+    if(kind==='paso'){
+      if(agua){ this.noise(0.16,'bandpass',900,2200,0.16); this.noise(0.07,'highpass',3500,3500,0.08,0.04); return; }       // chapoteo
+      if(f==='conquistadores') this.noise(0.06,'bandpass',1500,700,0.12);                                                    // bota con placa
+      else if(f==='oscura') this.noise(0.09,'lowpass',500,150,0.14);                                                        // pisada pesada y húmeda
+      else if(f==='terrarios') this.noise(0.10,'highpass',2500,1500,0.07);                                                  // hojas y ramas
+      else if(f==='reptiloides') this.noise(0.07,'bandpass',2200,900,0.09);                                                  // arrastre de escamas
+      else this.play('step');
+      return; }
+    if(kind==='golpe'){
+      if(f==='conquistadores'){ this.tone(1800,900,0.05,'square',0.06,0.02); }                                              // chasquido de chapa
+      else if(f==='oscura'){ this.tone(170,95,0.22,'sawtooth',0.14,0.02); this.noise(0.12,'bandpass',900,500,0.08,0.03); }  // alarido
+      else if(f==='terrarios'){ this.tone(240,150,0.2,'triangle',0.14,0.02); this.noise(0.14,'lowpass',700,200,0.1,0.03); } // madera que cruje
+      else if(f==='reptiloides'){ this.noise(0.28,'highpass',6500,3000,0.14,0.02); }                                        // siseo
+      return; }
+    if(kind==='ataque'){
+      if(f==='conquistadores'){ this.tone(520,780,0.07,'square',0.05); }                                                     // zumbido de riel
+      else if(f==='oscura'){ this.tone(120,200,0.2,'sawtooth',0.10); }                                                       // rugido corto
+      else if(f==='terrarios'){ this.tone(180,260,0.18,'sine',0.12); }                                                       // crujido hondo
+      else if(f==='reptiloides'){ this.noise(0.18,'highpass',5500,4000,0.10); this.tone(260,200,0.1,'triangle',0.05,0.05); }
+      return; }
+    if(kind==='muerte'){
+      if(f==='conquistadores'){ this.tone(900,120,0.45,'square',0.07); this.noise(0.25,'highpass',3000,1200,0.06,0.1); }   // chispa y apagón
+      else if(f==='oscura'){ this.tone(260,50,0.7,'sawtooth',0.14); this.noise(0.4,'bandpass',600,150,0.10,0.1); }          // aullido
+      else if(f==='terrarios'){ this.tone(150,60,0.6,'triangle',0.16); this.noise(0.35,'lowpass',900,150,0.14,0.05); }      // tronco que cae
+      else if(f==='reptiloides'){ this.noise(0.5,'bandpass',1200,350,0.14); this.tone(220,70,0.5,'sine',0.08,0.05); }       // gorgoteo
+      return; }
   },
   play(kind){
     if(!this.on||FX.speed===0) return; this.init(); if(!this.ctx) return;
@@ -2238,6 +2291,7 @@ function recruit(type){
   if(s.gold<cost) return toast('No te alcanza el oro.');
   const spots=freeCastleTiles(s); if(!spots.length) return toast('No hay lugar libre en la fortaleza.');
   const [c,r]=spots[0]; const u=spawn(type,s.i,c,r); u.mp=0;u.acted=true;
+  s.st.rt=s.st.rt||{}; s.st.rt[type]=(s.st.rt[type]||0)+1;
   s.gold-=cost; s.st.recruited++; s.st.gold+=cost; SND.play('recruit'); refreshVis(); NET.enviarParcial();
   const futUp=S.units.filter(x=>x.alive&&x.side===s.i&&!x.leader).reduce((a,x)=>a+x.lvl,0);
   if(futUp>(s.vils||0)+1) toast(`Cuidado: mantenimiento ${futUp} y solo ${s.vils||0} aldeas.`); log(`Se recluta <b>${UNITS[type].name}</b> por ${cost} de oro.`);
@@ -2624,6 +2678,34 @@ function drawAmbient(now,size){
   }
   ctx.restore();
 }
+/* lluvia, niebla y tormenta se dibujan sólo sobre lo que se ve en pantalla */
+function drawClima(now,size,VR){
+  const cl=climaDe(); if(cl.id==='despejado') return;
+  const x0=VR?Math.max(0,VR.x0+size*3):0, y0=VR?Math.max(0,VR.y0+size*3):0, x1=VR?Math.min(cv.width,VR.x1-size*3):cv.width, y1=VR?Math.min(cv.height,VR.y1-size*3):cv.height;
+  const W=x1-x0, H=y1-y0; if(W<=0||H<=0) return; const t=now/1000;
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,y0,W,H); ctx.clip();
+  if(cl.id==='niebla'){
+    ctx.fillStyle='rgba(205,215,210,.20)'; ctx.fillRect(x0,y0,W,H);
+    for(let i=0;i<7;i++){ const px=x0+((i*0.173+t*0.012*(1+i%3)+0.1)%1.3-0.15)*W, py=y0+(0.12+(i*0.29)%0.8)*H, R=size*(5+i%3*2);
+      const gr=ctx.createRadialGradient(px,py,0,px,py,R); gr.addColorStop(0,'rgba(225,232,228,.30)'); gr.addColorStop(1,'rgba(225,232,228,0)');
+      ctx.fillStyle=gr; ctx.beginPath(); ctx.ellipse(px,py,R,R*0.55,0,0,7); ctx.fill(); }
+  } else {
+    const tor=cl.id==='tormenta', n=Math.min(tor?260:150,Math.round(W*H/(tor?5200:8500)));
+    ctx.fillStyle=tor?'rgba(14,22,40,.30)':'rgba(30,50,80,.14)'; ctx.fillRect(x0,y0,W,H);
+    ctx.strokeStyle=tor?'rgba(200,220,255,.50)':'rgba(190,215,255,.42)'; ctx.lineWidth=Math.max(1,size*0.04); ctx.lineCap='round'; ctx.beginPath();
+    const vel=tor?1.5:1.0;
+    for(let i=0;i<n;i++){ const hx=climaHash(i,7)/4294967296, hy=climaHash(i,13)/4294967296;
+      const px=x0+((hx+t*0.10*vel*(0.7+hy*0.6))%1)*W, py=y0+((hy+t*0.9*vel*(0.7+hx*0.6))%1)*H, L=size*(0.45+hx*0.35);
+      ctx.moveTo(px,py); ctx.lineTo(px-L*0.28,py+L); }
+    ctx.stroke();
+    if(tor){                                                // relámpagos: uno cada pocos segundos
+      const k=Math.floor(t/6.5), fase=t-k*6.5, h=climaHash(k,99)%100;
+      if(h<70&&fase<0.35){ const a=(fase<0.1?fase/0.1:Math.max(0,1-(fase-0.1)/0.25))*0.55; ctx.fillStyle='rgba(235,240,255,'+a.toFixed(3)+')'; ctx.fillRect(x0,y0,W,H);
+        if(S._truenoK!==k){ S._truenoK=k; try{ if(SND.on&&FX.speed>0){ SND.init(); SND.noise(1.4,'lowpass',500,70,0.5,0.35); SND.tone(70,35,1.0,'sine',0.3,0.35); } }catch(e){} } }
+    }
+  }
+  ctx.restore();
+}
 let ambientTimer=null;
 function ambientLoop(){ clearInterval(ambientTimer); ambientTimer=setInterval(()=>{ if(!CFG.ambient) return; if(document.getElementById('game').classList.contains('hidden')) return; if(document.hidden) return; if(!FX.running) draw(); },110); }
 
@@ -2708,6 +2790,7 @@ function draw(){
     ctx.save(); ctx.globalAlpha=0.3+0.3*pulso; ctx.strokeStyle='#F2E6C4'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(x,y,size*(0.75+0.12*pulso),0,7); ctx.stroke(); ctx.restore();
     if(t.owner>=0){ ctx.strokeStyle=S.sides[t.owner].color; ctx.lineWidth=3.5; hexPath(x,y,size-3); ctx.stroke(); } }
   if(CFG.ambient) drawAmbient(now,size);
+  try{ drawClima(now,size,VR); }catch(e){}
   drawMini();
   for(const m of marksVisibles()){
     const {x,y}=hexPix(m.c,m.r,size); const pulso=0.5+0.5*Math.sin(now/260);
@@ -2834,7 +2917,9 @@ function refreshUI(){
   try{ refreshObjetivo(); }catch(e){}
   const s=S.sides[S.cur];
   document.getElementById('turnNum').textContent=S.turn;
-  const P=PHASES[S.phase]; document.getElementById('phasePill').innerHTML=`${P.icon} <b>${P.name}</b>`;
+  const P=PHASES[S.phase], CL=climaDe(); document.getElementById('phasePill').innerHTML=`${P.icon} <b>${P.name}</b>${CL.icon?` ${CL.icon}`:''}`;
+  if(S._climaVisto!==CL.id){ const prev=S._climaVisto; S._climaVisto=CL.id; if(prev!=null||CL.id!=='despejado'){ try{ toast(`${CL.icon||'☀️'} ${CL.name}: ${CL.txt}`); }catch(e){} } }
+  document.getElementById('phasePill').title=CL.icon?`${CL.name}: ${CL.txt}`:'';
   const sn=document.getElementById('sideName'); const porEq=new Set(S.sides.map(x=>x.team)).size<S.sides.length;
   const quien=s.human?(s.playerId?profName(s.playerId):'Vos'):`IA ${aiLevel(s).name.toLowerCase()}`;
   const corto=window.innerWidth<820||window.innerHeight<=540;
@@ -3637,7 +3722,7 @@ function bindCfg(){
   document.getElementById('cfgReset').onclick=()=>{Object.assign(CFG,CFG_DEF); applyCfg(); saveCfg(); toast('Configuración restablecida');};
 }
 
-const SETUP={mode:'single',map:'franja',gold:100,ai:'veterano',fog:true,modoVictoria:'lideres',girar:true,slots:[]};
+const SETUP={mode:'single',map:'franja',gold:100,ai:'veterano',fog:true,clima:true,modoVictoria:'lideres',girar:true,slots:[]};
 const FAC_IDS=Object.keys(FACTIONS);
 function ensureSlots(){
   const M=MAPS.find(m=>m.id===SETUP.map); const n=M.players;
@@ -3702,6 +3787,7 @@ function buildSetup(){
     aldeas:`Gana el equipo que controle ${Math.max(4,(SETUP.slots.length||3)+2)} aldeas a la vez, durante dos rondas seguidas. La carrera es por el territorio, no por matar; hay que sostenerlo, no solo tocarlo una vez.`,
     corazon:'Aparece un castillo neutral en el centro del mapa. Al agotarse los turnos, gana quien lo esté ocupando en ese momento; también se puede ganar matando a todos los líderes antes.'};
   document.getElementById('winDesc').textContent=descs[SETUP.modoVictoria];
+  document.querySelectorAll('#climaSel button').forEach(b=>{b.setAttribute('aria-pressed',(+b.dataset.f===1)===SETUP.clima); b.onclick=()=>{SETUP.clima=+b.dataset.f===1;buildSetup();};});
   document.querySelectorAll('#fogSel button').forEach(b=>{b.setAttribute('aria-pressed',(+b.dataset.f===1)===SETUP.fog); b.onclick=()=>{SETUP.fog=+b.dataset.f===1;buildSetup();};});
   document.querySelectorAll('#aiSel button').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.ai===SETUP.ai); b.onclick=()=>{SETUP.ai=b.dataset.ai;buildSetup();};});
   document.getElementById('aiDesc').textContent=AI_LEVELS[SETUP.ai].desc;
@@ -3737,7 +3823,7 @@ document.getElementById('btnStart').onclick=()=>{
   const M0=MAPS.find(m=>m.id===SETUP.map); ensureSlots();
   SETUP.slots.forEach(x=>{ if(x.azar&&!x.human) x.fac=FAC_IDS[Math.floor(Math.random()*FAC_IDS.length)]; x.azar=false; });   // se sortea recién ahora
   const M=voltearMapa(M0,SETUP.girar?FLIPS[Math.floor(Math.random()*FLIPS.length)]:'');
-  buildMap(M,SETUP.slots.map(x=>({fac:x.fac,human:x.human,team:x.team,playerId:x.playerId})),SETUP.gold); S.fog=SETUP.fog;
+  buildMap(M,SETUP.slots.map(x=>({fac:x.fac,human:x.human,team:x.team,playerId:x.playerId})),SETUP.gold); S.fog=SETUP.fog; climaIniciar(SETUP.clima);
   S.view=S.sides.findIndex(x=>x.human); refreshVis();
   document.getElementById('log').innerHTML=''; log(`<b>${M.name}</b> — comienza la campaña.`);
   S.hex=hexQueEntra(M.w); resizeCanvas(); show('game'); if(CFG.music) MUSIC.start(TEMA_DE[PHASES[0].id]); startSideTurn(); wakeEncender();
@@ -4261,18 +4347,78 @@ function recallUnit(profileId,fac,idx,side,c,r){
   return u;
 }
 /* al terminar una partida, anotar resultado en cada perfil humano */
+/* ───────── logros y estadísticas del jugador ───────── */
+const LOGROS=[
+ {id:'primera',  ic:'🏁', n:'Primera victoria',        d:'Ganá tu primera partida.'},
+ {id:'diez',     ic:'🎖️', n:'Diez victorias',          d:'Ganá 10 partidas.'},
+ {id:'veinticinco',ic:'🏅',n:'Veinticinco victorias',  d:'Ganá 25 partidas.'},
+ {id:'veterano', ic:'🪖', n:'Curtido en mil batallas', d:'Jugá 20 partidas.'},
+ {id:'bajas50',  ic:'⚔️', n:'Cincuenta bajas',         d:'Acumulá 50 bajas enemigas.'},
+ {id:'bajas250', ic:'💀', n:'Azote de ejércitos',      d:'Acumulá 250 bajas enemigas.'},
+ {id:'rapida',   ic:'⚡', n:'Guerra relámpago',        d:'Ganá antes del turno 15.'},
+ {id:'maraton',  ic:'⏳', n:'Maratón',                 d:'Terminá una partida de 40 turnos o más.'},
+ {id:'limpia',   ic:'🛡️', n:'Sin una baja',            d:'Ganá sin perder ni una unidad.'},
+ {id:'aldeas',   ic:'🏘️', n:'Señor de las aldeas',     d:'Terminá controlando 10 aldeas o más.'},
+ {id:'maestro',  ic:'🧠', n:'Domaste al Maestro',      d:'Ganá contra la IA Maestro.'},
+ {id:'racha3',   ic:'🔥', n:'Racha de tres',           d:'Ganá 3 partidas seguidas.'},
+ {id:'cuatro',   ic:'🌍', n:'Todos los bandos',        d:'Ganá con los cuatro bandos.'},
+ {id:'agua',     ic:'🌊', n:'Rey del agua',            d:'Ganá con los Reptiloides.'},
+];
 function profRegistrar(){
   guardarSupervivientes();
   let cambio=false;
   S.sides.forEach(s=>{
     if(!s.human||!s.playerId) return; const p=profGet(s.playerId); if(!p) return;
-    p.st.partidas++; if(s.alive) p.st.ganadas++;
-    p.st.bajas+=s.st.kills; p.st.perdidas+=s.st.losses;
-    p.st.facCount[s.fac]=(p.st.facCount[s.fac]||0)+1;
-    p.st.favorita=Object.entries(p.st.facCount).sort((a,b)=>b[1]-a[1])[0][0];
+    const st=p.st; st.partidas++; const gano=!!s.alive; if(gano) st.ganadas++;
+    st.bajas+=s.st.kills; st.perdidas+=s.st.losses;
+    st.facCount[s.fac]=(st.facCount[s.fac]||0)+1;
+    st.favorita=Object.entries(st.facCount).sort((a,b)=>b[1]-a[1])[0][0];
+    /* estadísticas nuevas */
+    st.ganPorFac=st.ganPorFac||{}; st.usos=st.usos||{}; st.logros=st.logros||{};
+    if(gano) st.ganPorFac[s.fac]=(st.ganPorFac[s.fac]||0)+1;
+    Object.entries(s.st.rt||{}).forEach(([k,n])=>{ st.usos[k]=(st.usos[k]||0)+n; });
+    st.maxTurnos=Math.max(st.maxTurnos||0,S.turn||0);
+    st.racha=gano?(st.racha||0)+1:0; st.mejorRacha=Math.max(st.mejorRacha||0,st.racha);
+    const aldeas=S.tiles.filter(t=>t.t==='aldea'&&t.owner===s.i).length;
+    st.maxAldeas=Math.max(st.maxAldeas||0,aldeas);
+    const vsMaestro=S.sides.some(x=>!x.human&&x.ai==='maestro');
+    const ok={primera:st.ganadas>=1, diez:st.ganadas>=10, veinticinco:st.ganadas>=25, veterano:st.partidas>=20,
+      bajas50:st.bajas>=50, bajas250:st.bajas>=250, rapida:gano&&S.turn<15&&S.turn>0, maraton:(S.turn||0)>=40,
+      limpia:gano&&s.st.losses===0&&s.st.kills>0, aldeas:aldeas>=10, maestro:gano&&vsMaestro&&!S.esCampana,
+      racha3:st.racha>=3, cuatro:['conquistadores','oscura','terrarios','reptiloides'].every(f=>(st.ganPorFac[f]||0)>0),
+      agua:gano&&s.fac==='reptiloides'};
+    const nuevos=LOGROS.filter(l=>ok[l.id]&&!st.logros[l.id]);
+    nuevos.forEach(l=>{ st.logros[l.id]=Date.now(); });
+    if(nuevos.length){ S.logrosNuevos=(S.logrosNuevos||[]).concat(nuevos);
+      setTimeout(()=>nuevos.forEach((l,i)=>setTimeout(()=>{ try{ toast(`🏆 Logro: ${l.ic} ${l.n}`); }catch(e){} },i*2600)),900); }
     cambio=true;
   });
   if(cambio) saveProfiles();
+  try{ const nu=S.logrosNuevos||[]; S.logrosNuevos=[]; const ot=document.getElementById('overText');
+    if(nu.length&&ot) ot.textContent+=' 🏆 Logros nuevos: '+nu.map(l=>l.ic+' '+l.n).join(', ')+'.'; }catch(e){}
+}
+function profEstadisticas(id){
+  const p=profGet(id); if(!p) return;
+  const st=p.st, lg=st.logros||{}, usos=Object.entries(st.usos||{}).sort((a,b)=>b[1]-a[1])[0];
+  const fav=st.favorita?FACTIONS[st.favorita].name:'—';
+  const unidadFav=usos&&UNITS[usos[0]]?`${UNITS[usos[0]].name} (${usos[1]})`:'—';
+  const ratio=st.partidas?Math.round(st.ganadas/st.partidas*100):0;
+  const porFac=Object.entries(FACTIONS).map(([k,f])=>{ const j=st.facCount[k]||0, g=(st.ganPorFac||{})[k]||0; return j?`<li>${f.name}: ${g} de ${j} ganadas</li>`:''; }).join('')||'<li>Todavía no jugaste.</li>';
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(6,10,8,.82);display:flex;align-items:center;justify-content:center;padding:16px';
+  const total=Object.keys(lg).length;
+  ov.innerHTML=`<div style="background:var(--panel);border:1px solid var(--line);max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:20px;color:var(--ink)">
+   <h2 style="margin:0 0 4px;font-family:'Fraunces'">${p.name}</h2>
+   <p class="tiny" style="margin:0 0 14px">${st.partidas} partidas · ${st.ganadas} ganadas (${ratio}%) · ${st.bajas} bajas · racha máxima ${st.mejorRacha||0}</p>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:14px;margin-bottom:12px">
+     <div>Bando favorito: <b>${fav}</b></div><div>Unidad más usada: <b>${unidadFav}</b></div>
+     <div>Partida más larga: <b>${st.maxTurnos||0} turnos</b></div><div>Más aldeas juntas: <b>${st.maxAldeas||0}</b></div></div>
+   <ul style="margin:0 0 14px;padding-left:18px;font-size:14px">${porFac}</ul>
+   <h3 style="margin:0 0 8px;font-size:15px">Logros (${total} de ${LOGROS.length})</h3>
+   <div style="display:grid;gap:6px">${LOGROS.map(l=>`<div style="display:flex;gap:10px;align-items:center;padding:6px 8px;border:1px solid var(--line);opacity:${lg[l.id]?1:.45}"><span style="font-size:22px">${lg[l.id]?l.ic:'🔒'}</span><span><b>${l.n}</b><br><span class="tiny">${l.d}</span></span></div>`).join('')}</div>
+   <div style="text-align:right;margin-top:14px"><button id="statCerrar">Cerrar</button></div></div>`;
+  document.body.appendChild(ov);
+  const cerrar=()=>ov.remove(); ov.querySelector('#statCerrar').onclick=cerrar; ov.onclick=e=>{ if(e.target===ov) cerrar(); };
 }
 function buildProfiles(){
   const box=document.getElementById('profList'); if(!box) return; box.innerHTML='';
@@ -4281,7 +4427,8 @@ function buildProfiles(){
     const d=document.createElement('div'); d.className='profrow'+(PROF.activo===p.id?' on':'');
     const fav=p.st.favorita?FACTIONS[p.st.favorita]:null;
     d.innerHTML=`<button class="pmain"><b>${p.name}</b><span class="tiny">${p.st.partidas} partidas · ${p.st.ganadas} ganadas${fav?` · suele jugar ${fav.name}`:''}</span></button>
-                 <button class="pdel" title="Borrar jugador">✕</button>`;
+                 <button class="pstat" title="Estadísticas y logros">🏆</button><button class="pdel" title="Borrar jugador">✕</button>`;
+    d.querySelector('.pstat').onclick=()=>profEstadisticas(p.id);
     d.querySelector('.pmain').onclick=()=>{ PROF.activo=p.id; saveProfiles(); buildProfiles(); refreshProfilePill(); };
     d.querySelector('.pdel').onclick=()=>{ if(confirm(`¿Borrar a ${p.name}? Se pierden sus estadísticas.`)){ profBorrar(p.id); buildProfiles(); refreshProfilePill(); } };
     box.appendChild(d);
@@ -4440,7 +4587,7 @@ function bindNet(){
 /* ---------- 19b. GUARDAR Y CARGAR ---------- */
 const SAVE_SLOTS=['auto','1','2','3'];
 function serializeGame(){
-  return {v:1,when:Date.now(),map:S.map.id,flip:S.map.flip||'',turn:S.turn,phase:S.phase,cur:S.cur,fog:S.fog,ai:SETUP.ai,hex:S.hex,esCampana:!!S.esCampana,campana:S.campana||null,guion:S.guion||null,marks:S.marks||[],
+  return {v:1,when:Date.now(),map:S.map.id,flip:S.map.flip||'',turn:S.turn,phase:S.phase,cur:S.cur,fog:S.fog,climaOn:!!S.climaOn,climaSeed:S.climaSeed,ai:SETUP.ai,hex:S.hex,esCampana:!!S.esCampana,campana:S.campana||null,guion:S.guion||null,marks:S.marks||[],
     modoVictoria:SETUP.modoVictoria||'lideres',conq:S.conq||null,terra:S.terra||null,alianza:S.alianza||null,objetivoPendiente:S.objetivoPendiente||null,
     sides:S.sides.map(x=>({fac:x.fac,team:x.team,playerId:x.playerId,st:x.st,gold:x.gold,upkeep:x.upkeep,bruto:x.bruto,pagado:x.pagado,human:x.human,ai:x.ai,alive:x.alive,income:x.income,vils:x.vils})),
     owners:S.tiles.map(t=>t.owner),
@@ -4459,7 +4606,7 @@ function loadGame(slot){
   S.esCampana=!!g.esCampana; S.campana=g.campana||null; S.guion=g.guion||{}; S.marks=g.marks||[];
   S.conq=g.conq||null; S.terra=g.terra||null; S.alianza=g.alianza||null; S.objetivoPendiente=g.objetivoPendiente||null;
   S.units.forEach(u=>{ if(!u.esEscolta) delete u.esEscolta; });
-  S.turn=g.turn; S.phase=g.phase; S.cur=g.cur; S.fog=!!g.fog; S.view=S.sides.findIndex(x=>x.human&&x.i===g.cur); if(S.view<0) S.view=S.sides.findIndex(x=>x.human); S.over=false; S.sel=null; S.reach=null; S.targets.clear(); S.undo=null; PENDING.clear();
+  S.turn=g.turn; S.phase=g.phase; S.cur=g.cur; S.fog=!!g.fog; S.climaOn=!!g.climaOn; S.climaSeed=(g.climaSeed!=null?g.climaSeed:null); S.view=S.sides.findIndex(x=>x.human&&x.i===g.cur); if(S.view<0) S.view=S.sides.findIndex(x=>x.human); S.over=false; S.sel=null; S.reach=null; S.targets.clear(); S.undo=null; PENDING.clear();
   document.getElementById('log').innerHTML=''; (g.log||[]).forEach(h=>log(h)); log(`💾 Partida cargada · turno ${S.turn}.`);
   S.hex=g.hex||(window.innerWidth<700?24:CFG.hex); resizeCanvas(); document.getElementById('over').classList.add('hidden'); show('game'); wakeEncender();
   refreshVis(); refreshUI(); draw(); if(CFG.music) MUSIC.start(TEMA_DE[PHASES[S.phase].id]); wakeEncender();
@@ -7269,7 +7416,7 @@ const NET={
     } else {
       const M=MAPS.find(m=>m.id===SETUP.map);
       sala={estado:'lobby',creada:Date.now(),host:u?u.id:'anon',
-        cfg:{map:SETUP.map,gold:SETUP.gold,ai:SETUP.ai,fog:SETUP.fog},
+        cfg:{map:SETUP.map,gold:SETUP.gold,ai:SETUP.ai,fog:SETUP.fog,clima:SETUP.clima!==false},
         slots:Array.from({length:M.players},(_,i)=>({fac:FAC_IDS[i%3],team:i+1,tipo:i===0?'humano':'ia',
           userId:i===0?(u?u.id:'anon'):null,nombre:i===0?(u?u.name:'Anfitrión'):null}))};
     }
@@ -7361,7 +7508,7 @@ const NET={
       const M=MAPS.find(m=>m.id===sala.cfg.map);
       SETUP.map=sala.cfg.map; SETUP.gold=sala.cfg.gold; SETUP.ai=sala.cfg.ai; SETUP.fog=sala.cfg.fog;
       buildMap(M,sala.slots.map(x=>({fac:x.fac,team:x.team,human:x.tipo==='humano'})),sala.cfg.gold);
-      S.fog=sala.cfg.fog;
+      S.fog=sala.cfg.fog; climaIniciar(sala.cfg.clima!==false);
       S.sides.forEach((sd,i)=>{ sd.user=sala.slots[i].nombre||null; });
     }
     await this.fb.update(this.ref(),{estado:'jugando',v:1,por:'inicio',turno:S.turn,estadoJuego:JSON.stringify(serializeGame())});
@@ -7459,7 +7606,7 @@ function aplicarEstado(g,animar){
   g.owners.forEach((o,i)=>S.tiles[i].owner=o);
   g.units.forEach(u=>S.units.push(Object.assign({anim:null},u)));
   uid=Math.max(0,...g.units.map(u=>u.id))+1;
-  S.turn=g.turn; S.phase=g.phase; S.cur=g.cur; S.fog=!!g.fog; S.over=false; S.sel=null; S.reach=null; S.targets.clear(); S.undo=null; S.marks=g.marks||[]; PENDING.clear();
+  S.turn=g.turn; S.phase=g.phase; S.cur=g.cur; S.fog=!!g.fog; S.climaOn=!!g.climaOn; S.climaSeed=(g.climaSeed!=null?g.climaSeed:null); S.over=false; S.sel=null; S.reach=null; S.targets.clear(); S.undo=null; S.marks=g.marks||[]; PENDING.clear();
   document.getElementById('log').innerHTML=''; (g.log||[]).forEach(h=>log(h));
   if(!S.hex) S.hex=CFG.hex; resizeCanvas(); LAYER.dirty=true;
   if(animar&&mismaPartida&&prevPos.size) animarLlegadaRed(prevPos);
@@ -8990,7 +9137,7 @@ const PAL={
 const ESCRIG={biped:1.0,bestia:1.6,lagarto:1.7,alado:1.5,planta:1.5,bola:1.4,arbol:1.15,moto:1.7};
 const LISTA=[
  /* Conquistadores */
- {id:'lancero',  fac:'conquistadores',nom:'Lancero Ligero',  rig:'biped', arma:'tridente',  esc:0.98,
+ {id:'lancero',  fac:'conquistadores',nom:'Lancero Ligero',  rig:'biped', arma:'lanza',  esc:0.98,
   ancho:0.88, chaleco:1, pañuelo:1,
   tinte:{ropa:'#A9682F',ropa2:'#7C4A20',pant:'#6B5335',bota:'#463421'}},
  {id:'tirador',  fac:'conquistadores',nom:'Tirador',         rig:'biped', arma:'rifle',  esc:1.02,
@@ -9020,7 +9167,7 @@ const LISTA=[
   tinte:{ropa:'#453C2E',ropa2:'#282116',piel:'#7E7458',acento:'#9CCB3E'}},
 
  /* Reptiloides */
- {id:'escamoso', fac:'reptiloides',   nom:'Escamoso',        rig:'biped', arma:'zarpa',  esc:1.02,
+ {id:'escamoso', fac:'reptiloides',   nom:'Escamoso',        rig:'biped', arma:'tridente',  esc:1.02,
   ancho:1.0, criatura:0, reptil:'escamoso',
   tinte:{ropa:'#7A5A34',ropa2:'#4E3820',piel:'#4FA67A',acento:'#E6D45A'}},
  {id:'escupidor',fac:'reptiloides',   nom:'Escupidor',       rig:'biped', arma:'cerbatana',esc:1.02,
@@ -9579,7 +9726,8 @@ function arma(g,u,P,m,p,t,anim,f){
   }
   if(a==='tridente'){
     /* asta larga con un tridente de metal bien visible: tres puntas y cinta de la facción */
-    cap(g,0,22,0,-34,3.6,'#6B4A2A');
+    cap(g,0,22,0,-38,4.4,'#6B4A2A');
+    g.save(); g.translate(0,-33); g.scale(1.45,1.45); g.translate(0,33);
     g.lineCap='round'; g.lineJoin='round';
     for(const [col,w] of [['#2B3238',5.2],['#E2E9EE',2.8]]){
       g.strokeStyle=col; g.lineWidth=w;
@@ -9589,7 +9737,8 @@ function arma(g,u,P,m,p,t,anim,f){
     for(const x of [-8,0,8]){ const y=x?-47:-54; g.beginPath(); g.moveTo(x-3,y+1); g.lineTo(x,y-7); g.lineTo(x+3,y+1); g.closePath();
       g.fillStyle='#E2E9EE'; g.fill(); g.strokeStyle='#2B3238'; g.lineWidth=1.2; g.stroke(); }
     cap(g,0,-31,0,-28,5.6,P.metal2);
-    g.strokeStyle=P.acento; g.lineWidth=2.2; g.beginPath(); g.moveTo(0,-26); g.quadraticCurveTo(5+sen(t*3)*1.5,-22,3,-15); g.stroke();
+    g.restore();
+    g.strokeStyle=P.acento; g.lineWidth=2.6; g.beginPath(); g.moveTo(0,-30); g.quadraticCurveTo(5+sen(t*3)*1.5,-22,3,-15); g.stroke();
   } else if(a==='lanza'){
     cap(g,0,20,0,-31,3.4,'#6B4A2A');
     g.fillStyle=P.metal; g.beginPath(); g.moveTo(0,-42); g.lineTo(3.6,-28); g.lineTo(-3.6,-28); g.fill();
@@ -10918,7 +11067,7 @@ function baseDe(c,r){
     const k=m.keeps[i];
     if(hexDist(k.c,k.r,c,r)>1) continue;
     const sd=S.sides&&S.sides[i]; if(!sd||!sd.fac) return null;
-    if(sd.fac!=='conquistadores'&&sd.fac!=='oscura'&&sd.fac!=='terrarios') return null;
+    if(sd.fac!=='conquistadores'&&sd.fac!=='oscura'&&sd.fac!=='terrarios'&&sd.fac!=='reptiloides') return null;
     return {fac:sd.fac, kc:k.c, kr:k.r, centro:(k.c===c&&k.r===r)};
   }
   return null;
@@ -10940,6 +11089,12 @@ function piezasBase(est,b,c,r,p,s){
     else if(dir==='S') P('b_puerta',0,0.55);
     else if(dir==='NE'||dir==='NW') P('b_costillas',0,0.42);
     else P('b_espinas',0,0.40);
+  } else if(b.fac==='reptiloides'){
+    if(dir==='C') P('b_cueva',0,0.58);
+    else if(dir==='N') P('b_rocas',0,0.40,{grande:1});
+    else if(dir==='NE'||dir==='NW') P('b_rocas',(g-.5)*0.3,0.42);
+    else if(dir==='S') P('b_pasos',0,0.50);
+    else P('b_juncos',(g-.5)*0.3,0.40);
   } else {
     if(dir==='C') P('b_corazon',0,0.55);
     else if(dir==='S') P('b_arco',0,0.62);
@@ -10948,6 +11103,7 @@ function piezasBase(est,b,c,r,p,s){
   }
 }
 
+const cap2=(g,x1,y1,x2,y2,w,col)=>{ g.strokeStyle=col; g.lineWidth=Math.max(1,w); g.lineCap='round'; g.beginPath(); g.moveTo(x1,y1); g.lineTo(x2,y2); g.stroke(); };
 const hexV=(g,x,y,r)=>{ g.beginPath(); for(let i=0;i<6;i++){ const a=Math.PI/3*i; const px=x+r*Math.cos(a), py=y+r*Math.sin(a); i?g.lineTo(px,py):g.moveTo(px,py); } g.closePath(); };
 const mezcla=(a,b,t)=>{ const A=parseInt(a.slice(1),16), B=parseInt(b.slice(1),16);
   const f=(sh)=>Math.round(((A>>sh)&255)*(1-t)+((B>>sh)&255)*t);
@@ -10968,6 +11124,27 @@ const BASE_PINTORES={
         const x=X+Math.cos(a)*d, y=Y+Math.sin(a)*d*.9, k=AZAR(o.g2*17,i+60);
         g.fillStyle=k>.5?'rgba(150,138,118,.45)':'rgba(24,20,16,.35)'; g.beginPath(); g.ellipse(x,y,u*(.03+k*.05),u*(.02+k*.03),0,0,7); g.fill(); }
       g.restore(); return;
+    }
+    if(f==='reptiloides'){
+      /* el torreón está en un lago: agua verdosa alrededor y piedra mojada y barro en el centro */
+      g.save(); hexV(g,X,Y,u*1.0); g.clip();
+      const cen=o.dir==='C';
+      const gr=g.createRadialGradient(X,Y,u*.1,X,Y,u*1.1);
+      if(cen){ gr.addColorStop(0,'#5A6652'); gr.addColorStop(1,'#46503F'); } else { gr.addColorStop(0,'#2F8890'); gr.addColorStop(1,'#236670'); }
+      g.fillStyle=gr; g.fillRect(X-u*1.1,Y-u*1.1,u*2.2,u*2.2);
+      if(!cen){
+        g.lineCap='round';
+        for(let i=0;i<7;i++){ const x=X+(AZAR(o.g*31,i)-.5)*u*1.6, y=Y+(AZAR(o.g2*29,i)-.5)*u*1.3, w=u*(.18+AZAR(o.g*5,i+9)*.2);
+          g.strokeStyle='rgba(205,242,242,.30)'; g.lineWidth=Math.max(1,u*.035); g.beginPath(); g.ellipse(x,y,w,w*.32,0,3.4,6.0); g.stroke(); }
+        g.fillStyle='rgba(12,40,48,.20)'; g.beginPath(); g.ellipse(X-u*.2,Y+u*.3,u*.6,u*.2,0,0,7); g.fill();
+      } else {
+        for(let i=0;i<14;i++){ const a=AZAR(o.g*91,i)*6.283, d=Math.sqrt(AZAR(o.g*53,i+30))*u*.95;
+          g.fillStyle=AZAR(o.g2*17,i+60)>.5?'rgba(180,190,160,.35)':'rgba(30,38,26,.35)';
+          g.beginPath(); g.ellipse(X+Math.cos(a)*d,Y+Math.sin(a)*d*.88,u*.08,u*.04,0,0,7); g.fill(); }
+      }
+      g.restore();
+      hexV(g,X,Y,u*.985); g.strokeStyle='rgba(16,48,52,.30)'; g.lineWidth=Math.max(1,u*.05); g.stroke();
+      return;
     }
     g.save();
     hexV(g,X,Y,u*1.0);
@@ -11376,6 +11553,82 @@ const BASE_PINTORES={
     for(const [dx,col] of [[-.28,'#F2E6A0'],[.22,'#D8B8F0'],[0,'#C6E88A']]){
       g.fillStyle=col; g.beginPath(); g.arc(X+dx*u,Y-1.05*u,.05*u,0,7); g.fill();
       g.fillStyle='rgba(198,232,138,.25)'; g.beginPath(); g.arc(X+dx*u,Y-1.05*u,.14*u,0,7); g.fill(); }
+  },
+  /* ───────── REPTILOIDES: la cueva del lago ───────── */
+  b_cueva(g,o,som){
+    const u=o.s, X=o.x, Y=o.y;
+    som(X+u*.3,Y+u*.12,u*2.0,u*.40);
+    const mont=()=>{ g.beginPath(); g.moveTo(X-1.55*u,Y); g.quadraticCurveTo(X-1.40*u,Y-1.30*u,X-.30*u,Y-1.58*u);
+      g.quadraticCurveTo(X+.95*u,Y-1.62*u,X+1.55*u,Y); g.closePath(); };
+    mont(); let gr=g.createLinearGradient(X,Y-1.6*u,X,Y); gr.addColorStop(0,'#8A9484'); gr.addColorStop(1,'#4F5A4C'); g.fillStyle=gr; g.fill();
+    g.save(); mont(); g.clip();
+    g.fillStyle='rgba(0,0,0,.20)'; g.fillRect(X+.2*u,Y-1.7*u,1.5*u,1.8*u);                       // lado en sombra
+    g.strokeStyle='rgba(30,40,28,.45)'; g.lineWidth=Math.max(1,u*.035);
+    for(let i=0;i<6;i++){ g.beginPath(); g.arc(X+(i-2.5)*.55*u,Y+.1*u,(.9+(i%3)*.25)*u,3.6,5.8); g.stroke(); }   // estratos de roca
+    g.fillStyle='#4F8F3E'; g.globalAlpha=.75;
+    for(let i=0;i<10;i++){ const a=3.3+AZAR(o.g*13,i)*2.6, d=(.75+AZAR(o.g*7,i)*.55)*u; g.beginPath(); g.ellipse(X+Math.cos(a)*d*1.15,Y+Math.sin(a)*d*.95,u*.12,u*.06,0,0,7); g.fill(); }
+    g.globalAlpha=1; g.restore();
+    mont(); g.strokeStyle='rgba(10,22,18,.9)'; g.lineWidth=Math.max(1,u*.045); g.stroke();
+    /* boca de la cueva: negra, con agua adentro y el brillo del oro */
+    const boca=()=>{ g.beginPath(); g.moveTo(X-.52*u,Y); g.lineTo(X-.52*u,Y-.50*u); g.quadraticCurveTo(X,Y-1.15*u,X+.52*u,Y-.50*u); g.lineTo(X+.52*u,Y); g.closePath(); };
+    boca(); g.fillStyle='#050D10'; g.fill();
+    g.save(); boca(); g.clip();
+    let gl=g.createRadialGradient(X,Y-.1*u,0,X,Y-.1*u,.75*u); gl.addColorStop(0,'rgba(224,184,74,.70)'); gl.addColorStop(.5,'rgba(224,184,74,.22)'); gl.addColorStop(1,'rgba(224,184,74,0)');
+    g.fillStyle=gl; g.fillRect(X-u,Y-1.3*u,2*u,1.4*u);
+    g.fillStyle='rgba(60,170,180,.55)'; g.fillRect(X-.6*u,Y-.16*u,1.2*u,.2*u);                  // agua que entra
+    g.fillStyle='#E0B84A';                                                                       // monedas y escamas de oro
+    for(let i=0;i<7;i++){ g.beginPath(); g.ellipse(X+(AZAR(o.g*3,i)-.5)*.8*u,Y-(.05+AZAR(o.g*5,i)*.22)*u,u*.05,u*.03,0,0,7); g.fill(); }
+    g.restore();
+    boca(); g.strokeStyle='rgba(8,18,16,.95)'; g.lineWidth=Math.max(1,u*.045); g.stroke();
+    g.strokeStyle='#E0B84A'; g.lineWidth=Math.max(1.2,u*.07); g.lineCap='round';                  // arco dorado sobre la entrada
+    g.beginPath(); g.moveTo(X-.60*u,Y-.05*u); g.lineTo(X-.60*u,Y-.52*u); g.quadraticCurveTo(X,Y-1.28*u,X+.60*u,Y-.52*u); g.lineTo(X+.60*u,Y-.05*u); g.stroke();
+    g.strokeStyle='rgba(255,236,160,.6)'; g.lineWidth=Math.max(.8,u*.025);
+    g.beginPath(); g.moveTo(X-.62*u,Y-.08*u); g.lineTo(X-.62*u,Y-.52*u); g.quadraticCurveTo(X,Y-1.31*u,X+.62*u,Y-.52*u); g.stroke();
+    /* cresta de oro encima y dos antorchas verdes */
+    g.fillStyle='#E0B84A'; g.strokeStyle='rgba(10,22,18,.9)'; g.lineWidth=Math.max(1,u*.03);
+    for(let i=-2;i<=2;i++){ const hx=X+i*.16*u, hy=Y-1.28*u+Math.abs(i)*.07*u, ha=(.30-Math.abs(i)*.05)*u;
+      g.beginPath(); g.moveTo(hx-.07*u,hy); g.lineTo(hx,hy-ha); g.lineTo(hx+.07*u,hy); g.closePath(); g.fill(); g.stroke(); }
+    for(const sx of [-1,1]){ const px=X+sx*.80*u; cap2(g,px,Y,px,Y-.62*u,u*.06,'#5B4128');
+      const fg=g.createRadialGradient(px,Y-.7*u,0,px,Y-.7*u,.26*u); fg.addColorStop(0,'rgba(200,242,122,.95)'); fg.addColorStop(1,'rgba(200,242,122,0)');
+      g.fillStyle=fg; g.beginPath(); g.arc(px,Y-.7*u,.26*u,0,7); g.fill(); }
+    /* ondas pegadas al pie */
+    g.strokeStyle='rgba(205,242,242,.55)'; g.lineWidth=Math.max(1,u*.035);
+    for(let i=0;i<3;i++){ g.beginPath(); g.ellipse(X,Y+.04*u,(1.5+i*.12)*u,(.12+i*.03)*u,0,.15,3.0); g.stroke(); }
+  },
+  b_rocas(g,o,som){
+    const u=o.s, X=o.x, Y=o.y, k=o.grande?1.35:1;
+    som(X+u*.25,Y+u*.08,u*1.1*k,u*.2);
+    const roca=(dx,dy,w,h,col)=>{ g.beginPath(); g.moveTo(X+(dx-w)*u,Y+dy*u); g.lineTo(X+(dx-w*.7)*u,Y+(dy-h*.8)*u); g.lineTo(X+(dx-w*.1)*u,Y+(dy-h)*u);
+      g.lineTo(X+(dx+w*.6)*u,Y+(dy-h*.75)*u); g.lineTo(X+(dx+w)*u,Y+dy*u); g.closePath(); g.fillStyle=col; g.fill();
+      g.fillStyle='rgba(255,255,255,.18)'; g.beginPath(); g.moveTo(X+(dx-w)*u,Y+dy*u); g.lineTo(X+(dx-w*.7)*u,Y+(dy-h*.8)*u); g.lineTo(X+(dx-w*.1)*u,Y+(dy-h)*u); g.lineTo(X+(dx-w*.15)*u,Y+dy*u); g.closePath(); g.fill();
+      g.strokeStyle='rgba(12,24,20,.85)'; g.lineWidth=Math.max(1,u*.035); g.stroke(); };
+    roca(-.30*k,0,.38*k,.80*k,'#6C7868'); roca(.28*k,.02,.34*k,.62*k,'#5C685A'); roca(.0,.08,.30*k,.40*k,'#78846F');
+    g.fillStyle='#4F8F3E'; g.beginPath(); g.ellipse(X-.3*k*u,Y-.78*k*u,.14*u,.06*u,-.1,0,7); g.fill();
+    g.strokeStyle='rgba(205,242,242,.5)'; g.lineWidth=Math.max(1,u*.03); g.beginPath(); g.ellipse(X,Y+.12*u,.75*k*u,.1*u,0,.2,2.9); g.stroke();
+  },
+  b_juncos(g,o,som){
+    const u=o.s, X=o.x, Y=o.y;
+    g.fillStyle='rgba(60,130,60,.85)';
+    for(let i=0;i<3;i++){ const px=X+(-.45+i*.42+AZAR(o.g*3,i)*.1)*u, py=Y+(.05+AZAR(o.g2*7,i)*.15)*u;   // nenúfares
+      g.beginPath(); g.ellipse(px,py,.17*u,.07*u,0,0,7); g.fill(); g.strokeStyle='rgba(20,60,30,.7)'; g.lineWidth=Math.max(.8,u*.02); g.stroke(); }
+    g.lineCap='round';
+    for(let i=0;i<8;i++){ const bx=X+(-.5+i*.14)*u, h=(.45+AZAR(o.g*9,i)*.45)*u, sw=(AZAR(o.g2*5,i)-.5)*.16*u;
+      g.strokeStyle=i%2?'#4E7F3A':'#6E9A3E'; g.lineWidth=Math.max(1,u*.04); g.beginPath(); g.moveTo(bx,Y); g.quadraticCurveTo(bx+sw*.4,Y-h*.6,bx+sw,Y-h); g.stroke();
+      if(i%3===0){ g.strokeStyle='#6B4A2A'; g.lineWidth=Math.max(1.2,u*.07); g.beginPath(); g.moveTo(bx+sw,Y-h); g.lineTo(bx+sw,Y-h-.14*u); g.stroke(); } }
+    g.strokeStyle='rgba(205,242,242,.5)'; g.lineWidth=Math.max(1,u*.03); g.beginPath(); g.ellipse(X,Y+.1*u,.6*u,.09*u,0,.2,2.9); g.stroke();
+  },
+  b_pasos(g,o,som){
+    const u=o.s, X=o.x, Y=o.y;
+    /* piedras de paso hacia la boca de la cueva y un estandarte dorado */
+    for(let i=0;i<4;i++){ const px=X+(i%2?.12:-.12)*u, py=Y-(.05+i*.30)*u+.10*u, w=(.28-i*.025)*u;
+      g.fillStyle='rgba(8,30,34,.35)'; g.beginPath(); g.ellipse(px+.03*u,py+.05*u,w,w*.42,0,0,7); g.fill();
+      g.fillStyle=i%2?'#7C8874':'#6A7664'; g.beginPath(); g.ellipse(px,py,w,w*.42,0,0,7); g.fill();
+      g.strokeStyle='rgba(12,24,20,.8)'; g.lineWidth=Math.max(1,u*.03); g.stroke(); }
+    const mx=X+.62*u; cap2(g,mx,Y+.05*u,mx,Y-1.0*u,u*.06,'#5B4128');
+    g.fillStyle='#2F8F6A'; g.beginPath(); g.moveTo(mx,Y-1.0*u); g.lineTo(mx+.46*u,Y-.9*u); g.lineTo(mx+.34*u,Y-.74*u); g.lineTo(mx+.46*u,Y-.58*u); g.lineTo(mx,Y-.62*u); g.closePath(); g.fill();
+    g.strokeStyle='rgba(10,22,18,.9)'; g.lineWidth=Math.max(1,u*.03); g.stroke();
+    g.fillStyle='#E0B84A'; g.beginPath(); g.arc(mx+.17*u,Y-.78*u,.07*u,0,7); g.fill();
+    g.strokeStyle='rgba(205,242,242,.5)'; g.lineWidth=Math.max(1,u*.03); g.beginPath(); g.ellipse(mx,Y+.08*u,.3*u,.06*u,0,.2,2.9); g.stroke();
   },
   b_menhir(g,o,som){
     const u=o.s, X=o.x, Y=o.y;
@@ -12065,7 +12318,7 @@ async function vivoStrikeNuevo(from,to,a,hit,dmg){
   else await wait(tImp);
   const ahora=performance.now();
   if(hit){
-    SND.play(a.t);
+    SND.play(a.t); SND.unidad(to,'golpe'); SND.unidad(from,'ataque');
     FX.flash.set(to.id,{t0:ahora,t1:ahora+260/sp,col:DMGCOL[a.t]});
     floatText(to,'−'+dmg,DMGCOL[a.t]);
   } else {
