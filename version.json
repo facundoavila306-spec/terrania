@@ -1,9 +1,9 @@
 {
- "version": "34.42",
+ "version": "34.43",
  "base": "34",
  "fecha": "07/10/2026",
  "notas": [
-  "Un jugador ahora es un submenu: Escaramuza, Academia y Desafio del dia por separado"
+  "Menu principal: Un jugador y Multijugador a lo ancho, el resto en dos columnas"
  ],
  "archivos": [
   {
@@ -20,7 +20,7 @@
   },
   {
    "p": "index.html",
-   "h": "1ab45485584b6f98ca3a2962559b97da77867551c92e2d20d5c1bd13ec58e927",
+   "h": "a7ccbcc21941d81d11ab5dc868fc272f23c4168a70708321e20862e8743c2659",
    "n": 985154
   },
   {
