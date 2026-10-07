@@ -530,7 +530,37 @@ button,input,select,textarea{border-radius:7px}
 #creditos .cab{display:flex;gap:16px;align-items:center;margin-bottom:12px}#creditos .cab img{height:110px}
 #creditos h3{color:var(--bone);margin:14px 0 4px;font-size:16px}#creditos p{margin:4px 0;color:var(--dim)}#creditos b{color:var(--ink)}
 @media (orientation:landscape) and (max-height:560px){.estudioLogo{height:40px}.main-foot.estudioFoot{display:flex!important;position:static;grid-column:2;font-size:11px}#main .main-wrap{padding-bottom:12px}#creditos .cab img{height:70px}}
-#tutBox{position:fixed;left:50%;top:104px;transform:translateX(-50%);z-index:8500;width:min(560px,calc(100vw - 24px));background:rgba(14,22,18,.97);border:1px solid var(--bone);box-shadow:0 8px 30px rgba(0,0,0,.55);padding:14px 16px;color:var(--ink);font-size:15px;line-height:1.45}
+#tutBox{position:fixed;left:14px;bottom:14px;z-index:8500;width:min(470px,calc(100vw - 28px));background:linear-gradient(180deg,rgba(18,28,23,.98),rgba(11,17,14,.98));border:1px solid var(--tc,var(--bone));border-left:5px solid var(--tc,var(--bone));box-shadow:0 10px 34px rgba(0,0,0,.6);padding:12px 16px 12px;color:var(--ink);font-size:15px;line-height:1.45}
+#tutBox.tutSec{background:linear-gradient(180deg,rgba(40,33,12,.98),rgba(18,15,7,.98));box-shadow:0 0 0 1px var(--tc),0 10px 40px rgba(217,177,63,.25)}
+#tutBox .tutHead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+#tutBox .tutSig{font-size:18px}
+#tutBox .tutCap{font-weight:700;color:var(--tc);letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+#tutBox .tutDots{margin-left:auto;display:flex;gap:5px}
+#tutBox .tutDots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.14);display:block}
+#tutBox .tutDots i.ok{background:var(--tc)}
+#tutBox .tutDots i.now{background:transparent;box-shadow:0 0 0 2px var(--tc)}
+#tutBox .tutTit{font-size:18px;font-weight:700;font-family:Georgia,serif;margin-bottom:2px}
+@media(max-width:760px){#tutBox{left:50%;bottom:auto;top:104px;transform:translateX(-50%)}}
+#tutBox .tutMin{background:transparent!important;border:none!important;padding:0 4px!important;font-size:16px!important;color:var(--tc)!important;margin-left:6px}
+#tutBox.tutMini .tutTxt,#tutBox.tutMini .tutMis,#tutBox.tutMini .tutKey{display:none}
+#tutBox .tutKey{color:#F2D77A;margin:6px 0 2px}
+#tutBox .tutMis{margin-top:8px;font-size:13px;color:var(--bone);opacity:.9}
+#tutBox .tutChk{display:inline-block;animation:tutBlink 1.2s infinite}
+@keyframes tutBlink{50%{opacity:.35}}
+#academia{position:fixed;inset:0;z-index:9000;background:rgba(5,9,7,.78);display:flex;align-items:center;justify-content:center;padding:12px}
+#academia .acaBox{width:min(620px,100%);max-height:94vh;overflow:auto;background:linear-gradient(180deg,rgba(18,28,23,.99),rgba(11,17,14,.99));border:1px solid var(--bone);padding:18px 18px 14px}
+#academia .acaTit{font-family:Georgia,serif;font-size:24px;color:var(--bone);margin-bottom:4px}
+#academia .acaSub{font-size:14px;color:var(--ink);opacity:.85;margin-bottom:14px;line-height:1.4}
+#academia .acaGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){#academia .acaGrid{grid-template-columns:1fr}}
+#academia .acaCard{display:flex;align-items:center;gap:12px;text-align:left;background:rgba(255,255,255,.04);border:1px solid var(--line);border-left:4px solid var(--tc);color:var(--ink);padding:12px;cursor:pointer}
+#academia .acaCard:hover{background:rgba(255,255,255,.09)}
+#academia .acaSig{font-size:28px;color:var(--tc)}
+#academia .acaTxt{display:flex;flex-direction:column;flex:1}
+#academia .acaTxt b{font-family:Georgia,serif;font-size:17px;color:var(--tc)}
+#academia .acaTxt small{font-size:12.5px;opacity:.8;line-height:1.3;margin-top:2px}
+#academia .acaOk{color:var(--tc);font-size:20px;font-weight:700}
+#academia button#acaCerrar{background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:9px 18px;cursor:pointer}
 #tutBox .tutRow{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:10px}
 #tutBox button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:8px 14px;cursor:pointer;font-size:14px}
 #tutBox button.tutGo{background:var(--bone);color:#16130c;border-color:var(--bone);font-weight:700}
@@ -605,7 +635,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
       <h1>La Batalla<span class="sub2">por</span> Terrania</h1>
       <ul class="main-nav">
         <li id="btnResumeNet" style="display:none"><button data-net="1"><span class="ico">🌐</span><span class="lbl">Volver a la sala</span><span id="netBadge"></span></button></li>
-        <li id="liTutorial"><button type="button" id="btnTutorial"><span class="ico">🎓</span><span class="lbl">Tutorial <span id="tutNuevo" style="font-size:11px;color:var(--bone)">· nuevo</span></span><span>Tu primera partida, paso a paso</span></button></li>
+        <li id="liTutorial"><button type="button" id="btnTutorial"><span class="ico">🎓</span><span class="lbl">Academia <span id="tutNuevo" style="font-size:11px;color:var(--bone)">· nuevo</span></span><span>Aprendé jugando: lo básico y los secretos de cada facción</span></button></li>
         <li><button type="button" id="btnDiario"><span class="ico">📅</span><span class="lbl">Desafío del día</span><span id="diarioSub">Mismo mapa y reglas para todos, con ranking</span></button></li>
         <li><button data-go="single"><span class="ico">⚔</span><span class="lbl">Un jugador</span><span>Escaramuza contra la IA</span></button></li>
         <li><button data-go="multi"><span class="ico">🤝</span><span class="lbl">Multijugador</span><span>En el mismo dispositivo o en línea</span></button></li>
@@ -1783,6 +1813,7 @@ function planCombat(att,dfn,aAtk){
 /* ---------- 9. COMBATE ANIMADO ---------- */
 async function doAttack(att,dfn,aAtk){
   const P=planCombat(att,dfn,aAtk);
+  try{ tutEv('atk',{att,dfn,a:aAtk,P,tile:(tileAt(att.c,att.r)||{}).t}); }catch(e){}
   log(`<b>${unitName(att)}</b> (${def(att).name}) ataca a <b>${unitName(dfn)}</b> con ${aAtk.n} (${P.aDmg}×${aAtk.s}, ${P.aHit}%)`+(P.dAtk?` · responde ${P.dAtk.n} (${P.dDmg}×${P.dAtk.s}, ${P.dHit}%)`:' · sin respuesta'));
   if(FX.speed>0&&CFG.follow) centrarEn(dfn,true);
   let aS=aAtk.s, dS=P.dAtk?P.dAtk.s:0, guard=0;
@@ -1799,6 +1830,7 @@ async function doAttack(att,dfn,aAtk){
   gainXP(att,dfn.lvl); gainXP(dfn,att.lvl);
 }
 async function kill(dead,killer){
+  try{ tutEv('kill',{dead,killer}); }catch(e){}
   dead.alive=false; SND.play('kill'); SND.unidad(dead,'muerte'); refreshVis();
   S.sides[dead.side].st.losses++; if(killer&&killer.side!==dead.side){ S.sides[killer.side].st.kills++; killer.kills=(killer.kills||0)+1; }
   log(`☠ <b>${unitName(dead)}</b> (${def(dead).name}) cae.`);
@@ -3301,7 +3333,7 @@ document.addEventListener('keyup',e=>{ keys.delete(e.code); if(e.code==='Space')
 document.getElementById('endTurn').onclick=()=>{
   if(S.over||S.busy) return; S.path=null; S.pending=null;
   const pend=S.units.filter(u=>u.alive&&u.side===S.cur&&!u.acted&&!u.leader).length;
-  if(CFG.confirmEnd&&pend>0&&Date.now()-endArm>3000){ endArm=Date.now(); toast(`Quedan ${pend} unidades sin mover. Tocá de nuevo para terminar.`); return; }
+  if(CFG.confirmEnd&&pend>0&&!TUT.on&&Date.now()-endArm>3000){ endArm=Date.now(); toast(`Quedan ${pend} unidades sin mover. Tocá de nuevo para terminar.`); return; }
   endArm=0; S.sel=null;S.reach=null;S.targets.clear(); nextSide();
   if(NET.on) NET.enviar();
 };
@@ -3431,6 +3463,7 @@ function aiRecruitPick(s,L){
 }
 let AI_RUN=0;
 async function aiTurn(s){
+  if(typeof TUT!=='undefined'&&TUT.on&&TUT.pasivo){ setTimeout(()=>{ S.busy=false; nextSide(); },450); return; }
   const my=++AI_RUN; S.aiBeat=performance.now();
   try{ await aiTurnInner(s,my); }
   catch(err){
@@ -4434,54 +4467,153 @@ async function diarioAbrir(){
 }
 document.getElementById('btnDiario').onclick=diarioAbrir;
 try{ const sub=document.getElementById('diarioSub'); const c=diarioConfig(diarioFecha()); sub.textContent=`Hoy: ${FACTIONS[c.fac].name} en ${c.mapName} · IA ${AI_LEVELS[c.ai].name}`; }catch(e){}
-/* ───────── tutorial: una primera partida guiada ─────────
-   Usa una partida de verdad (mapa chico, un rival flojo, sin niebla ni clima) y un globo que va pidiendo cada acción;
-   cada paso avanza solo cuando el jugador hace lo que se le pidió. */
-const TUT={on:false,i:0,timer:null,base:{},hexFn:null,bk:null,pulse:null};
-const TUT_PASOS=[
- {txt:'👋 <b>¡Bienvenido a Terrania!</b> Se gana eliminando al líder rival. Te muestro lo básico en seis pasos, jugando de verdad.',btn:'Empezar'},
- {txt:'<b>1 de 6 · Elegí a tu líder.</b> Es el de la bandera, dentro de tu fortaleza (el círculo que late). Tocalo.',cond:()=>S.sel&&S.sel.leader&&S.sel.side===0,hexFn:()=>{ const l=S.units.find(u=>u.alive&&u.leader&&u.side===0); return l&&{c:l.c,r:l.r}; }},
- {txt:'<b>2 de 6 · Reclutá.</b> Con el líder en la fortaleza podés comprar unidades con tu oro. En el panel <b>Reclutar</b> tocá un <b>Lancero Ligero</b>.',cond:()=>S.sides[0].st.recruited>=1},
- {txt:'<b>3 de 6 · Terminá el turno.</b> Las unidades nuevas no se mueven el turno en que nacen. Tocá <b>Terminar turno</b> y el rival juega el suyo.',cond:()=>S.turn>=2&&S.cur===0&&!S.busy,pulso:'#endTurn'},
- {txt:'<b>4 de 6 · Tomá una aldea.</b> Tocá tu unidad: las casillas azules son adonde llega. Movela hasta la aldea marcada; cada aldea te da oro por turno (puede llevar uno o dos turnos).',cond:()=>S.tiles.filter(t=>t.t==='aldea'&&t.owner===0).length>TUT.base.aldeas,hexFn:()=>TUT.aldea},
- {txt:'<b>5 de 6 · A pelear.</b> Apareció un enemigo cerca. Tocá tu unidad, después al enemigo y elegí el ataque. Fijate en los porcentajes: el terreno y la hora del día cambian el resultado.',cond:()=>S.sides[0].st.dealt>TUT.base.dealt,onEnter:()=>tutEnemigo(),hexFn:()=>TUT.enemigo&&TUT.enemigo.alive?{c:TUT.enemigo.c,r:TUT.enemigo.r}:null},
- {txt:'<b>6 de 6 · El reloj manda.</b> Arriba ves la jornada: cada bando rinde mejor a ciertas horas. Los Conquistadores, a la tarde; los Terrarios, de mañana; la Alianza Oscura, de noche. Planificá los ataques según la hora.',btn:'Entendido'},
- {txt:'🏆 <b>¡Listo!</b> Ya sabés lo básico: capturá aldeas, reclutá y eliminá al líder rival. Podés seguir esta partida o salir cuando quieras.',btn:'Terminar tutorial'}];
+/* ───────── Academia de Terrania: aprender haciendo ─────────
+   Cada capítulo es un campo de instrucción chico, con un rival que no se mueve, y una lista de misiones que hay que
+   CUMPLIR de verdad (no se pueden saltear): el paso avanza solo cuando el juego detecta que lo hiciste. Al cumplir
+   las misiones clave se revela el secreto de la facción. */
+const TUT={on:false,i:0,cap:null,timer:null,base:{},hexFn:null,bk:null,ev:[],reveal:false,pasivo:true};
+const tutEv=(k,d)=>{ if(TUT.on){ TUT.ev.push(Object.assign({k},d)); if(TUT.ev.length>60) TUT.ev.shift(); } };
+const tutLado=()=>S.sides[0];
+const tutMios=(tipo)=>S.units.filter(u=>u.alive&&u.side===0&&!u.leader&&(!tipo||u.type===tipo));
+const tutHecho=()=>{ try{ return JSON.parse(localStorage.getItem('terrania.academia')||'{}'); }catch(e){ return {}; } };
+function tutLibre(c,r,min,max,evitar){
+  const L=[]; for(const t of S.tiles){ if(['agua','vacio','montana','fortaleza','aldea'].includes(t.t)||unitAt(t.c,t.r)) continue;
+    const d=hexDist(c,r,t.c,t.r); if(d>=min&&d<=max&&!(evitar&&evitar(t))) L.push([d,t.c,t.r,t]); }
+  L.sort((a,b)=>a[0]-b[0]||a[1]-b[1]||a[2]-b[2]); return L.length?L[0][3]:null;
+}
+function tutMuneco(tipo,c,r,hp){ const e=spawn(tipo,1,c,r); e.hp=e.maxhp=hp||120; return e; }
 function tutAldeaCercana(){
   const k=S.sides[0].keep; if(!k) return null; let best=null,bd=1e9;
   for(const t of S.tiles){ if(t.t!=='aldea'||t.owner>=0) continue; const d=hexDist(k.c,k.r,t.c,t.r); if(d<bd){bd=d;best=t;} }
   return best&&{c:best.c,r:best.r};
 }
-function tutEnemigo(){
-  const mio=S.units.find(u=>u.alive&&u.side===0&&!u.leader)||S.units.find(u=>u.alive&&u.side===0); if(!mio) return;
-  let spot=null;
-  for(const dist of [2,3,1]){ for(const t of S.tiles){ if(['agua','vacio','montana','fortaleza'].includes(t.t)||unitAt(t.c,t.r)) continue; if(hexDist(mio.c,mio.r,t.c,t.r)===dist){ spot=t; break; } } if(spot) break; }
-  if(!spot) return; const e=spawn('nara',1,spot.c,spot.r); e.hp=Math.min(e.hp,18); e.maxhp=Math.max(e.maxhp,e.hp); TUT.enemigo=e; refreshVis(); draw();
-}
+const tutEnHex=(u,h)=>!!(u&&h&&u.alive&&u.c===h.c&&u.r===h.r);
+const tutSelLider=()=>{ const l=S.units.find(u=>u.alive&&u.leader&&u.side===0); return l&&{c:l.c,r:l.r}; };
+const FAC_ACA={conquistadores:'#5AA7D8',terrarios:'#8CC23F',oscura:'#C7455F',reptiloides:'#27B58A'};
+const P_FIN='<b>Fin del capítulo.</b> ';
+const TUT_CAPS=[
+ {id:'basico',nombre:'Lo básico',sub:'Elegir, reclutar, mover, tomar aldeas y pelear',fac:'conquistadores',rival:'oscura',color:'#D9B13F',sigil:'🎓',oro:60,
+  rows:['..................','......h...........','..v...............','..................','..................','..................','..................','....v.............','.........v........','....F.............','..................'],
+  pasos:[
+   {t:'Elegí a tu líder',txt:'Bienvenido a Terrania. Se gana eliminando al líder rival, y todo empieza en tu fortaleza. <b>Tocá a tu líder</b> (el de la bandera, dentro del círculo que late).',cond:()=>S.sel&&S.sel.leader&&S.sel.side===0,hexFn:tutSelLider},
+   {t:'Reclutá',txt:'Con el líder en la fortaleza podés comprar unidades con tu oro. En el panel <b>Reclutar</b> tocá un <b>Lancero Ligero</b>.',cond:()=>tutLado().st.recruited>=1},
+   {t:'Terminá el turno',txt:'Las unidades nuevas no se mueven el turno en que nacen. Tocá <b>Terminar turno</b>; el rival juega el suyo.',cond:()=>S.turn>TUT.base.turno&&S.cur===0&&!S.busy,pulso:'#endTurn'},
+   {t:'Tomá una aldea',txt:'Tocá tu lancero: las casillas azules son adonde llega. Movelo hasta la aldea marcada. Cada aldea te da 1 de oro por turno y cura a quien se quede en ella (puede llevar un par de turnos).',cond:()=>S.tiles.filter(t=>t.t==='aldea'&&t.owner===0).length>TUT.base.aldeas,hexFn:()=>TUT.aldea},
+   {t:'A pelear',txt:'Apareció un enemigo cerca. Tocá tu unidad, después al enemigo y elegí el ataque. Mirá los porcentajes: el terreno y la hora del día cambian el resultado.',cond:()=>tutLado().st.dealt>TUT.base.dealt,onEnter:()=>{ const mio=tutMios()[0]||S.units.find(u=>u.alive&&u.side===0); if(!mio) return; const t=tutLibre(mio.c,mio.r,2,3); if(t){ const e=spawn('nara',1,t.c,t.r); e.hp=e.maxhp=Math.max(e.maxhp,40); e.hp=22; TUT.enemigo=e; refreshVis(); draw(); } },hexFn:()=>TUT.enemigo&&TUT.enemigo.alive?{c:TUT.enemigo.c,r:TUT.enemigo.r}:null},
+   {t:'El reloj manda',txt:'Arriba ves la jornada: cada bando rinde mejor a ciertas horas. Los Conquistadores, a la tarde; los Terrarios, de mañana; la Alianza Oscura, de noche. Planificá los ataques según la hora. <br><br>Los secretos de cada facción te los enseña su capítulo.',btn:'Entendido'},
+   {t:'¡Listo!',txt:'Ya sabés lo básico: capturá aldeas, reclutá y eliminá al líder rival. Ahora elegí una facción y aprendé sus secretos.',btn:'Volver a la Academia',fin:true}]},
+ {id:'conquistadores',nombre:'Conquistadores',sub:'Falange, tiro certero y motos que se cuelan',fac:'conquistadores',rival:'oscura',color:FAC_ACA.conquistadores,sigil:'⚙',oro:100,
+  rows:['..................','..................','.....FF...........','....FFF...........','..................','..........v.......','..................','..................','...h..............','..................','..................'],
+  escena(){ const k=S.sides[0].keep; const f=S.tiles.find(t=>t.t==='bosque'&&hexDist(k.c,k.r,t.c,t.r)>=4&&hexDist(k.c,k.r,t.c,t.r)<=6);
+    TUT.objetivo=f&&tutMuneco('nara',f.c,f.r,150); TUT.vil=S.tiles.find(t=>t.t==='aldea'&&hexDist(k.c,k.r,t.c,t.r)>=6);
+    if(TUT.vil){ const g={c:TUT.vil.c-2,r:TUT.vil.r}; const N=neighbors(g.c,g.r); let par=null; for(const a of N) for(const b of N) if(!par&&hexDist(a[0],a[1],b[0],b[1])===2) par=[a,b];
+      if(par){ par.forEach(([c,r])=>tutMuneco('nara',c,r,200)); } } refreshVis(); draw(); },
+  pasos:[
+   {t:'Falange',txt:'La infantería de la colonia pelea en bloque. <b>Reclutá 3 Lanceros Ligeros</b> (14 de oro c/u) y dejalos pegados formando un grupo.',cond:()=>S.units.some(u=>u.alive&&u.side===0&&falange(u)),
+    secreto:'<b>Falange</b>: tres o más lanceros pegados pegan <b>+20%</b>. Solos mueren; en grupo aguantan. Peleá siempre con la línea junta.'},
+   {t:'Reclutá más',txt:'Ahora un <b>Tirador de Precisión</b> (23) y un <b>Motorista de Riel</b> (18).',cond:()=>tutMios('tirador').length&&tutMios('motorista').length},
+   {t:'Terminá el turno',txt:'Los nuevos se activan el turno que viene.',cond:()=>S.turn>TUT.base.turno&&S.cur===0&&!S.busy,pulso:'#endTurn'},
+   {t:'Tiro certero',txt:'Hay un enemigo escondido en el bosque (marcado). Acercá al <b>Tirador</b> hasta quedar pegado y dispará con el <b>Rifle de riel</b>. Mirá el porcentaje antes de confirmar.',hexFn:()=>TUT.objetivo&&TUT.objetivo.alive?{c:TUT.objetivo.c,r:TUT.objetivo.r}:null,
+    cond:()=>TUT.ev.some(e=>e.k==='atk'&&e.att.type==='tirador'&&e.a.sp==='certero'),
+    secretoFn:()=>{ const e=TUT.ev.find(e=>e.k==='atk'&&e.att.type==='tirador'&&e.a.sp==='certero'); return `<b>Certero</b>: el rifle nunca baja del <b>70%</b> de acierto. Tu tiro tuvo <b>${e?e.P.aHit:70}%</b> contra un blanco en bosque. Por eso los Terrarios y la Oscura le temen a tus tiradores.`; }},
+   {t:'Colate entre líneas',txt:'Dos enemigos custodian el camino hasta la <b>aldea marcada</b>. Llevá al <b>Motorista</b> hasta ahí pasando entre los dos. Cualquier otra unidad se frenaría al pegarse a ellos.',hexFn:()=>TUT.vil&&{c:TUT.vil.c,r:TUT.vil.r},
+    cond:()=>tutMios('motorista').some(u=>tutEnHex(u,TUT.vil)),
+    secreto:'<b>Hostigador</b>: el motorista ignora la zona de control enemiga y se mete entre líneas. Roba aldeas y remata heridos; no lo pongas a sostener una línea.'},
+   {t:'Lo que falta',txt:'<b>Industria</b>: sumás +1 de oro cada cuatro aldeas (hasta +2). <b>La tarde</b> es tu hora: ahí pegás +25%. Y tu <b>Guardián Pretoriano</b> aguanta casi todo menos el fuego. Base sólida, cada pieza con su rol.',btn:'Terminar capítulo',fin:true}]},
+ {id:'terrarios',nombre:'Terrarios',sub:'Arraigo, bosque que sana y savia',fac:'terrarios',rival:'conquistadores',color:FAC_ACA.terrarios,sigil:'❦',oro:80,
+  rows:['..................','..................','...FFFF...........','..FFFFF...........','..FFFF............','..................','..FFFF............','..FFFFF...........','...FFFF...........','..................','..................'],
+  escena(){ const k=S.sides[0].keep; const cand=S.tiles.filter(t=>t.t==='bosque'&&hexDist(k.c,k.r,t.c,t.r)>=3&&hexDist(k.c,k.r,t.c,t.r)<=5).sort((a,b)=>b.c-a.c||a.r-b.r);
+    for(const f of cand){ const p=neighbors(f.c,f.r).map(([c,r])=>tileAt(c,r)).find(t=>t&&t.t==='llanura'&&!unitAt(t.c,t.r)&&hexDist(k.c,k.r,t.c,t.r)>hexDist(k.c,k.r,f.c,f.r)); if(p){ TUT.objetivo=tutMuneco('lancero',p.c,p.r,200); break; } } refreshVis(); draw(); },
+  pasos:[
+   {t:'Arraigo',txt:'Los Terrarios no comen. <b>Reclutá 3 Brotales</b> (12 de oro c/u) y terminá el turno.',cond:()=>(tutLado().st.rt||{}).brotal>=3&&S.turn>TUT.base.turno&&S.cur===0&&!S.busy,pulso:'#endTurn',
+    secretoFn:()=>`<b>Arraigo</b>: las unidades de nivel 1 <b>no cuestan mantenimiento</b>. Fijate en tu oro: tenés ${tutMios().length} unidades y pagás <b>${tutLado().pagado||0}</b> de mantenimiento. Sostenés ejércitos grandes con pocas aldeas.`},
+   {t:'El bosque es tuyo',txt:'El enemigo (marcado) está al borde del bosque. Metele un Brotal <b>desde una casilla de bosque</b> pegada a él y atacá.',hexFn:()=>TUT.objetivo&&TUT.objetivo.alive?{c:TUT.objetivo.c,r:TUT.objetivo.r}:null,
+    cond:()=>TUT.ev.some(e=>e.k==='atk'&&e.att.side===0&&e.tile==='bosque'),
+    secreto:'En el bosque pegás <b>+20%</b>, tenés <b>70% de defensa</b> y te reponés <b>1 de vida por turno</b>. Fuera de él no tenés ventaja: peleá donde vos elijas, o no pelees.'},
+   {t:'Savia que cura',txt:'Tu <b>Brotal Sanador</b> está junto a un herido. Los aliados <b>pegados</b> al Sanador se curan. Dejalos juntos y <b>terminá el turno</b>.',
+    onEnter:()=>{ const k=S.sides[0].keep; const a=tutLibre(k.c,k.r,2,4); if(!a) return; const s=spawn('brotal_sanador',0,a.c,a.r); const b=neighbors(a.c,a.r).map(([c,r])=>tileAt(c,r)).find(t=>t&&!['agua','vacio','montana','fortaleza'].includes(t.t)&&!unitAt(t.c,t.r)); const h=spawn('brotal',0,b?b.c:a.c,b?b.r:a.r); h.hp=10; TUT.herido=h; TUT.base.hp=10; refreshVis(); draw(); },
+    hexFn:()=>TUT.herido&&TUT.herido.alive?{c:TUT.herido.c,r:TUT.herido.r}:null,
+    cond:()=>TUT.herido&&TUT.herido.hp>TUT.base.hp&&S.cur===0&&!S.busy,
+    secreto:'<b>Cura</b>: el Sanador repone 4 de vida por turno a los aliados pegados. Es el <b>único sanador de Terrania</b>. Protegelo.'},
+   {t:'Ojo con el fuego',txt:'Tu corteza aguanta flechas y espadas, pero <b>el fuego te borra</b>: los tiradores de la colonia con munición incendiaria son tu peor pesadilla. Y la <b>mañana</b> es tu hora (+25%), la tarde tu punto flaco (−25%).',btn:'Terminar capítulo',fin:true}]},
+ {id:'oscura',nombre:'Alianza Oscura',sub:'Horda barata, Festín y la noche',fac:'oscura',rival:'terrarios',color:FAC_ACA.oscura,sigil:'☠',oro:40,
+  rows:['..................','......MM..........','.....MMM..........','..................','..................','..................','..................','..................','..................','..................','..................'],
+  escena(){ const k=S.sides[0].keep; const t=tutLibre(k.c,k.r,2,3); if(t){ const n=spawn('nara',0,t.c,t.r); n.hp=11; TUT.herida=n;
+      const t2=tutLibre(t.c,t.r,2,3,x=>unitAt(x.c,x.r)); if(t2){ TUT.objetivo=tutMuneco('brotal',t2.c,t2.r,6); } } 
+    TUT.mont=S.tiles.filter(x=>x.t==='montana').sort((a,b)=>hexDist(k.c,k.r,a.c,a.r)-hexDist(k.c,k.r,b.c,b.r))[0]; refreshVis(); draw(); },
+  pasos:[
+   {t:'Baratos y muchos',txt:'La Alianza gana por número. <b>Reclutá 3 Naras</b>: cuestan <b>8 de oro</b> cada una, lo más barato de Terrania.',cond:()=>(tutLado().st.rt||{}).nara>=3,
+    secreto:'Son baratos pero frágiles, y la Marchitez te dejó abierto al <b>daño arcano</b> (−30%). Compensás con cantidad: dos Naras por cada soldado del rival.'},
+   {t:'Festín',txt:'Tu <b>Nara herida</b> (marcada) tiene 11 de vida. Mandala a <b>matar al Brotal debilitado</b> que tiene cerca.',hexFn:()=>TUT.objetivo&&TUT.objetivo.alive?{c:TUT.objetivo.c,r:TUT.objetivo.r}:(TUT.herida&&TUT.herida.alive?{c:TUT.herida.c,r:TUT.herida.r}:null),
+    cond:()=>TUT.ev.some(e=>e.k==='kill'&&e.killer&&e.killer.side===0&&e.dead.type==='brotal'),
+    secretoFn:()=>`<b>Festín</b>: al matar, recuperás la <b>mitad de la vida que te falta</b> (una vez por turno).${TUT.herida?` Tu Nara quedó en <b>${TUT.herida.hp}</b> de vida.`:''} Las bajas ajenas te mantienen en pie.`},
+   {t:'Esperá a la noche',txt:'Tu hora es la <b>noche</b> (+25% de daño; de mañana rendís −25%). Terminá turnos hasta que arriba diga <b>Noche</b> 🌙.',pulso:'#endTurn',
+    cond:()=>PHASES[S.phase]&&PHASES[S.phase].id==='noche'&&S.cur===0&&!S.busy,
+    secreto:'De noche pegás <b>+25%</b>. Planificá la ofensiva para que el choque caiga en la oscuridad y retirate cuando amanezca.'},
+   {t:'Montaña',txt:'La montaña es tu casa: <b>70% de defensa</b> y cuesta 1 de movimiento. Subí un Nara a la <b>montaña marcada</b>.',hexFn:()=>TUT.mont&&{c:TUT.mont.c,r:TUT.mont.r},
+    cond:()=>tutMios().some(u=>tileAt(u.c,u.r).t==='montana'),
+    secreto:'En montaña tu defensa es la mejor de todas las facciones, y casi nadie más puede subir sin penalización.'},
+   {t:'Lo que falta',txt:'Tus <b>Nolopmas</b> drenan vida y se escabullen, tus <b>Nicas</b> cargan con el hacha, tus <b>Nusluz</b> disparan flechas ígneas y envenenan. Barato, feroz y hambriento.',btn:'Terminar capítulo',fin:true}]},
+ {id:'reptiloides',nombre:'Reptiloides',sub:'Nado: el camino que nadie más puede tomar',fac:'reptiloides',rival:'oscura',color:FAC_ACA.reptiloides,sigil:'🦎',oro:70,
+  rows:['..................','.....~~~..........','.....~~~..........','.....~~~..........','.....~~~..........','.....~~~....v.....','.....~~~..........','.....~~~..........','.....~~~..........','.....~~~..........','..................'],
+  escena(){ const k=S.sides[0].keep; TUT.vil=S.tiles.find(t=>t.t==='aldea'); if(TUT.vil){ const t=tutLibre(TUT.vil.c,TUT.vil.r,1,2); if(t) TUT.objetivo=tutMuneco('nara',t.c,t.r,120); } refreshVis(); draw(); },
+  pasos:[
+   {t:'Reclutá',txt:'Reclutá un <b>Escamoso</b> y un <b>Escupidor</b>.',cond:()=>tutMios('escamoso').length&&tutMios('escupidor').length},
+   {t:'Terminá el turno',txt:'Los nuevos se activan el turno que viene.',cond:()=>S.turn>TUT.base.turno&&S.cur===0&&!S.busy,pulso:'#endTurn'},
+   {t:'Cruzá nadando',txt:'Un lago parte el mapa: nadie más lo cruza. Llevá al <b>Escamoso</b> a la <b>aldea marcada</b>, del otro lado, atravesando el agua (puede llevar dos turnos).',hexFn:()=>TUT.vil&&{c:TUT.vil.c,r:TUT.vil.r},
+    cond:()=>tutMios('escamoso').some(u=>tutEnHex(u,TUT.vil)),
+    secreto:'<b>Nado</b>: cruzás cualquier agua como si fuera llano. Los demás tienen que rodear: vos aparecés por donde nadie te espera y robás aldeas lejos del frente.'},
+   {t:'Veneno a distancia',txt:'Pasá al <b>Escupidor</b> al otro lado y escupile al enemigo marcado con el <b>Dardo de cerbatana</b>.',hexFn:()=>TUT.objetivo&&TUT.objetivo.alive?{c:TUT.objetivo.c,r:TUT.objetivo.r}:null,
+    cond:()=>TUT.ev.some(e=>e.k==='atk'&&e.att.type==='escupidor'&&e.a.r==='rango'),
+    secreto:'Ataca de lejos: un enemigo cuerpo a cuerpo <b>no puede responderle</b>. Protegelo atrás del Escamoso y del agua.'},
+   {t:'Sin debilidades',txt:'Fuera del agua no tenés ventajas… ni debilidades: <b>50% de defensa en todo</b>, ninguna hora del día te castiga, ninguna resistencia te falta. Tu <b>Acechador</b> hostiga como una moto. Ganás por el camino que los demás no pueden tomar.',btn:'Terminar capítulo',fin:true}]}
+];
 function tutMostrar(){
-  const p=TUT_PASOS[TUT.i], box=document.getElementById('tutBox'); if(!box) return;
+  const cap=TUT.cap, p=cap.pasos[TUT.i], box=document.getElementById('tutBox'); if(!box) return;
   document.querySelectorAll('.tutPulse').forEach(e=>e.classList.remove('tutPulse'));
   if(p.pulso){ const e=document.querySelector(p.pulso); if(e) e.classList.add('tutPulse'); }
+  TUT.reveal=false; TUT.ev.length=0; TUT.base.turno=S.turn;
   if(p.onEnter&&!p._ent){ p._ent=true; try{ p.onEnter(); }catch(e){} }
-  if(TUT.i===4&&!TUT.aldea) TUT.aldea=tutAldeaCercana();
-  box.innerHTML=`<div>${p.txt}</div><div class="tutRow"><button id="tutSalir">Salir del tutorial</button><span>${p.btn?`<button class="tutGo" id="tutOk">${p.btn}</button>`:`<button id="tutSaltar">Saltar paso ▸</button>`}</span></div>`;
+  const n=cap.pasos.length;
+  const pts=cap.pasos.map((_,j)=>`<i class="${j<TUT.i?'ok':j===TUT.i?'now':''}"></i>`).join('');
+  box.style.setProperty('--tc',cap.color);
+  box.innerHTML=`<div class="tutHead"><span class="tutSig">${cap.sigil}</span><span class="tutCap">${cap.nombre}</span><span class="tutDots">${pts}</span><button class="tutMin" id="tutMin" title="Achicar">▾</button></div>
+   <div class="tutTit">${TUT.i+1}. ${p.t}</div><div class="tutTxt">${p.txt}</div>
+   ${p.btn?'':`<div class="tutMis"><span class="tutChk">▢</span> Misión: hacelo para seguir</div>`}
+   <div class="tutRow"><button id="tutSalir">Salir</button>${p.btn?`<button class="tutGo" id="tutOk">${p.btn}</button>`:''}</div>`;
   box.querySelector('#tutSalir').onclick=()=>tutTerminar(false);
+  tutMinBtn(box);
   const ok=box.querySelector('#tutOk'); if(ok) ok.onclick=()=>tutSiguiente();
-  const sk=box.querySelector('#tutSaltar'); if(sk) sk.onclick=()=>tutSiguiente();
   TUT.hexFn=p.hexFn||null; draw();
 }
-function tutSiguiente(){
-  if(TUT.i>=TUT_PASOS.length-1){ tutTerminar(true); return; }
-  TUT.i++; if(TUT.i===4) TUT.aldea=tutAldeaCercana(); tutMostrar();
+function tutMinBtn(box){ const b=box.querySelector('#tutMin'); if(!b) return; box.classList.toggle('tutMini',!!TUT.mini); b.textContent=TUT.mini?'▴':'▾'; b.onclick=()=>{ TUT.mini=!TUT.mini; box.classList.toggle('tutMini',TUT.mini); b.textContent=TUT.mini?'▴':'▾'; }; }
+function tutRevelar(p){
+  const cap=TUT.cap, box=document.getElementById('tutBox'); if(!box) return;
+  const html=p.secretoFn?p.secretoFn():p.secreto; TUT.reveal=true; TUT.hexFn=null;
+  box.classList.add('tutSec');
+  box.innerHTML=`<div class="tutHead"><span class="tutSig">${cap.sigil}</span><span class="tutCap">${cap.nombre}</span><span class="tutDots">${cap.pasos.map((_,j)=>`<i class="${j<=TUT.i?'ok':''}"></i>`).join('')}</span><button class="tutMin" id="tutMin" title="Achicar">▾</button></div>
+   <div class="tutTit">✅ ¡Misión cumplida!</div><div class="tutKey">🔑 <b>Secreto de ${cap.id==='oscura'?'la':'los'} ${cap.nombre}</b></div><div class="tutTxt">${html}</div>
+   <div class="tutRow"><span></span><button class="tutGo" id="tutOk">Continuar</button></div>`;
+  box.querySelector('#tutOk').onclick=()=>{ box.classList.remove('tutSec'); tutSiguiente(); };
+  box.classList.remove('tutMini'); tutMinBtn(box);
 }
-function tutTerminar(completo){
+function tutSiguiente(){
+  const cap=TUT.cap, p=cap.pasos[TUT.i];
+  if(p.fin||TUT.i>=cap.pasos.length-1){ tutTerminar(true,true); return; }
+  TUT.i++; tutMostrar();
+}
+function tutTerminar(completo,volver){
+  const cap=TUT.cap;
   TUT.on=false; clearInterval(TUT.timer); TUT.hexFn=null;
   const box=document.getElementById('tutBox'); if(box) box.remove();
   document.querySelectorAll('.tutPulse').forEach(e=>e.classList.remove('tutPulse'));
-  try{ localStorage.setItem('terrania.tutHecho','1'); }catch(e){}
+  if(completo&&cap){ try{ const h=tutHecho(); h[cap.id]=1; localStorage.setItem('terrania.academia',JSON.stringify(h)); localStorage.setItem('terrania.tutHecho','1'); }catch(e){} }
+  const k=MAPS.findIndex(m=>m.tut); if(k>=0) MAPS.splice(k,1);
   if(TUT.bk){ Object.assign(SETUP,TUT.bk); TUT.bk=null; }
-  try{ toast(completo?'¡Tutorial completo! Ahora jugá a tu ritmo.':'Tutorial cerrado. Lo encontrás en el menú cuando quieras.'); }catch(e){}
-  try{ draw(); }catch(e){}
+  try{ const n=document.getElementById('tutNuevo'); if(n&&completo) n.remove(); }catch(e){}
+  if(volver||!completo){ try{ if(!document.getElementById('game').classList.contains('hidden')) document.getElementById('btnQuit').click(); }catch(e){} }
+  try{ toast(completo?'¡Capítulo completo!':'Academia cerrada. La encontrás en el menú cuando quieras.'); }catch(e){}
+  if(volver){ setTimeout(tutAcademia,250); }
 }
 function drawTut(now,size){
   if(!TUT.on||!TUT.hexFn) return; const h=TUT.hexFn(); if(!h) return;
@@ -4489,26 +4621,46 @@ function drawTut(now,size){
   ctx.save(); ctx.strokeStyle='#F2E6C4'; ctx.lineWidth=Math.max(2,size*0.10); ctx.globalAlpha=0.55+0.4*k; ctx.beginPath(); ctx.arc(x,y,size*(0.78+0.14*k),0,7); ctx.stroke();
   ctx.globalAlpha=0.9; ctx.font=`${Math.round(size*0.7)}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('👇',x,y-size*(1.15+0.15*k)); ctx.restore();
 }
-function tutorialIniciar(){
+function tutorialIniciar(id){
+  const cap=TUT_CAPS.find(c=>c.id===id); if(!cap) return;
   SND.init();
+  const ov=document.getElementById('academia'); if(ov) ov.remove();
   TUT.bk=JSON.parse(JSON.stringify(SETUP));
-  SETUP.mode='single'; SETUP.map='borde'; SETUP.gold=100; SETUP.ai='recluta'; SETUP.fog=false; SETUP.clima=false; SETUP.girar=false; SETUP.modoVictoria='lideres';
-  SETUP.slots=[]; ensureSlots(); SETUP.slots[0].fac='conquistadores'; SETUP.slots[1].fac='oscura'; SETUP.slots.forEach(x=>{x.azar=false;});
+  const m={id:'tut_'+cap.id,players:2,name:'Campo de instrucción',desc:'',w:18,h:11,keeps:[{c:2,r:5},{c:15,r:5}],rows:cap.rows,tut:true};
+  MAPS.push(m);
+  SETUP.mode='single'; SETUP.map=m.id; SETUP.gold=cap.oro; SETUP.ai='recluta'; SETUP.fog=false; SETUP.clima=false; SETUP.girar=false; SETUP.modoVictoria='lideres';
+  SETUP.slots=[]; ensureSlots(); SETUP.slots[0].fac=cap.fac; SETUP.slots[1].fac=cap.rival; SETUP.slots.forEach(x=>{x.azar=false;});
   document.getElementById('btnStart').click();
-  TUT.on=true; TUT.i=0; TUT.enemigo=null; TUT.aldea=null; TUT_PASOS.forEach(p=>{ delete p._ent; });
-  TUT.base={aldeas:S.tiles.filter(t=>t.t==='aldea'&&t.owner===0).length,dealt:S.sides[0].st.dealt};
+  cap.pasos.forEach(p=>{ delete p._ent; delete p._ok; });
+  TUT.on=true; TUT.cap=cap; TUT.i=0; TUT.enemigo=null; TUT.aldea=null; TUT.objetivo=null; TUT.vil=null; TUT.herido=null; TUT.herida=null; TUT.mont=null; TUT.ev.length=0;
+  S.sides[0].gold=cap.oro; S.sides[1].gold=0;
+  if(cap.escena){ try{ cap.escena(); }catch(e){ logError('tutEscena',e); } }
+  TUT.aldea=tutAldeaCercana();
+  TUT.base={aldeas:S.tiles.filter(t=>t.t==='aldea'&&t.owner===0).length,dealt:S.sides[0].st.dealt,turno:S.turn};
   const box=document.createElement('div'); box.id='tutBox'; document.body.appendChild(box);
   tutMostrar();
   clearInterval(TUT.timer);
   TUT.timer=setInterval(()=>{
     if(!TUT.on) return;
     if(document.getElementById('game').classList.contains('hidden')||S.over){ tutTerminar(false); return; }
-    const p=TUT_PASOS[TUT.i]; if(p&&p.cond&&!p.btn){ let ok=false; try{ ok=!!p.cond(); }catch(e){} if(ok) setTimeout(()=>{ if(TUT.on&&TUT_PASOS[TUT.i]===p) tutSiguiente(); },700); }
-    else if(TUT.i===4&&!TUT.aldea) TUT.aldea=tutAldeaCercana();
+    const p=cap.pasos[TUT.i]; if(!p||p.btn||TUT.reveal||p._ok) return;
+    let ok=false; try{ ok=!!p.cond(); }catch(e){}
+    if(ok){ p._ok=true; setTimeout(()=>{ if(!TUT.on||cap.pasos[TUT.i]!==p) return; if(p.secreto||p.secretoFn) tutRevelar(p); else tutSiguiente(); },700); }
   },400);
 }
-document.getElementById('btnTutorial').onclick=tutorialIniciar;
-try{ if(localStorage.getItem('terrania.tutHecho')) document.getElementById('tutNuevo').remove(); }catch(e){}
+function tutAcademia(){
+  let ov=document.getElementById('academia'); if(ov) ov.remove();
+  const h=tutHecho();
+  ov=document.createElement('div'); ov.id='academia';
+  ov.innerHTML=`<div class="acaBox"><div class="acaTit">🎓 Academia de Terrania</div><div class="acaSub">Aprendé haciendo: cada capítulo es un campo de práctica con misiones que tenés que cumplir. Empezá por lo básico y después descubrí el secreto de cada facción.</div>
+   <div class="acaGrid">${TUT_CAPS.map((c,i)=>`<button class="acaCard" data-id="${c.id}" style="--tc:${c.color}"><span class="acaSig">${c.sigil}</span><span class="acaTxt"><b>${c.nombre}</b><small>${c.sub}</small></span><span class="acaOk">${h[c.id]?'✔':(i===0?'▶':'')}</span></button>`).join('')}</div>
+   <div class="tutRow" style="margin-top:14px"><span></span><button id="acaCerrar">Cerrar</button></div></div>`;
+  document.body.appendChild(ov);
+  ov.querySelectorAll('.acaCard').forEach(b=>b.onclick=()=>tutorialIniciar(b.dataset.id));
+  ov.querySelector('#acaCerrar').onclick=()=>ov.remove(); ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+}
+document.getElementById('btnTutorial').onclick=tutAcademia;
+try{ const h=tutHecho(); if(Object.keys(h).length) document.getElementById('tutNuevo').remove(); }catch(e){}
 /* ───────── repetición de la partida ─────────
    Se guarda una foto al empezar el turno de cada bando (unidades, vida y dueños de aldeas) y, al terminar,
    se puede rever la guerra con la niebla levantada, avanzando o retrocediendo turno por turno. */
