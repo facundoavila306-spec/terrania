@@ -635,8 +635,6 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
       <h1>La Batalla<span class="sub2">por</span> Terrania</h1>
       <ul class="main-nav">
         <li id="btnResumeNet" style="display:none"><button data-net="1"><span class="ico">🌐</span><span class="lbl">Volver a la sala</span><span id="netBadge"></span></button></li>
-        <li id="liTutorial"><button type="button" id="btnTutorial"><span class="ico">🎓</span><span class="lbl">Academia <span id="tutNuevo" style="font-size:11px;color:var(--bone)">· nuevo</span></span><span>Aprendé jugando: lo básico y los secretos de cada facción</span></button></li>
-        <li><button type="button" id="btnDiario"><span class="ico">📅</span><span class="lbl">Desafío del día</span><span id="diarioSub">Mismo mapa y reglas para todos, con ranking</span></button></li>
         <li><button data-go="single"><span class="ico">⚔</span><span class="lbl">Un jugador</span><span>Escaramuza contra la IA</span></button></li>
         <li><button data-go="multi"><span class="ico">🤝</span><span class="lbl">Multijugador</span><span>En el mismo dispositivo o en línea</span></button></li>
         <li><button data-go="campana"><span class="ico">🔥</span><span class="lbl">Campaña</span><span>Cuatro campañas con historia propia</span></button></li>
@@ -656,6 +654,10 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
 <section id="single" class="screen hidden">
 <div class="pane">
   <div class="pane-head"><button class="back" data-go="main">← Menú</button><h2 id="singleTitle">Un jugador</h2><p class="hint" id="singleHint"></p></div>
+  <div id="atajosSolo" style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px">
+    <button type="button" id="btnTutorial" class="ghost" style="flex:1 1 220px;margin:0;text-align:left"><b>🎓 Academia</b> <span id="tutNuevo" style="font-size:11px;color:var(--bone)">· nuevo</span><br><span class="tiny">Aprendé jugando: lo básico y los secretos de cada facción</span></button>
+    <button type="button" id="btnDiario" class="ghost" style="flex:1 1 220px;margin:0;text-align:left"><b>📅 Desafío del día</b><br><span class="tiny" id="diarioSub">Mismo mapa y reglas para todos, con ranking</span></button>
+  </div>
   <div class="setup">
     <div>
       <div class="field"><h3>Campo de batalla</h3><div id="mapPreview"></div><div class="maps" id="mapList"></div></div>
@@ -3775,6 +3777,7 @@ function ensureSlots(){
 }
 function buildSetup(){
   const single=SETUP.mode==='single';
+  document.getElementById('atajosSolo').style.display=single?'flex':'none';
   document.getElementById('singleTitle').textContent=single?'Un jugador':'Multijugador en este dispositivo';
   document.getElementById('singleHint').textContent=single?'Elegí el mapa; después, para cada bando, su facción y si lo jugás vos o la IA. Las facciones pueden repetirse.':'Cada bando puede ser una persona o la IA; al terminar un turno se pasa el dispositivo. Las facciones pueden repetirse.';
   ensureSlots();
