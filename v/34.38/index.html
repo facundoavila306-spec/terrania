@@ -182,8 +182,9 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;letter-sp
 .ghost:hover{color:var(--ink);border-color:var(--bone)}
 
 /* --- multijugador --- */
-.profrow{display:grid;grid-template-columns:1fr auto;gap:6px;background:var(--panel);border:1px solid var(--line);border-left:4px solid transparent}
+.profrow{display:grid;grid-template-columns:1fr auto auto;gap:6px;background:var(--panel);border:1px solid var(--line);border-left:4px solid transparent}
 .profrow.on{border-left-color:var(--bone);background:var(--panel2)}
+.profrow .pstat{background:transparent;border:0;padding:0 8px;font-size:20px;cursor:pointer}
 .profrow .pmain{background:transparent;border:0;text-align:left;padding:12px 14px;color:var(--ink)}
 .profrow .pmain b{display:block;font-size:17px;font-family:'Fraunces';font-weight:600}
 .profrow .pmain span{display:block;margin-top:2px}
@@ -529,6 +530,12 @@ button,input,select,textarea{border-radius:7px}
 #creditos .cab{display:flex;gap:16px;align-items:center;margin-bottom:12px}#creditos .cab img{height:110px}
 #creditos h3{color:var(--bone);margin:14px 0 4px;font-size:16px}#creditos p{margin:4px 0;color:var(--dim)}#creditos b{color:var(--ink)}
 @media (orientation:landscape) and (max-height:560px){.estudioLogo{height:40px}.main-foot.estudioFoot{display:flex!important;position:static;grid-column:2;font-size:11px}#main .main-wrap{padding-bottom:12px}#creditos .cab img{height:70px}}
+#tutBox{position:fixed;left:50%;top:104px;transform:translateX(-50%);z-index:8500;width:min(560px,calc(100vw - 24px));background:rgba(14,22,18,.97);border:1px solid var(--bone);box-shadow:0 8px 30px rgba(0,0,0,.55);padding:14px 16px;color:var(--ink);font-size:15px;line-height:1.45}
+#tutBox .tutRow{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:10px}
+#tutBox button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:8px 14px;cursor:pointer;font-size:14px}
+#tutBox button.tutGo{background:var(--bone);color:#16130c;border-color:var(--bone);font-weight:700}
+@keyframes tutPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,230,196,.0)}50%{box-shadow:0 0 0 6px rgba(242,230,196,.55)}}
+.tutPulse{animation:tutPulse 1.1s infinite}
 </style>
 </head>
 <body>
@@ -598,6 +605,8 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
       <h1>La Batalla<span class="sub2">por</span> Terrania</h1>
       <ul class="main-nav">
         <li id="btnResumeNet" style="display:none"><button data-net="1"><span class="ico">🌐</span><span class="lbl">Volver a la sala</span><span id="netBadge"></span></button></li>
+        <li id="liTutorial"><button type="button" id="btnTutorial"><span class="ico">🎓</span><span class="lbl">Tutorial <span id="tutNuevo" style="font-size:11px;color:var(--bone)">· nuevo</span></span><span>Tu primera partida, paso a paso</span></button></li>
+        <li><button type="button" id="btnDiario"><span class="ico">📅</span><span class="lbl">Desafío del día</span><span id="diarioSub">Mismo mapa y reglas para todos, con ranking</span></button></li>
         <li><button data-go="single"><span class="ico">⚔</span><span class="lbl">Un jugador</span><span>Escaramuza contra la IA</span></button></li>
         <li><button data-go="multi"><span class="ico">🤝</span><span class="lbl">Multijugador</span><span>En el mismo dispositivo o en línea</span></button></li>
         <li><button data-go="campana"><span class="ico">🔥</span><span class="lbl">Campaña</span><span>Cuatro campañas con historia propia</span></button></li>
@@ -633,6 +642,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
       </div>
       <div class="field"><h3>Niebla de guerra</h3>
         <div class="toggle" id="fogSel" style="width:100%"><button data-f="1" style="flex:1">Con niebla</button><button data-f="0" style="flex:1">Todo visible</button></div>
+        <div class="toggle" id="climaSel" style="width:100%;margin-top:8px"><button data-f="1" style="flex:1">Con clima</button><button data-f="0" style="flex:1">Siempre despejado</button></div>
         <p class="tiny" style="margin:8px 0 0;line-height:1.5">Con niebla solo ves lo que alcanzan tus unidades y tus aldeas. Los exploradores valen oro, y una unidad que descubre enemigos en su camino se frena.</p>
       </div>
       <div class="field"><h3>Dificultad de la IA</h3>
@@ -1029,7 +1039,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
     <p class="tiny" style="margin-bottom:26px">Pasá el dispositivo. Nadie más debería ver el tablero.</p>
     <button class="start" id="passOk" style="width:auto;padding:15px 44px">Estoy listo</button>
   </div></div>
-  <div id="over" class="hidden"><div class="overbox"><h2 id="overTitle"></h2><p id="overText"></p><div id="overStats"></div><button class="start" id="btnAgain" style="width:auto;padding:15px 40px;margin-top:24px">Nueva partida</button></div></div>
+  <div id="over" class="hidden"><div class="overbox"><h2 id="overTitle"></h2><p id="overText"></p><div id="overStats"></div><button class="start" id="btnAgain" style="width:auto;padding:15px 40px;margin-top:24px">Nueva partida</button> <button class="start" id="btnReplay" style="width:auto;padding:15px 28px;margin-top:24px;margin-left:8px;background:var(--panel2);color:var(--ink)">▶ Ver repetición</button></div></div>
   <div id="escenaDlg" class="hidden"><div class="escbox" id="escBox">
     <div class="esc-head" id="escHead"><div class="esc-sig" id="escSigil">❧</div><div><div class="esc-nom" id="escNom"></div><div class="esc-rol" id="escRol"></div></div></div>
     <div class="esc-txt" id="escTxt"></div>
@@ -1352,13 +1362,13 @@ lider_terr3:{fac:'terrarios',name:'Sylvaan en Marcha',role:'Líder · nivel 3',c
 
 /* ═══ REPTILOIDES · su único rasgo propio es nadar (agua con coste 1); resistencias parejas, sin vulnerabilidades ═══ */
 escamoso:{fac:'reptiloides',name:'Escamoso',role:'Infantería básica',cost:14,hp:42,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:6,s:3,t:'filo',r:'melee'}], res:{filo:5,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escamoso_curtido'],
+  atk:[{n:'Tridente',d:6,s:3,t:'filo',r:'melee'}], res:{filo:5,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escamoso_curtido'],
   note:'La línea de los Reptiloides. <b>Nada</b>: el agua le cuesta 1 de movimiento, como el llano. Sin ventajas ni debilidades en ningún otro terreno.'},
 escamoso_curtido:{fac:'reptiloides',name:'Escamoso Curtido',role:'Nivel 2 · desde Escamoso',cost:0,lvl:2,hp:50,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:8,s:3,t:'filo',r:'melee'}], res:{filo:10,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['guerrero_salamandra'],
+  atk:[{n:'Tridente',d:8,s:3,t:'filo',r:'melee'}], res:{filo:10,perf:10,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['guerrero_salamandra'],
   note:'Escamas más duras, garras más largas. Sigue nadando donde otros se detienen.'},
 guerrero_salamandra:{fac:'reptiloides',name:'Guerrero Salamandra',role:'Nivel 3 · desde Escamoso Curtido',cost:0,lvl:3,hp:60,mp:5,glyph:'🦎',
-  atk:[{n:'Garras',d:10,s:3,t:'filo',r:'melee'}], res:{filo:15,perf:15,imp:5,fuego:0,frio:0,arc:0}, ab:[],
+  atk:[{n:'Tridente',d:10,s:3,t:'filo',r:'melee'}], res:{filo:15,perf:15,imp:5,fuego:0,frio:0,arc:0}, ab:[],
   note:'El veterano del cauce. Tres zarpazos de diez, y sale del agua cuando él quiere.'},
 escupidor:{fac:'reptiloides',name:'Escupidor',role:'Distancia',cost:22,hp:36,mp:5,glyph:'🐍',
   atk:[{n:'Colmillo',d:4,s:1,t:'filo',r:'melee'},{n:'Dardo de cerbatana',d:11,s:2,t:'perf',r:'rango'}], res:{filo:0,perf:5,imp:0,fuego:0,frio:0,arc:0}, ab:[], next:['escupidor_acido'],
@@ -1503,10 +1513,26 @@ function hexDist(c1,r1,c2,r2){ const a=toCube(c1,r1),b=toCube(c2,r2); return Mat
 const tileAt=(c,r)=>inGrid(c,r)?S.tiles[r*S.w+c]:null;
 const unitAt=(c,r)=>S.units.find(u=>u.alive&&u.c===c&&u.r===r)||null;
 /* --- niebla: casillas visibles para el bando que juega --- */
+/* ---------- CLIMA ----------
+   Cambia cada tres turnos y sale de la semilla de la partida, así todos los jugadores (y la partida guardada)
+   ven el mismo cielo sin mandar nada por la red. Los efectos entran en el desglose de daño y de acierto. */
+const CLIMAS={
+  despejado:{id:'despejado',name:'Despejado',icon:'',fuego:1,rango:0,vis:0,txt:'El cielo se despejó.'},
+  lluvia:   {id:'lluvia',   name:'Lluvia',   icon:'🌧',fuego:0.75,rango:0,vis:0,txt:'El fuego pierde un 25% de daño.'},
+  niebla:   {id:'niebla',   name:'Niebla',   icon:'🌫',fuego:1,rango:-10,vis:2,txt:'Se ve menos lejos y los ataques a distancia aciertan un 10% menos.'},
+  tormenta: {id:'tormenta', name:'Tormenta', icon:'⛈',fuego:0.6,rango:-10,vis:1,txt:'El fuego pierde un 40%, se ve menos lejos y la distancia acierta un 10% menos.'}};
+function climaIniciar(on,semilla){ S.climaOn=!!on; S.climaSeed=(semilla!=null)?semilla:Math.floor(Math.random()*1e9); }
+function climaHash(a,b){ let h=(a^0x9E3779B9)>>>0; h=Math.imul(h^(b+0x7F4A7C15),2246822519)>>>0; h=Math.imul(h^(h>>>13),3266489917)>>>0; return (h^(h>>>16))>>>0; }
+function climaDe(turno){
+  if(!S.climaOn||S.climaSeed==null||S.esCampana) return CLIMAS.despejado;
+  const b=Math.floor(((turno||S.turn)-1)/3); if(b<1) return CLIMAS.despejado;     // los primeros turnos, cielo limpio
+  const r=climaHash(S.climaSeed,b)%100;
+  return r<48?CLIMAS.despejado:r<70?CLIMAS.lluvia:r<86?CLIMAS.niebla:CLIMAS.tormenta;
+}
 function computeVis(side){
   const vis=new Set();
   const team=teamOf(side);
-  for(const u of S.units){ if(!u.alive||teamOf(u.side)!==team) continue; const rng=(def(u).mp||5)+1;
+  for(const u of S.units){ if(!u.alive||teamOf(u.side)!==team) continue; const rng=Math.max(2,(def(u).mp||5)+1-climaDe().vis);
     for(let c=Math.max(0,u.c-rng-1);c<=Math.min(S.w-1,u.c+rng+1);c++) for(let r=Math.max(0,u.r-rng-1);r<=Math.min(S.h-1,u.r+rng+1);r++) if(hexDist(u.c,u.r,c,r)<=rng) vis.add(key(c,r)); }
   for(const t of S.tiles){ if(t.t==='aldea'&&t.owner>=0&&teamOf(t.owner)===team){ vis.add(key(t.c,t.r)); for(const [c,r] of neighbors(t.c,t.r)) if(inB(c,r)) vis.add(key(c,r)); } }
   for(const sd of teamSides(team)){ const k=sd.keep; if(!k) continue; for(let c=k.c-2;c<=k.c+2;c++) for(let r=k.r-2;r<=k.r+2;r++) if(inB(c,r)&&hexDist(k.c,k.r,c,r)<=2) vis.add(key(c,r)); }
@@ -1558,7 +1584,7 @@ const mapaConFlip=(id,flip)=>{ const M=MAPS.find(m=>m.id===id); return M?voltear
 /* ---------- 6. CONSTRUCCIÓN ---------- */
 function buildMap(mapDef,slots,startGold){
   S.map=mapDef;S.w=mapDef.w;S.h=mapDef.h;S.tiles=[];S.units=[];S.sides=[];
-  S.cur=0;S.turn=1;S.phase=0;S.sel=null;S.over=false;uid=1;
+  S.cur=0;S.turn=1;S.phase=0;S.sel=null;S.over=false;uid=1;S.repl=[];
   FX.off.clear();FX.flash.clear();FX.texts.length=0;FX.shots.length=0;
   for(let r=0;r<S.h;r++){
     const row=(mapDef.rows[r]||'').padEnd(S.w,'.');
@@ -1709,6 +1735,7 @@ function dmgBreakdown(att,dfn,a,charge){
       if(has(o,'liderazgo')||(has(o,'liderazgo_manada')&&att.type.startsWith('nara'))) lider=true;}
     if(lider){ d*=1.25; parts.push(['Liderazgo','+25%']); } }
   const m=phaseMul(att); if(m!==1){ d*=m; parts.push([PHASES[S.phase].name, m>1?'+25%':'−25%']); }
+  { const cl=climaDe(); if(a.t==='fuego'&&cl.fuego<1){ d*=cl.fuego; parts.push([cl.name,'−'+Math.round((1-cl.fuego)*100)+'%']); } }
   const res=(def(dfn).res[a.t]??0)+(hasTrait(dfn,'tenaz')?10:0); if(res){ d*=(100-res)/100; parts.push(['Resistencia a '+DMG[a.t], (res>0?'−':'+')+Math.abs(res)+'%']); }
   if(fac(att).id==='terrarios'&&tileAt(att.c,att.r).t==='bosque'){ d*=1.2; parts.push(['Raíces del bosque','+20%']); }
   if(fac(att).id==='conquistadores'&&tileAt(att.c,att.r).t==='colina'){ d*=1.2; parts.push(['Dueños de las colinas','+20%']); }
@@ -1728,6 +1755,7 @@ function hitBreakdown(att,dfn,a){
   { const ta=tileAt(att.c,att.r).t, td=t.t;
     if(ALTO.includes(ta)&&!ALTO.includes(td)){ ch+=10; parts.push(['Desde la altura','+10%']); }
     if(ta==='pantano'&&td!=='pantano'&&fac(att).id==='conquistadores'){ ch-=10; parts.push(['Hundido en el barro','−10%']); } }
+  { const cl=climaDe(); if(a.r==='rango'&&cl.rango){ ch+=cl.rango; parts.push([cl.name,cl.rango+'%']); } }
   if(a.sp==='certero'&&ch<70){ ch=70; parts.push(['Certero','mín. 70%']); }
   return {ch:Math.max(15,Math.min(95,ch)),parts};
 }
@@ -1771,7 +1799,7 @@ async function doAttack(att,dfn,aAtk){
   gainXP(att,dfn.lvl); gainXP(dfn,att.lvl);
 }
 async function kill(dead,killer){
-  dead.alive=false; SND.play('kill'); refreshVis();
+  dead.alive=false; SND.play('kill'); SND.unidad(dead,'muerte'); refreshVis();
   S.sides[dead.side].st.losses++; if(killer&&killer.side!==dead.side){ S.sides[killer.side].st.kills++; killer.kills=(killer.kills||0)+1; }
   log(`☠ <b>${unitName(dead)}</b> (${def(dead).name}) cae.`);
   floatText(dead,'☠',DMGCOL.filo,1.5);
@@ -1842,7 +1870,7 @@ async function moveUnit(u,c,r,mpLeft,reach){
       if(blocker&&blocker.side!==u.side){ stopped=true; break; }            // emboscada: alguien oculto en el camino
       if(FX.speed>0){
         const a=hexPix(u.c,u.r,S.hex), b=hexPix(pc,pr,S.hex), t0=performance.now();
-        SND.play('step');
+        SND.unidad(u,'paso',(tileAt(pc,pr)||{}).t);
         await new Promise(res=>{ const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/per); u.anim={x:a.x+(b.x-a.x)*p,y:a.y+(b.y-a.y)*p-Math.sin(p*Math.PI)*S.hex*0.12}; draw(); if(p<1) requestAnimationFrame(tick); else res(); }; tick(); });
       }
       mp-=moveCost(u,tileAt(pc,pr)); u.c=pc;u.r=pr;
@@ -1910,7 +1938,7 @@ async function strikeFx(from,to,a,hit,dmg){
     await wait(200/sp);
   }
   if(hit){
-    SND.play(a.t);
+    SND.play(a.t); SND.unidad(to,'golpe'); SND.unidad(from,'ataque');
     FX.flash.set(to.id,{t0:performance.now(),t1:performance.now()+260/sp,col:DMGCOL[a.t]});
     floatText(to,'−'+dmg,DMGCOL[a.t]);
   } else {
@@ -1969,6 +1997,39 @@ const SND={on:true,vol:0.8,ctx:null,
       case 'profunda':
         this.noise(1.7,'lowpass',380,900,0.11*v,0); this.tone(210,330,1.1,'sine',0.045*v,0.45); this.tone(330,190,0.9,'sine',0.04*v,1.55); break;
     }
+  },
+  /* sonidos propios de cada bando: golpe recibido, grito al atacar, paso y muerte.
+     kind: 'golpe' | 'ataque' | 'paso' | 'muerte' */
+  unidad(u,kind,tile){
+    if(!this.on||FX.speed===0||!u) return; this.init(); if(!this.ctx) return;
+    let f=''; try{ f=fac(u).id; }catch(e){}
+    const agua=tile&&(tile==='agua'||tile==='vado'||tile==='pantano');
+    if(kind==='paso'){
+      if(agua){ this.noise(0.16,'bandpass',900,2200,0.16); this.noise(0.07,'highpass',3500,3500,0.08,0.04); return; }       // chapoteo
+      if(f==='conquistadores') this.noise(0.06,'bandpass',1500,700,0.12);                                                    // bota con placa
+      else if(f==='oscura') this.noise(0.09,'lowpass',500,150,0.14);                                                        // pisada pesada y húmeda
+      else if(f==='terrarios') this.noise(0.10,'highpass',2500,1500,0.07);                                                  // hojas y ramas
+      else if(f==='reptiloides') this.noise(0.07,'bandpass',2200,900,0.09);                                                  // arrastre de escamas
+      else this.play('step');
+      return; }
+    if(kind==='golpe'){
+      if(f==='conquistadores'){ this.tone(1800,900,0.05,'square',0.06,0.02); }                                              // chasquido de chapa
+      else if(f==='oscura'){ this.tone(170,95,0.22,'sawtooth',0.14,0.02); this.noise(0.12,'bandpass',900,500,0.08,0.03); }  // alarido
+      else if(f==='terrarios'){ this.tone(240,150,0.2,'triangle',0.14,0.02); this.noise(0.14,'lowpass',700,200,0.1,0.03); } // madera que cruje
+      else if(f==='reptiloides'){ this.noise(0.28,'highpass',6500,3000,0.14,0.02); }                                        // siseo
+      return; }
+    if(kind==='ataque'){
+      if(f==='conquistadores'){ this.tone(520,780,0.07,'square',0.05); }                                                     // zumbido de riel
+      else if(f==='oscura'){ this.tone(120,200,0.2,'sawtooth',0.10); }                                                       // rugido corto
+      else if(f==='terrarios'){ this.tone(180,260,0.18,'sine',0.12); }                                                       // crujido hondo
+      else if(f==='reptiloides'){ this.noise(0.18,'highpass',5500,4000,0.10); this.tone(260,200,0.1,'triangle',0.05,0.05); }
+      return; }
+    if(kind==='muerte'){
+      if(f==='conquistadores'){ this.tone(900,120,0.45,'square',0.07); this.noise(0.25,'highpass',3000,1200,0.06,0.1); }   // chispa y apagón
+      else if(f==='oscura'){ this.tone(260,50,0.7,'sawtooth',0.14); this.noise(0.4,'bandpass',600,150,0.10,0.1); }          // aullido
+      else if(f==='terrarios'){ this.tone(150,60,0.6,'triangle',0.16); this.noise(0.35,'lowpass',900,150,0.14,0.05); }      // tronco que cae
+      else if(f==='reptiloides'){ this.noise(0.5,'bandpass',1200,350,0.14); this.tone(220,70,0.5,'sine',0.08,0.05); }       // gorgoteo
+      return; }
   },
   play(kind){
     if(!this.on||FX.speed===0) return; this.init(); if(!this.ctx) return;
@@ -2073,6 +2134,7 @@ const MUSIC={on:true,vol:0.5,playing:false,phase:null,pending:null,timer:null,ne
 function startSideTurn(){
   const s=S.sides[S.cur];
   if(!s.alive){nextSide();return;}
+  try{ repGrabar(); }catch(e){}
   const vils=S.tiles.filter(t=>t.owner===s.i).length;
   const units=S.units.filter(u=>u.alive&&u.side===s.i);
   const arraigo = s.fac==='terrarios';                                   // Arraigo: los brotes de nivel 1 no comen
@@ -2238,6 +2300,7 @@ function recruit(type){
   if(s.gold<cost) return toast('No te alcanza el oro.');
   const spots=freeCastleTiles(s); if(!spots.length) return toast('No hay lugar libre en la fortaleza.');
   const [c,r]=spots[0]; const u=spawn(type,s.i,c,r); u.mp=0;u.acted=true;
+  s.st.rt=s.st.rt||{}; s.st.rt[type]=(s.st.rt[type]||0)+1;
   s.gold-=cost; s.st.recruited++; s.st.gold+=cost; SND.play('recruit'); refreshVis(); NET.enviarParcial();
   const futUp=S.units.filter(x=>x.alive&&x.side===s.i&&!x.leader).reduce((a,x)=>a+x.lvl,0);
   if(futUp>(s.vils||0)+1) toast(`Cuidado: mantenimiento ${futUp} y solo ${s.vils||0} aldeas.`); log(`Se recluta <b>${UNITS[type].name}</b> por ${cost} de oro.`);
@@ -2624,6 +2687,34 @@ function drawAmbient(now,size){
   }
   ctx.restore();
 }
+/* lluvia, niebla y tormenta se dibujan sólo sobre lo que se ve en pantalla */
+function drawClima(now,size,VR){
+  const cl=climaDe(); if(cl.id==='despejado') return;
+  const x0=VR?Math.max(0,VR.x0+size*3):0, y0=VR?Math.max(0,VR.y0+size*3):0, x1=VR?Math.min(cv.width,VR.x1-size*3):cv.width, y1=VR?Math.min(cv.height,VR.y1-size*3):cv.height;
+  const W=x1-x0, H=y1-y0; if(W<=0||H<=0) return; const t=now/1000;
+  ctx.save(); ctx.beginPath(); ctx.rect(x0,y0,W,H); ctx.clip();
+  if(cl.id==='niebla'){
+    ctx.fillStyle='rgba(205,215,210,.20)'; ctx.fillRect(x0,y0,W,H);
+    for(let i=0;i<7;i++){ const px=x0+((i*0.173+t*0.012*(1+i%3)+0.1)%1.3-0.15)*W, py=y0+(0.12+(i*0.29)%0.8)*H, R=size*(5+i%3*2);
+      const gr=ctx.createRadialGradient(px,py,0,px,py,R); gr.addColorStop(0,'rgba(225,232,228,.30)'); gr.addColorStop(1,'rgba(225,232,228,0)');
+      ctx.fillStyle=gr; ctx.beginPath(); ctx.ellipse(px,py,R,R*0.55,0,0,7); ctx.fill(); }
+  } else {
+    const tor=cl.id==='tormenta', n=Math.min(tor?260:150,Math.round(W*H/(tor?5200:8500)));
+    ctx.fillStyle=tor?'rgba(14,22,40,.30)':'rgba(30,50,80,.14)'; ctx.fillRect(x0,y0,W,H);
+    ctx.strokeStyle=tor?'rgba(200,220,255,.50)':'rgba(190,215,255,.42)'; ctx.lineWidth=Math.max(1,size*0.04); ctx.lineCap='round'; ctx.beginPath();
+    const vel=tor?1.5:1.0;
+    for(let i=0;i<n;i++){ const hx=climaHash(i,7)/4294967296, hy=climaHash(i,13)/4294967296;
+      const px=x0+((hx+t*0.10*vel*(0.7+hy*0.6))%1)*W, py=y0+((hy+t*0.9*vel*(0.7+hx*0.6))%1)*H, L=size*(0.45+hx*0.35);
+      ctx.moveTo(px,py); ctx.lineTo(px-L*0.28,py+L); }
+    ctx.stroke();
+    if(tor){                                                // relámpagos: uno cada pocos segundos
+      const k=Math.floor(t/6.5), fase=t-k*6.5, h=climaHash(k,99)%100;
+      if(h<70&&fase<0.35){ const a=(fase<0.1?fase/0.1:Math.max(0,1-(fase-0.1)/0.25))*0.55; ctx.fillStyle='rgba(235,240,255,'+a.toFixed(3)+')'; ctx.fillRect(x0,y0,W,H);
+        if(S._truenoK!==k){ S._truenoK=k; try{ if(SND.on&&FX.speed>0){ SND.init(); SND.noise(1.4,'lowpass',500,70,0.5,0.35); SND.tone(70,35,1.0,'sine',0.3,0.35); } }catch(e){} } }
+    }
+  }
+  ctx.restore();
+}
 let ambientTimer=null;
 function ambientLoop(){ clearInterval(ambientTimer); ambientTimer=setInterval(()=>{ if(!CFG.ambient) return; if(document.getElementById('game').classList.contains('hidden')) return; if(document.hidden) return; if(!FX.running) draw(); },110); }
 
@@ -2708,6 +2799,8 @@ function draw(){
     ctx.save(); ctx.globalAlpha=0.3+0.3*pulso; ctx.strokeStyle='#F2E6C4'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(x,y,size*(0.75+0.12*pulso),0,7); ctx.stroke(); ctx.restore();
     if(t.owner>=0){ ctx.strokeStyle=S.sides[t.owner].color; ctx.lineWidth=3.5; hexPath(x,y,size-3); ctx.stroke(); } }
   if(CFG.ambient) drawAmbient(now,size);
+  try{ drawClima(now,size,VR); }catch(e){}
+  try{ drawTut(now,size); }catch(e){}
   drawMini();
   for(const m of marksVisibles()){
     const {x,y}=hexPix(m.c,m.r,size); const pulso=0.5+0.5*Math.sin(now/260);
@@ -2834,7 +2927,9 @@ function refreshUI(){
   try{ refreshObjetivo(); }catch(e){}
   const s=S.sides[S.cur];
   document.getElementById('turnNum').textContent=S.turn;
-  const P=PHASES[S.phase]; document.getElementById('phasePill').innerHTML=`${P.icon} <b>${P.name}</b>`;
+  const P=PHASES[S.phase], CL=climaDe(); document.getElementById('phasePill').innerHTML=`${P.icon} <b>${P.name}</b>${CL.icon?` ${CL.icon}`:''}`;
+  if(S._climaVisto!==CL.id){ const prev=S._climaVisto; S._climaVisto=CL.id; if(prev!=null||CL.id!=='despejado'){ try{ toast(`${CL.icon||'☀️'} ${CL.name}: ${CL.txt}`); }catch(e){} } }
+  document.getElementById('phasePill').title=CL.icon?`${CL.name}: ${CL.txt}`:'';
   const sn=document.getElementById('sideName'); const porEq=new Set(S.sides.map(x=>x.team)).size<S.sides.length;
   const quien=s.human?(s.playerId?profName(s.playerId):'Vos'):`IA ${aiLevel(s).name.toLowerCase()}`;
   const corto=window.innerWidth<820||window.innerHeight<=540;
@@ -2969,7 +3064,7 @@ const PISTAS={
 };
 let pistaT;
 function pista(id){
-  if(!CFG.pistasOn) return; CFG.pistas=CFG.pistas||{}; if(CFG.pistas[id]) return;
+  if(!CFG.pistasOn||(typeof TUT!=='undefined'&&TUT.on)) return; CFG.pistas=CFG.pistas||{}; if(CFG.pistas[id]) return;
   if(ESCENA.on) return; const s0=S.sides[S.cur]; if(!s0||!s0.human) return;
   CFG.pistas[id]=true; saveCfg();
   const el=document.getElementById('pista'); if(!el) return;
@@ -3637,7 +3732,7 @@ function bindCfg(){
   document.getElementById('cfgReset').onclick=()=>{Object.assign(CFG,CFG_DEF); applyCfg(); saveCfg(); toast('Configuración restablecida');};
 }
 
-const SETUP={mode:'single',map:'franja',gold:100,ai:'veterano',fog:true,modoVictoria:'lideres',girar:true,slots:[]};
+const SETUP={mode:'single',map:'franja',gold:100,ai:'veterano',fog:true,clima:true,modoVictoria:'lideres',girar:true,slots:[]};
 const FAC_IDS=Object.keys(FACTIONS);
 function ensureSlots(){
   const M=MAPS.find(m=>m.id===SETUP.map); const n=M.players;
@@ -3702,6 +3797,7 @@ function buildSetup(){
     aldeas:`Gana el equipo que controle ${Math.max(4,(SETUP.slots.length||3)+2)} aldeas a la vez, durante dos rondas seguidas. La carrera es por el territorio, no por matar; hay que sostenerlo, no solo tocarlo una vez.`,
     corazon:'Aparece un castillo neutral en el centro del mapa. Al agotarse los turnos, gana quien lo esté ocupando en ese momento; también se puede ganar matando a todos los líderes antes.'};
   document.getElementById('winDesc').textContent=descs[SETUP.modoVictoria];
+  document.querySelectorAll('#climaSel button').forEach(b=>{b.setAttribute('aria-pressed',(+b.dataset.f===1)===SETUP.clima); b.onclick=()=>{SETUP.clima=+b.dataset.f===1;buildSetup();};});
   document.querySelectorAll('#fogSel button').forEach(b=>{b.setAttribute('aria-pressed',(+b.dataset.f===1)===SETUP.fog); b.onclick=()=>{SETUP.fog=+b.dataset.f===1;buildSetup();};});
   document.querySelectorAll('#aiSel button').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.ai===SETUP.ai); b.onclick=()=>{SETUP.ai=b.dataset.ai;buildSetup();};});
   document.getElementById('aiDesc').textContent=AI_LEVELS[SETUP.ai].desc;
@@ -3737,7 +3833,7 @@ document.getElementById('btnStart').onclick=()=>{
   const M0=MAPS.find(m=>m.id===SETUP.map); ensureSlots();
   SETUP.slots.forEach(x=>{ if(x.azar&&!x.human) x.fac=FAC_IDS[Math.floor(Math.random()*FAC_IDS.length)]; x.azar=false; });   // se sortea recién ahora
   const M=voltearMapa(M0,SETUP.girar?FLIPS[Math.floor(Math.random()*FLIPS.length)]:'');
-  buildMap(M,SETUP.slots.map(x=>({fac:x.fac,human:x.human,team:x.team,playerId:x.playerId})),SETUP.gold); S.fog=SETUP.fog;
+  buildMap(M,SETUP.slots.map(x=>({fac:x.fac,human:x.human,team:x.team,playerId:x.playerId})),SETUP.gold); S.fog=SETUP.fog; climaIniciar(SETUP.clima);
   S.view=S.sides.findIndex(x=>x.human); refreshVis();
   document.getElementById('log').innerHTML=''; log(`<b>${M.name}</b> — comienza la campaña.`);
   S.hex=hexQueEntra(M.w); resizeCanvas(); show('game'); if(CFG.music) MUSIC.start(TEMA_DE[PHASES[0].id]); startSideTurn(); wakeEncender();
@@ -4261,18 +4357,295 @@ function recallUnit(profileId,fac,idx,side,c,r){
   return u;
 }
 /* al terminar una partida, anotar resultado en cada perfil humano */
+/* ───────── desafío del día ─────────
+   Mapa, bandos, nivel de la IA, oro y clima salen de la fecha (hora argentina): todos juegan lo mismo.
+   El puntaje premia ganar rápido, las bajas y las aldeas. El mejor queda en el perfil y, si hay conexión,
+   en el ranking del día (rama /diario de Firebase; sólo se escribe el puntaje propio). */
+const DIARIO_MAPAS=['borde','vado','meseta','isla','franja','bosque','pantano','yunque','costa','vientos','cruce'];
+const diarioFecha=()=>new Date(Date.now()-3*3600e3).toISOString().slice(0,10);
+function diarioRng(str){ let h=1779033703^str.length; for(let i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; }
+  return ()=>{ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489917); h^=h>>>16; return (h>>>0)/4294967296; }; }
+function diarioConfig(fecha){
+  const R=diarioRng('terrania-'+fecha), pick=a=>a[Math.floor(R()*a.length)];
+  const map=pick(DIARIO_MAPAS), M=MAPS.find(m=>m.id===map), n=M.players;
+  const fac=pick(FAC_IDS); const rivales=[]; for(let i=1;i<n;i++) rivales.push(pick(FAC_IDS));
+  const ai=pick(['veterano','veterano','comandante','comandante','maestro']);
+  const oro=pick([70,100,100,150]); const clima=R()<0.7; const niebla=R()<0.8;
+  return {fecha,map,mapName:M.name,n,fac,rivales,ai,oro,clima,niebla,climaSeed:Math.floor(R()*1e9)};
+}
+function diarioPuntaje(s,gano){
+  const aldeas=S.tiles.filter(t=>t.t==='aldea'&&t.owner===s.i).length;
+  const base=gano?1000+Math.max(0,turnoLimite()-S.turn)*8:0;
+  return Math.max(0,Math.round(base+s.st.kills*10+aldeas*15-s.st.losses*5));
+}
+function diarioRegistrar(){
+  const D=S.diario; if(!D||S.diarioHecho) return; S.diarioHecho=true;
+  const s=S.sides.find(x=>x.human); if(!s) return; const p=profGet(s.playerId||PROF.activo); if(!p) return;
+  const gano=!!s.alive, pts=diarioPuntaje(s,gano);
+  p.st.diario=p.st.diario||{}; const prev=p.st.diario[D.fecha];
+  const mejor=!prev||pts>prev.pts; if(mejor){ p.st.diario[D.fecha]={pts,gano,turno:S.turn}; saveProfiles(); }
+  const ot=document.getElementById('overText'); if(ot) ot.textContent+=` 📅 Desafío del día: ${pts} puntos${mejor?(prev?' (¡nuevo récord personal de hoy!)':''):` (tu mejor de hoy: ${prev.pts})`}.`;
+  if(mejor) diarioSubir(D.fecha,p,pts,gano,s.fac);
+}
+async function diarioSubir(fecha,p,pts,gano,fac){
+  try{ if(!await NET.init()) return;
+    await NET.fb.set(NET.fb.ref(NET.db,'diario/'+fecha+'/'+p.id),{n:p.name,s:pts,w:gano?1:0,t:S.turn,f:fac,at:Date.now()});
+  }catch(e){ /* sin conexión o sin permiso: el puntaje queda sólo en el perfil */ }
+}
+async function diarioRanking(fecha){
+  try{ if(!await NET.init()) return {error:'Sin conexión configurada.'};
+    const snap=await NET.fb.get(NET.fb.ref(NET.db,'diario/'+fecha));
+    if(!snap.exists()) return {lista:[]};
+    return {lista:Object.entries(snap.val()).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>b.s-a.s).slice(0,10)};
+  }catch(e){ return {error:'No se pudo leer el ranking (¿falta permitir /diario en las reglas de Firebase?).'}; }
+}
+function diarioJugar(cfg){
+  SND.init(); const bk=JSON.parse(JSON.stringify(SETUP));
+  SETUP.mode='single'; SETUP.map=cfg.map; SETUP.gold=cfg.oro; SETUP.ai=cfg.ai; SETUP.fog=cfg.niebla; SETUP.clima=cfg.clima; SETUP.girar=false; SETUP.modoVictoria='lideres';
+  SETUP.slots=[]; ensureSlots(); SETUP.slots[0].fac=cfg.fac; cfg.rivales.forEach((f,i)=>{ if(SETUP.slots[i+1]) SETUP.slots[i+1].fac=f; }); SETUP.slots.forEach((x,i)=>{ x.azar=false; x.team=i+1; });
+  document.getElementById('btnStart').click();
+  climaIniciar(cfg.clima,cfg.climaSeed); S.diario=cfg; S.diarioHecho=false;
+  Object.assign(SETUP,bk);
+}
+async function diarioAbrir(){
+  if(!PROF.activo){ toast('Creá tu jugador primero (menú Jugadores) para guardar tu puntaje.'); return; }
+  const cfg=diarioConfig(diarioFecha()), p=profGet(PROF.activo), mio=(p.st.diario||{})[cfg.fecha];
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(6,10,8,.84);display:flex;align-items:center;justify-content:center;padding:16px';
+  const nivel=AI_LEVELS[cfg.ai].name, f=FACTIONS[cfg.fac].name;
+  ov.innerHTML=`<div style="background:var(--panel);border:1px solid var(--line);max-width:520px;width:100%;max-height:90vh;overflow:auto;padding:20px;color:var(--ink)">
+   <h2 style="margin:0 0 4px;font-family:'Fraunces'">📅 Desafío del día</h2><p class="tiny" style="margin:0 0 12px">${cfg.fecha} · el mismo para todos, se renueva a medianoche (hora argentina)</p>
+   <ul style="margin:0 0 12px;padding-left:18px;font-size:15px;line-height:1.55">
+     <li>Jugás con <b>${f}</b> en <b>${cfg.mapName}</b> (${cfg.n} bandos)</li>
+     <li>Rivales: ${cfg.rivales.map(x=>FACTIONS[x].name).join(', ')} · IA <b>${nivel}</b></li>
+     <li>Oro inicial: <b>${cfg.oro}</b> · ${cfg.niebla?'con niebla':'sin niebla'} · ${cfg.clima?'con clima':'cielo despejado'}</li></ul>
+   <p class="tiny" style="margin:0 0 12px">Puntaje: 1000 por ganar + 8 por cada turno que sobre + 10 por baja + 15 por aldea − 5 por unidad perdida. Podés repetirlo; cuenta tu mejor intento.</p>
+   <p style="margin:0 0 12px">Tu mejor de hoy: <b>${mio?mio.pts+' puntos'+(mio.gano?' (victoria)':''):'todavía no jugaste'}</b></p>
+   <h3 style="margin:0 0 6px;font-size:15px">Ranking de hoy</h3><div id="diaRank" class="tiny">Cargando…</div>
+   <div style="display:flex;gap:8px;justify-content:space-between;margin-top:16px"><button id="diaCerrar">Cerrar</button><button id="diaJugar" class="start" style="width:auto;margin:0;padding:11px 26px">Jugar el desafío</button></div></div>`;
+  ov.querySelectorAll('button:not(.start)').forEach(e=>{ e.style.cssText='background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:10px 16px;cursor:pointer'; });
+  document.body.appendChild(ov);
+  const cerrar=()=>ov.remove(); ov.querySelector('#diaCerrar').onclick=cerrar; ov.onclick=e=>{ if(e.target===ov) cerrar(); };
+  ov.querySelector('#diaJugar').onclick=()=>{ cerrar(); diarioJugar(cfg); };
+  const rk=await diarioRanking(cfg.fecha), box=ov.querySelector('#diaRank'); if(!box.isConnected) return;
+  if(rk.error) box.textContent=rk.error;
+  else if(!rk.lista.length) box.textContent='Todavía nadie jugó hoy: ¡sé el primero!';
+  else box.innerHTML='<ol style="margin:0;padding-left:20px;font-size:14px;color:var(--ink)">'+rk.lista.map(r=>`<li${r.id===PROF.activo?' style="color:var(--bone);font-weight:700"':''}>${String(r.n).replace(/[<>&]/g,'')} — ${r.s} pts${r.w?' 🏆':''} <span class="tiny">(${(FACTIONS[r.f]||{}).name||''}, turno ${r.t})</span></li>`).join('')+'</ol>';
+}
+document.getElementById('btnDiario').onclick=diarioAbrir;
+try{ const sub=document.getElementById('diarioSub'); const c=diarioConfig(diarioFecha()); sub.textContent=`Hoy: ${FACTIONS[c.fac].name} en ${c.mapName} · IA ${AI_LEVELS[c.ai].name}`; }catch(e){}
+/* ───────── tutorial: una primera partida guiada ─────────
+   Usa una partida de verdad (mapa chico, un rival flojo, sin niebla ni clima) y un globo que va pidiendo cada acción;
+   cada paso avanza solo cuando el jugador hace lo que se le pidió. */
+const TUT={on:false,i:0,timer:null,base:{},hexFn:null,bk:null,pulse:null};
+const TUT_PASOS=[
+ {txt:'👋 <b>¡Bienvenido a Terrania!</b> Se gana eliminando al líder rival. Te muestro lo básico en seis pasos, jugando de verdad.',btn:'Empezar'},
+ {txt:'<b>1 de 6 · Elegí a tu líder.</b> Es el de la bandera, dentro de tu fortaleza (el círculo que late). Tocalo.',cond:()=>S.sel&&S.sel.leader&&S.sel.side===0,hexFn:()=>{ const l=S.units.find(u=>u.alive&&u.leader&&u.side===0); return l&&{c:l.c,r:l.r}; }},
+ {txt:'<b>2 de 6 · Reclutá.</b> Con el líder en la fortaleza podés comprar unidades con tu oro. En el panel <b>Reclutar</b> tocá un <b>Lancero Ligero</b>.',cond:()=>S.sides[0].st.recruited>=1},
+ {txt:'<b>3 de 6 · Terminá el turno.</b> Las unidades nuevas no se mueven el turno en que nacen. Tocá <b>Terminar turno</b> y el rival juega el suyo.',cond:()=>S.turn>=2&&S.cur===0&&!S.busy,pulso:'#endTurn'},
+ {txt:'<b>4 de 6 · Tomá una aldea.</b> Tocá tu unidad: las casillas azules son adonde llega. Movela hasta la aldea marcada; cada aldea te da oro por turno (puede llevar uno o dos turnos).',cond:()=>S.tiles.filter(t=>t.t==='aldea'&&t.owner===0).length>TUT.base.aldeas,hexFn:()=>TUT.aldea},
+ {txt:'<b>5 de 6 · A pelear.</b> Apareció un enemigo cerca. Tocá tu unidad, después al enemigo y elegí el ataque. Fijate en los porcentajes: el terreno y la hora del día cambian el resultado.',cond:()=>S.sides[0].st.dealt>TUT.base.dealt,onEnter:()=>tutEnemigo(),hexFn:()=>TUT.enemigo&&TUT.enemigo.alive?{c:TUT.enemigo.c,r:TUT.enemigo.r}:null},
+ {txt:'<b>6 de 6 · El reloj manda.</b> Arriba ves la jornada: cada bando rinde mejor a ciertas horas. Los Conquistadores, a la tarde; los Terrarios, de mañana; la Alianza Oscura, de noche. Planificá los ataques según la hora.',btn:'Entendido'},
+ {txt:'🏆 <b>¡Listo!</b> Ya sabés lo básico: capturá aldeas, reclutá y eliminá al líder rival. Podés seguir esta partida o salir cuando quieras.',btn:'Terminar tutorial'}];
+function tutAldeaCercana(){
+  const k=S.sides[0].keep; if(!k) return null; let best=null,bd=1e9;
+  for(const t of S.tiles){ if(t.t!=='aldea'||t.owner>=0) continue; const d=hexDist(k.c,k.r,t.c,t.r); if(d<bd){bd=d;best=t;} }
+  return best&&{c:best.c,r:best.r};
+}
+function tutEnemigo(){
+  const mio=S.units.find(u=>u.alive&&u.side===0&&!u.leader)||S.units.find(u=>u.alive&&u.side===0); if(!mio) return;
+  let spot=null;
+  for(const dist of [2,3,1]){ for(const t of S.tiles){ if(['agua','vacio','montana','fortaleza'].includes(t.t)||unitAt(t.c,t.r)) continue; if(hexDist(mio.c,mio.r,t.c,t.r)===dist){ spot=t; break; } } if(spot) break; }
+  if(!spot) return; const e=spawn('nara',1,spot.c,spot.r); e.hp=Math.min(e.hp,18); e.maxhp=Math.max(e.maxhp,e.hp); TUT.enemigo=e; refreshVis(); draw();
+}
+function tutMostrar(){
+  const p=TUT_PASOS[TUT.i], box=document.getElementById('tutBox'); if(!box) return;
+  document.querySelectorAll('.tutPulse').forEach(e=>e.classList.remove('tutPulse'));
+  if(p.pulso){ const e=document.querySelector(p.pulso); if(e) e.classList.add('tutPulse'); }
+  if(p.onEnter&&!p._ent){ p._ent=true; try{ p.onEnter(); }catch(e){} }
+  if(TUT.i===4&&!TUT.aldea) TUT.aldea=tutAldeaCercana();
+  box.innerHTML=`<div>${p.txt}</div><div class="tutRow"><button id="tutSalir">Salir del tutorial</button><span>${p.btn?`<button class="tutGo" id="tutOk">${p.btn}</button>`:`<button id="tutSaltar">Saltar paso ▸</button>`}</span></div>`;
+  box.querySelector('#tutSalir').onclick=()=>tutTerminar(false);
+  const ok=box.querySelector('#tutOk'); if(ok) ok.onclick=()=>tutSiguiente();
+  const sk=box.querySelector('#tutSaltar'); if(sk) sk.onclick=()=>tutSiguiente();
+  TUT.hexFn=p.hexFn||null; draw();
+}
+function tutSiguiente(){
+  if(TUT.i>=TUT_PASOS.length-1){ tutTerminar(true); return; }
+  TUT.i++; if(TUT.i===4) TUT.aldea=tutAldeaCercana(); tutMostrar();
+}
+function tutTerminar(completo){
+  TUT.on=false; clearInterval(TUT.timer); TUT.hexFn=null;
+  const box=document.getElementById('tutBox'); if(box) box.remove();
+  document.querySelectorAll('.tutPulse').forEach(e=>e.classList.remove('tutPulse'));
+  try{ localStorage.setItem('terrania.tutHecho','1'); }catch(e){}
+  if(TUT.bk){ Object.assign(SETUP,TUT.bk); TUT.bk=null; }
+  try{ toast(completo?'¡Tutorial completo! Ahora jugá a tu ritmo.':'Tutorial cerrado. Lo encontrás en el menú cuando quieras.'); }catch(e){}
+  try{ draw(); }catch(e){}
+}
+function drawTut(now,size){
+  if(!TUT.on||!TUT.hexFn) return; const h=TUT.hexFn(); if(!h) return;
+  const {x,y}=hexPix(h.c,h.r,size), k=0.5+0.5*Math.sin(now/230);
+  ctx.save(); ctx.strokeStyle='#F2E6C4'; ctx.lineWidth=Math.max(2,size*0.10); ctx.globalAlpha=0.55+0.4*k; ctx.beginPath(); ctx.arc(x,y,size*(0.78+0.14*k),0,7); ctx.stroke();
+  ctx.globalAlpha=0.9; ctx.font=`${Math.round(size*0.7)}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('👇',x,y-size*(1.15+0.15*k)); ctx.restore();
+}
+function tutorialIniciar(){
+  SND.init();
+  TUT.bk=JSON.parse(JSON.stringify(SETUP));
+  SETUP.mode='single'; SETUP.map='borde'; SETUP.gold=100; SETUP.ai='recluta'; SETUP.fog=false; SETUP.clima=false; SETUP.girar=false; SETUP.modoVictoria='lideres';
+  SETUP.slots=[]; ensureSlots(); SETUP.slots[0].fac='conquistadores'; SETUP.slots[1].fac='oscura'; SETUP.slots.forEach(x=>{x.azar=false;});
+  document.getElementById('btnStart').click();
+  TUT.on=true; TUT.i=0; TUT.enemigo=null; TUT.aldea=null; TUT_PASOS.forEach(p=>{ delete p._ent; });
+  TUT.base={aldeas:S.tiles.filter(t=>t.t==='aldea'&&t.owner===0).length,dealt:S.sides[0].st.dealt};
+  const box=document.createElement('div'); box.id='tutBox'; document.body.appendChild(box);
+  tutMostrar();
+  clearInterval(TUT.timer);
+  TUT.timer=setInterval(()=>{
+    if(!TUT.on) return;
+    if(document.getElementById('game').classList.contains('hidden')||S.over){ tutTerminar(false); return; }
+    const p=TUT_PASOS[TUT.i]; if(p&&p.cond&&!p.btn){ let ok=false; try{ ok=!!p.cond(); }catch(e){} if(ok) setTimeout(()=>{ if(TUT.on&&TUT_PASOS[TUT.i]===p) tutSiguiente(); },700); }
+    else if(TUT.i===4&&!TUT.aldea) TUT.aldea=tutAldeaCercana();
+  },400);
+}
+document.getElementById('btnTutorial').onclick=tutorialIniciar;
+try{ if(localStorage.getItem('terrania.tutHecho')) document.getElementById('tutNuevo').remove(); }catch(e){}
+/* ───────── repetición de la partida ─────────
+   Se guarda una foto al empezar el turno de cada bando (unidades, vida y dueños de aldeas) y, al terminar,
+   se puede rever la guerra con la niebla levantada, avanzando o retrocediendo turno por turno. */
+function repGrabar(fin){
+  if(!S.repl||S.esReplay||!S.tiles.length) return;
+  const key2=S.turn+':'+S.cur+(fin?'f':'');
+  const last=S.repl[S.repl.length-1]; if(last&&last.k===key2) return;
+  S.repl.push({k:key2,t:S.turn,cur:S.cur,ph:S.phase,fin:!!fin,
+    u:S.units.filter(u=>u.alive).map(u=>({id:u.id,type:u.type,side:u.side,c:u.c,r:u.r,hp:u.hp,maxhp:u.maxhp,lvl:u.lvl,leader:u.leader,name:u.name,traits:u.traits||[],xp:u.xp||0})),
+    o:S.tiles.map(t=>t.owner)});
+  if(S.repl.length>900){ const mitad=S.repl.slice(0,450).filter((_,i)=>i%2===0); S.repl=mitad.concat(S.repl.slice(450)); }
+}
+const REPL={abierta:false,i:0,play:false,vel:1,timer:null,bk:null};
+function repAplicar(i){
+  const f=S.repl[i]; if(!f) return; REPL.i=i;
+  S.units=f.u.map(u=>Object.assign({mp:0,acted:true,slowed:false,alive:true,origCost:0},u));
+  S.tiles.forEach((t,k)=>{ t.owner=f.o[k]; });
+  S.turn=f.t; S.cur=f.cur; S.phase=f.ph; S.sel=null; S.reach=null; S.path=null; S.targets.clear();
+  try{ refreshUI(); }catch(e){} draw();
+  const bar=document.getElementById('replBar'); if(!bar) return;
+  const sd=S.sides[f.cur], nm=f.fin?'Final de la partida':`Turno ${f.t} · ${sd?sd.colorName:''} (${sd?FACTIONS[sd.fac].name:''})`;
+  bar.querySelector('#replTxt').textContent=nm+` — ${PHASES[f.ph].name}`;
+  bar.querySelector('#replSl').value=i; bar.querySelector('#replPlay').textContent=REPL.play?'⏸':'▶';
+}
+function repAbrir(){
+  if(!S.repl||S.repl.length<2||REPL.abierta) return;
+  REPL.abierta=true; S.esReplay=true;
+  REPL.bk={units:S.units,owners:S.tiles.map(t=>t.owner),turn:S.turn,cur:S.cur,phase:S.phase,fog:S.fog,over:S.over};
+  S.fog=false; S.over=true;
+  document.getElementById('over').classList.add('hidden');
+  const bar=document.createElement('div'); bar.id='replBar';
+  bar.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:9000;background:rgba(14,22,18,.96);border-top:1px solid var(--line);padding:10px 14px;display:grid;gap:8px;color:var(--ink)';
+  bar.innerHTML=`<div id="replTxt" style="font-weight:600"></div>
+    <input id="replSl" type="range" min="0" max="${S.repl.length-1}" value="0" style="width:100%">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button id="replIni">⏮</button><button id="replAtr">◀</button><button id="replPlay">▶</button><button id="replSig">▶|</button><button id="replFin">⏭</button>
+      <select id="replVel"><option value="1">x1</option><option value="2">x2</option><option value="4">x4</option></select>
+      <span style="flex:1"></span><button id="replCerrar">Cerrar repetición</button></div>`;
+  bar.querySelectorAll('button,select').forEach(e=>{ e.style.cssText='background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:8px 14px;font-size:16px;cursor:pointer;min-width:42px'; });
+  document.body.appendChild(bar);
+  const ir=i=>repAplicar(Math.max(0,Math.min(S.repl.length-1,i)));
+  const parar=()=>{ REPL.play=false; clearInterval(REPL.timer); };
+  const tic=()=>{ clearInterval(REPL.timer); if(!REPL.play) return; REPL.timer=setInterval(()=>{ if(REPL.i>=S.repl.length-1){ parar(); ir(REPL.i); return; } ir(REPL.i+1); },1100/REPL.vel); };
+  bar.querySelector('#replIni').onclick=()=>{ parar(); ir(0); };
+  bar.querySelector('#replAtr').onclick=()=>{ parar(); ir(REPL.i-1); };
+  bar.querySelector('#replSig').onclick=()=>{ parar(); ir(REPL.i+1); };
+  bar.querySelector('#replFin').onclick=()=>{ parar(); ir(S.repl.length-1); };
+  bar.querySelector('#replPlay').onclick=()=>{ if(REPL.i>=S.repl.length-1) ir(0); REPL.play=!REPL.play; tic(); ir(REPL.i); };
+  bar.querySelector('#replVel').onchange=e=>{ REPL.vel=+e.target.value; tic(); };
+  bar.querySelector('#replSl').oninput=e=>{ parar(); ir(+e.target.value); };
+  bar.querySelector('#replCerrar').onclick=repCerrar;
+  REPL.play=false; ir(0);
+}
+function repCerrar(){
+  if(!REPL.abierta) return; clearInterval(REPL.timer); REPL.play=false;
+  const b=REPL.bk; S.units=b.units; S.tiles.forEach((t,k)=>{ t.owner=b.owners[k]; });
+  S.turn=b.turn; S.cur=b.cur; S.phase=b.phase; S.fog=b.fog; S.over=b.over; S.esReplay=false; REPL.abierta=false;
+  const bar=document.getElementById('replBar'); if(bar) bar.remove();
+  try{ refreshVis(); refreshUI(); }catch(e){} draw();
+  document.getElementById('over').classList.remove('hidden');
+}
+document.getElementById('btnReplay').onclick=repAbrir;
+/* ───────── logros y estadísticas del jugador ───────── */
+const LOGROS=[
+ {id:'primera',  ic:'🏁', n:'Primera victoria',        d:'Ganá tu primera partida.'},
+ {id:'diez',     ic:'🎖️', n:'Diez victorias',          d:'Ganá 10 partidas.'},
+ {id:'veinticinco',ic:'🏅',n:'Veinticinco victorias',  d:'Ganá 25 partidas.'},
+ {id:'veterano', ic:'🪖', n:'Curtido en mil batallas', d:'Jugá 20 partidas.'},
+ {id:'bajas50',  ic:'⚔️', n:'Cincuenta bajas',         d:'Acumulá 50 bajas enemigas.'},
+ {id:'bajas250', ic:'💀', n:'Azote de ejércitos',      d:'Acumulá 250 bajas enemigas.'},
+ {id:'rapida',   ic:'⚡', n:'Guerra relámpago',        d:'Ganá antes del turno 15.'},
+ {id:'maraton',  ic:'⏳', n:'Maratón',                 d:'Terminá una partida de 40 turnos o más.'},
+ {id:'limpia',   ic:'🛡️', n:'Sin una baja',            d:'Ganá sin perder ni una unidad.'},
+ {id:'aldeas',   ic:'🏘️', n:'Señor de las aldeas',     d:'Terminá controlando 10 aldeas o más.'},
+ {id:'maestro',  ic:'🧠', n:'Domaste al Maestro',      d:'Ganá contra la IA Maestro.'},
+ {id:'racha3',   ic:'🔥', n:'Racha de tres',           d:'Ganá 3 partidas seguidas.'},
+ {id:'cuatro',   ic:'🌍', n:'Todos los bandos',        d:'Ganá con los cuatro bandos.'},
+ {id:'agua',     ic:'🌊', n:'Rey del agua',            d:'Ganá con los Reptiloides.'},
+ {id:'diario',   ic:'📅', n:'Desafío cumplido',        d:'Ganá un Desafío del día.'},
+];
 function profRegistrar(){
+  try{ repGrabar(true); }catch(e){}
+  try{ diarioRegistrar(); }catch(e){ logError&&logError('diario',e); }
   guardarSupervivientes();
   let cambio=false;
   S.sides.forEach(s=>{
     if(!s.human||!s.playerId) return; const p=profGet(s.playerId); if(!p) return;
-    p.st.partidas++; if(s.alive) p.st.ganadas++;
-    p.st.bajas+=s.st.kills; p.st.perdidas+=s.st.losses;
-    p.st.facCount[s.fac]=(p.st.facCount[s.fac]||0)+1;
-    p.st.favorita=Object.entries(p.st.facCount).sort((a,b)=>b[1]-a[1])[0][0];
+    const st=p.st; st.partidas++; const gano=!!s.alive; if(gano) st.ganadas++;
+    st.bajas+=s.st.kills; st.perdidas+=s.st.losses;
+    st.facCount[s.fac]=(st.facCount[s.fac]||0)+1;
+    st.favorita=Object.entries(st.facCount).sort((a,b)=>b[1]-a[1])[0][0];
+    /* estadísticas nuevas */
+    st.ganPorFac=st.ganPorFac||{}; st.usos=st.usos||{}; st.logros=st.logros||{};
+    if(gano) st.ganPorFac[s.fac]=(st.ganPorFac[s.fac]||0)+1;
+    Object.entries(s.st.rt||{}).forEach(([k,n])=>{ st.usos[k]=(st.usos[k]||0)+n; });
+    st.maxTurnos=Math.max(st.maxTurnos||0,S.turn||0);
+    st.racha=gano?(st.racha||0)+1:0; st.mejorRacha=Math.max(st.mejorRacha||0,st.racha);
+    const aldeas=S.tiles.filter(t=>t.t==='aldea'&&t.owner===s.i).length;
+    st.maxAldeas=Math.max(st.maxAldeas||0,aldeas);
+    const vsMaestro=S.sides.some(x=>!x.human&&x.ai==='maestro');
+    const ok={primera:st.ganadas>=1, diez:st.ganadas>=10, veinticinco:st.ganadas>=25, veterano:st.partidas>=20,
+      bajas50:st.bajas>=50, bajas250:st.bajas>=250, rapida:gano&&S.turn<15&&S.turn>0, maraton:(S.turn||0)>=40,
+      limpia:gano&&s.st.losses===0&&s.st.kills>0, aldeas:aldeas>=10, maestro:gano&&vsMaestro&&!S.esCampana,
+      racha3:st.racha>=3, cuatro:['conquistadores','oscura','terrarios','reptiloides'].every(f=>(st.ganPorFac[f]||0)>0),
+      agua:gano&&s.fac==='reptiloides', diario:gano&&!!S.diario};
+    const nuevos=LOGROS.filter(l=>ok[l.id]&&!st.logros[l.id]);
+    nuevos.forEach(l=>{ st.logros[l.id]=Date.now(); });
+    if(nuevos.length){ S.logrosNuevos=(S.logrosNuevos||[]).concat(nuevos);
+      setTimeout(()=>nuevos.forEach((l,i)=>setTimeout(()=>{ try{ toast(`🏆 Logro: ${l.ic} ${l.n}`); }catch(e){} },i*2600)),900); }
     cambio=true;
   });
   if(cambio) saveProfiles();
+  try{ const nu=S.logrosNuevos||[]; S.logrosNuevos=[]; const ot=document.getElementById('overText');
+    if(nu.length&&ot) ot.textContent+=' 🏆 Logros nuevos: '+nu.map(l=>l.ic+' '+l.n).join(', ')+'.'; }catch(e){}
+}
+function profEstadisticas(id){
+  const p=profGet(id); if(!p) return;
+  const st=p.st, lg=st.logros||{}, usos=Object.entries(st.usos||{}).sort((a,b)=>b[1]-a[1])[0];
+  const fav=st.favorita?FACTIONS[st.favorita].name:'—';
+  const unidadFav=usos&&UNITS[usos[0]]?`${UNITS[usos[0]].name} (${usos[1]})`:'—';
+  const ratio=st.partidas?Math.round(st.ganadas/st.partidas*100):0;
+  const porFac=Object.entries(FACTIONS).map(([k,f])=>{ const j=st.facCount[k]||0, g=(st.ganPorFac||{})[k]||0; return j?`<li>${f.name}: ${g} de ${j} ganadas</li>`:''; }).join('')||'<li>Todavía no jugaste.</li>';
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(6,10,8,.82);display:flex;align-items:center;justify-content:center;padding:16px';
+  const total=Object.keys(lg).length;
+  ov.innerHTML=`<div style="background:var(--panel);border:1px solid var(--line);max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:20px;color:var(--ink)">
+   <h2 style="margin:0 0 4px;font-family:'Fraunces'">${p.name}</h2>
+   <p class="tiny" style="margin:0 0 14px">${st.partidas} partidas · ${st.ganadas} ganadas (${ratio}%) · ${st.bajas} bajas · racha máxima ${st.mejorRacha||0}</p>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:14px;margin-bottom:12px">
+     <div>Bando favorito: <b>${fav}</b></div><div>Unidad más usada: <b>${unidadFav}</b></div>
+     <div>Partida más larga: <b>${st.maxTurnos||0} turnos</b></div><div>Más aldeas juntas: <b>${st.maxAldeas||0}</b></div></div>
+   <ul style="margin:0 0 14px;padding-left:18px;font-size:14px">${porFac}</ul>
+   <h3 style="margin:0 0 8px;font-size:15px">Logros (${total} de ${LOGROS.length})</h3>
+   <div style="display:grid;gap:6px">${LOGROS.map(l=>`<div style="display:flex;gap:10px;align-items:center;padding:6px 8px;border:1px solid var(--line);opacity:${lg[l.id]?1:.45}"><span style="font-size:22px">${lg[l.id]?l.ic:'🔒'}</span><span><b>${l.n}</b><br><span class="tiny">${l.d}</span></span></div>`).join('')}</div>
+   <div style="text-align:right;margin-top:14px"><button id="statCerrar">Cerrar</button></div></div>`;
+  document.body.appendChild(ov);
+  const cerrar=()=>ov.remove(); ov.querySelector('#statCerrar').onclick=cerrar; ov.onclick=e=>{ if(e.target===ov) cerrar(); };
 }
 function buildProfiles(){
   const box=document.getElementById('profList'); if(!box) return; box.innerHTML='';
@@ -4281,7 +4654,8 @@ function buildProfiles(){
     const d=document.createElement('div'); d.className='profrow'+(PROF.activo===p.id?' on':'');
     const fav=p.st.favorita?FACTIONS[p.st.favorita]:null;
     d.innerHTML=`<button class="pmain"><b>${p.name}</b><span class="tiny">${p.st.partidas} partidas · ${p.st.ganadas} ganadas${fav?` · suele jugar ${fav.name}`:''}</span></button>
-                 <button class="pdel" title="Borrar jugador">✕</button>`;
+                 <button class="pstat" title="Estadísticas y logros">🏆</button><button class="pdel" title="Borrar jugador">✕</button>`;
+    d.querySelector('.pstat').onclick=()=>profEstadisticas(p.id);
     d.querySelector('.pmain').onclick=()=>{ PROF.activo=p.id; saveProfiles(); buildProfiles(); refreshProfilePill(); };
     d.querySelector('.pdel').onclick=()=>{ if(confirm(`¿Borrar a ${p.name}? Se pierden sus estadísticas.`)){ profBorrar(p.id); buildProfiles(); refreshProfilePill(); } };
     box.appendChild(d);
@@ -4440,7 +4814,7 @@ function bindNet(){
 /* ---------- 19b. GUARDAR Y CARGAR ---------- */
 const SAVE_SLOTS=['auto','1','2','3'];
 function serializeGame(){
-  return {v:1,when:Date.now(),map:S.map.id,flip:S.map.flip||'',turn:S.turn,phase:S.phase,cur:S.cur,fog:S.fog,ai:SETUP.ai,hex:S.hex,esCampana:!!S.esCampana,campana:S.campana||null,guion:S.guion||null,marks:S.marks||[],
+  return {v:1,when:Date.now(),map:S.map.id,flip:S.map.flip||'',turn:S.turn,phase:S.phase,cur:S.cur,fog:S.fog,climaOn:!!S.climaOn,climaSeed:S.climaSeed,ai:SETUP.ai,hex:S.hex,esCampana:!!S.esCampana,campana:S.campana||null,guion:S.guion||null,marks:S.marks||[],
     modoVictoria:SETUP.modoVictoria||'lideres',conq:S.conq||null,terra:S.terra||null,alianza:S.alianza||null,objetivoPendiente:S.objetivoPendiente||null,
     sides:S.sides.map(x=>({fac:x.fac,team:x.team,playerId:x.playerId,st:x.st,gold:x.gold,upkeep:x.upkeep,bruto:x.bruto,pagado:x.pagado,human:x.human,ai:x.ai,alive:x.alive,income:x.income,vils:x.vils})),
     owners:S.tiles.map(t=>t.owner),
@@ -4459,7 +4833,7 @@ function loadGame(slot){
   S.esCampana=!!g.esCampana; S.campana=g.campana||null; S.guion=g.guion||{}; S.marks=g.marks||[];
   S.conq=g.conq||null; S.terra=g.terra||null; S.alianza=g.alianza||null; S.objetivoPendiente=g.objetivoPendiente||null;
   S.units.forEach(u=>{ if(!u.esEscolta) delete u.esEscolta; });
-  S.turn=g.turn; S.phase=g.phase; S.cur=g.cur; S.fog=!!g.fog; S.view=S.sides.findIndex(x=>x.human&&x.i===g.cur); if(S.view<0) S.view=S.sides.findIndex(x=>x.human); S.over=false; S.sel=null; S.reach=null; S.targets.clear(); S.undo=null; PENDING.clear();
+  S.turn=g.turn; S.phase=g.phase; S.cur=g.cur; S.fog=!!g.fog; S.climaOn=!!g.climaOn; S.climaSeed=(g.climaSeed!=null?g.climaSeed:null); S.view=S.sides.findIndex(x=>x.human&&x.i===g.cur); if(S.view<0) S.view=S.sides.findIndex(x=>x.human); S.over=false; S.sel=null; S.reach=null; S.targets.clear(); S.undo=null; PENDING.clear();
   document.getElementById('log').innerHTML=''; (g.log||[]).forEach(h=>log(h)); log(`💾 Partida cargada · turno ${S.turn}.`);
   S.hex=g.hex||(window.innerWidth<700?24:CFG.hex); resizeCanvas(); document.getElementById('over').classList.add('hidden'); show('game'); wakeEncender();
   refreshVis(); refreshUI(); draw(); if(CFG.music) MUSIC.start(TEMA_DE[PHASES[S.phase].id]); wakeEncender();
@@ -7269,7 +7643,7 @@ const NET={
     } else {
       const M=MAPS.find(m=>m.id===SETUP.map);
       sala={estado:'lobby',creada:Date.now(),host:u?u.id:'anon',
-        cfg:{map:SETUP.map,gold:SETUP.gold,ai:SETUP.ai,fog:SETUP.fog},
+        cfg:{map:SETUP.map,gold:SETUP.gold,ai:SETUP.ai,fog:SETUP.fog,clima:SETUP.clima!==false},
         slots:Array.from({length:M.players},(_,i)=>({fac:FAC_IDS[i%3],team:i+1,tipo:i===0?'humano':'ia',
           userId:i===0?(u?u.id:'anon'):null,nombre:i===0?(u?u.name:'Anfitrión'):null}))};
     }
@@ -7361,7 +7735,7 @@ const NET={
       const M=MAPS.find(m=>m.id===sala.cfg.map);
       SETUP.map=sala.cfg.map; SETUP.gold=sala.cfg.gold; SETUP.ai=sala.cfg.ai; SETUP.fog=sala.cfg.fog;
       buildMap(M,sala.slots.map(x=>({fac:x.fac,team:x.team,human:x.tipo==='humano'})),sala.cfg.gold);
-      S.fog=sala.cfg.fog;
+      S.fog=sala.cfg.fog; climaIniciar(sala.cfg.clima!==false);
       S.sides.forEach((sd,i)=>{ sd.user=sala.slots[i].nombre||null; });
     }
     await this.fb.update(this.ref(),{estado:'jugando',v:1,por:'inicio',turno:S.turn,estadoJuego:JSON.stringify(serializeGame())});
@@ -7459,7 +7833,7 @@ function aplicarEstado(g,animar){
   g.owners.forEach((o,i)=>S.tiles[i].owner=o);
   g.units.forEach(u=>S.units.push(Object.assign({anim:null},u)));
   uid=Math.max(0,...g.units.map(u=>u.id))+1;
-  S.turn=g.turn; S.phase=g.phase; S.cur=g.cur; S.fog=!!g.fog; S.over=false; S.sel=null; S.reach=null; S.targets.clear(); S.undo=null; S.marks=g.marks||[]; PENDING.clear();
+  S.turn=g.turn; S.phase=g.phase; S.cur=g.cur; S.fog=!!g.fog; S.climaOn=!!g.climaOn; S.climaSeed=(g.climaSeed!=null?g.climaSeed:null); S.over=false; S.sel=null; S.reach=null; S.targets.clear(); S.undo=null; S.marks=g.marks||[]; PENDING.clear();
   document.getElementById('log').innerHTML=''; (g.log||[]).forEach(h=>log(h));
   if(!S.hex) S.hex=CFG.hex; resizeCanvas(); LAYER.dirty=true;
   if(animar&&mismaPartida&&prevPos.size) animarLlegadaRed(prevPos);
@@ -8990,7 +9364,7 @@ const PAL={
 const ESCRIG={biped:1.0,bestia:1.6,lagarto:1.7,alado:1.5,planta:1.5,bola:1.4,arbol:1.15,moto:1.7};
 const LISTA=[
  /* Conquistadores */
- {id:'lancero',  fac:'conquistadores',nom:'Lancero Ligero',  rig:'biped', arma:'tridente',  esc:0.98,
+ {id:'lancero',  fac:'conquistadores',nom:'Lancero Ligero',  rig:'biped', arma:'lanza',  esc:0.98,
   ancho:0.88, chaleco:1, pañuelo:1,
   tinte:{ropa:'#A9682F',ropa2:'#7C4A20',pant:'#6B5335',bota:'#463421'}},
  {id:'tirador',  fac:'conquistadores',nom:'Tirador',         rig:'biped', arma:'rifle',  esc:1.02,
@@ -9020,7 +9394,7 @@ const LISTA=[
   tinte:{ropa:'#453C2E',ropa2:'#282116',piel:'#7E7458',acento:'#9CCB3E'}},
 
  /* Reptiloides */
- {id:'escamoso', fac:'reptiloides',   nom:'Escamoso',        rig:'biped', arma:'zarpa',  esc:1.02,
+ {id:'escamoso', fac:'reptiloides',   nom:'Escamoso',        rig:'biped', arma:'tridente',  esc:1.02,
   ancho:1.0, criatura:0, reptil:'escamoso',
   tinte:{ropa:'#7A5A34',ropa2:'#4E3820',piel:'#4FA67A',acento:'#E6D45A'}},
  {id:'escupidor',fac:'reptiloides',   nom:'Escupidor',       rig:'biped', arma:'cerbatana',esc:1.02,
@@ -12171,7 +12545,7 @@ async function vivoStrikeNuevo(from,to,a,hit,dmg){
   else await wait(tImp);
   const ahora=performance.now();
   if(hit){
-    SND.play(a.t);
+    SND.play(a.t); SND.unidad(to,'golpe'); SND.unidad(from,'ataque');
     FX.flash.set(to.id,{t0:ahora,t1:ahora+260/sp,col:DMGCOL[a.t]});
     floatText(to,'−'+dmg,DMGCOL[a.t]);
   } else {
