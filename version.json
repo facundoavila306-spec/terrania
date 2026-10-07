@@ -1,9 +1,9 @@
 {
- "version": "34.38",
+ "version": "34.39",
  "base": "34",
  "fecha": "07/10/2026",
  "notas": [
-  "Repeticion de partidas, tutorial guiado y Desafio del dia con ranking"
+  "Ssira, Reina del Cauce, rediseñada (cetro, aura, corona) y como cuarta jefa en el menu principal"
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "f5d891c94125d29f7c0b3efd913c5af8cbe707b9ff5dfbb67e8bef9bad385522",
-   "n": 961756
+   "h": "e77e7cf7d2aaf7d71d8a371bf3c71125ae1cffc67f8643d45b22e11d090b3cf1",
+   "n": 964621
   },
   {
    "p": "mapas/anillo.jpg",

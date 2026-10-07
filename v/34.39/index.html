@@ -9405,7 +9405,7 @@ const LISTA=[
  {id:'coloso',   fac:'reptiloides',   nom:'Coloso Cocodrilo',rig:'biped', arma:'hacha',  esc:1.22,
   ancho:1.5, criatura:0, reptil:'coloso', dosArmas:1, armaEsc:1.3,
   tinte:{ropa:'#5A4128',ropa2:'#33241A',piel:'#2F7F5E',acento:'#E6D45A'}},
- {id:'ssira',    fac:'reptiloides',   nom:'Ssira, Reina del Cauce',rig:'biped',arma:'zarpa',esc:1.20,
+ {id:'ssira',    fac:'reptiloides',   nom:'Ssira, Reina del Cauce',rig:'biped',arma:'cetro',esc:1.34,tiro:'agua',
   ancho:1.1, criatura:0, reptil:'reina', capa:'#1E6B55',
   tinte:{ropa:'#E8D9A0',ropa2:'#B59B4E',piel:'#5DBA8A',acento:'#F2D64E'}},
 
@@ -9440,7 +9440,7 @@ const IMPACTO=[0.46,0.56], SOL=0.10, VUELO=0.19;   // suelta enseguida y la flec
    Antes todas las unidades hacían el mismo movimiento. Ahora cada arma tiene el suyo:
    la lanza estoca, el bastón machaca de arriba abajo, el sable taja en diagonal,
    el hacha carga y descarga con todo el cuerpo, y las garras dan dos zarpazos. */
-const ESTILO_DE={lanza:'estocada', tridente:'estocada', baston:'machaque', sable:'tajo', hacha:'hachazo',
+const ESTILO_DE={lanza:'estocada', tridente:'estocada', cetro:'machaque', baston:'machaque', sable:'tajo', hacha:'hachazo',
                  zarpa:'zarpazo', garras:'zarpazo', colmillos:'estocada', cadena:'latigazo'};
 const VENTANA={estocada:[0.40,0.50], machaque:[0.49,0.60], tajo:[0.45,0.55],
                hachazo:[0.52,0.63], zarpazo:[0.36,0.46], latigazo:[0.47,0.58]};
@@ -9481,7 +9481,7 @@ const CURVA={estocada:cEstocada, machaque:cMachaque, tajo:golpe, hachazo:cHachaz
              zarpazo:cZarpazo, latigazo:cLatigazo};
 
 /* ángulo del arma (0 = vertical, + = punta hacia adelante) al cubrirse de un golpe */
-const GUARDIA={lanza:0.95, tridente:0.95, baston:1.50, sable:1.00, hacha:0.62, rifle:1.30, arco:0.12,
+const GUARDIA={lanza:0.95, tridente:0.95, cetro:1.50, baston:1.50, sable:1.00, hacha:0.62, rifle:1.30, arco:0.12,
                zarpa:0.25, garras:0.25, colmillos:0.25, cadena:1.2};
 
 /* ───────── rig bípedo ───────── */
@@ -9924,7 +9924,7 @@ function arma(g,u,P,m,p,t,anim,f){
   const rot = (p.armaRot!=null) ? p.armaRot : (u._rango ? 0.10+p.brazoA*0.833 : p.brazoA*1.45*0.92+0.10);
   g.save(); g.translate(m[0],m[1]); g.rotate(rot);
   if(u.armaEsc) g.scale(u.armaEsc,u.armaEsc);
-  if(u._rango && a!=='arco' && a!=='rifle' && a!=='cerbatana'){
+  if(u._rango && a!=='arco' && a!=='rifle' && a!=='cerbatana' && a!=='cetro'){
     /* tiene ataque de lejos pero su arma es de mano: saca la de tiro que le corresponde */
     if(u.fac==='conquistadores'){                       // pistola de riel
       cap(g,0,6,0,-3,5.0,P.metal2);
@@ -10011,6 +10011,15 @@ function arma(g,u,P,m,p,t,anim,f){
       g.beginPath(); g.moveTo(tx+1,-4); g.lineTo(tx-4,-7.2);
       g.moveTo(tx+1,-4); g.lineTo(tx-4,-0.8); g.stroke();
     }
+  } else if(a==='cetro'){
+    /* cetro de oro con un orbe de agua que late; al disparar el orbe se enciende */
+    const pul=0.75+0.25*sen(t*3.2), disp=(anim==='atacar'&&f>=SOL-0.02&&f<SOL+0.14);
+    cap(g,0,16,0,-36,4.2,'#8A6A1E'); cap(g,0,16,0,-36,2.4,'#E6C14E'); cap(g,0,-8,0,-12,5.4,'#F2D64E');
+    g.strokeStyle='#E6C14E'; g.lineWidth=2.6; g.beginPath(); g.arc(0,-41,7.4,Math.PI*0.15,Math.PI*0.85,true); g.stroke();
+    g.beginPath(); g.arc(0,-41,7.4,Math.PI*1.15,Math.PI*1.85,false); g.stroke();
+    const gr=g.createRadialGradient(0,-41,0,0,-41,disp?26:18); gr.addColorStop(0,'rgba(143,240,255,'+(disp?0.95:0.6*pul)+')'); gr.addColorStop(1,'rgba(143,240,255,0)');
+    g.fillStyle=gr; g.beginPath(); g.arc(0,-41,disp?26:18,0,TAU); g.fill();
+    elip(g,0,-41,5.0,5.0,'#7FE3F5'); elip(g,-1.4,-42.6,1.8,1.5,'#FFFFFF');
   } else if(a==='cerbatana'){
     /* tubo largo de caña con anillos de fibra y boquilla; apunta hacia adelante del arma */
     cap(g,0,14,1,-38,4.8,'#5B4128'); cap(g,0,14,1,-38,2.6,'#8A6A3C');
@@ -10079,13 +10088,13 @@ function reptCabeza(g,k,P,t,anim,f,verde,verde2,vientre,hueso){
   const abre=(anim==='atacar'&&!fino)?Math.max(0,golpe(f))*0.9:0;
   /* gorguera: abanico de púas detrás de la cabeza */
   if(fino||reina){
-    const ext=(fino&&anim==='atacar'&&f<0.5)?1:0.62;
+    const ext=(fino&&anim==='atacar'&&f<0.5)?1:(reina?1.0:0.62);
     g.fillStyle=P.acento; g.globalAlpha=.8; g.beginPath(); g.moveTo(-2,0);
-    for(let i=-3;i<=3;i++){ const a=Math.PI+i*0.30, l=(9+(3-Math.abs(i))*1.6)*ext*(reina?1.25:1);
+    for(let i=-3;i<=3;i++){ const a=Math.PI+i*0.30, l=(9+(3-Math.abs(i))*1.6)*ext*(reina?1.7:1);
       g.lineTo(-2+Math.cos(a)*l, Math.sin(a)*l); }
     g.closePath(); g.fill(); g.globalAlpha=1;
     g.strokeStyle=verde2; g.lineWidth=1.2; g.lineCap='round';
-    for(let i=-3;i<=3;i++){ const a=Math.PI+i*0.30, l=(9+(3-Math.abs(i))*1.6)*ext*(reina?1.25:1);
+    for(let i=-3;i<=3;i++){ const a=Math.PI+i*0.30, l=(9+(3-Math.abs(i))*1.6)*ext*(reina?1.7:1);
       g.beginPath(); g.moveTo(-2,0); g.lineTo(-2+Math.cos(a)*l, Math.sin(a)*l); g.stroke(); }
   }
   g.fillStyle=verde; g.beginPath(); g.ellipse(0,0,cw,ch,0,0,TAU); g.fill();
@@ -10115,9 +10124,9 @@ function reptCabeza(g,k,P,t,anim,f,verde,verde2,vientre,hueso){
     for(let i=0;i<4;i++){ g.beginPath(); g.moveTo(-3+i*2.8,-ch+0.6); g.lineTo(-2+i*2.8,-ch-3.6+i*0.4); g.lineTo(-0.4+i*2.8,-ch+0.6); g.fill(); }
   }
   if(reina){                                                  // corona de oro con gema
-    g.fillStyle='#E6C14E'; g.fillRect(-4.5,-ch-1.6,10,2.4);
-    for(let i=0;i<4;i++){ g.beginPath(); g.moveTo(-4.5+i*3,-ch-1.6); g.lineTo(-3+i*3,-ch-6.4-(i%2)*1.6); g.lineTo(-1.5+i*3,-ch-1.6); g.fill(); }
-    elip(g,0.5,-ch-0.6,1.3,1.1,'#D9363E');
+    g.fillStyle='#F2D64E'; g.fillRect(-5.5,-ch-1.8,12,2.8);
+    for(let i=0;i<5;i++){ const hh=(i===2?11:(i%2?7.5:9.5)); g.beginPath(); g.moveTo(-5.5+i*2.75,-ch-1.8); g.lineTo(-4.1+i*2.75,-ch-1.8-hh); g.lineTo(-2.75+i*2.75,-ch-1.8); g.fill(); }
+    elip(g,0.5,-ch-0.4,1.6,1.3,'#D9363E'); elip(g,0.5,-ch-12.6,1.5,1.5,'#7FE3F5');
   }
   elip(g,4.0,-1.6,2.3,1.9,P.acento);                         // ojo amarillo con pupila rasgada
   g.fillStyle='#0D0714'; g.fillRect(3.8,-2.7,0.9,2.3);
@@ -10138,6 +10147,11 @@ function pintarReptil(g,u,p,P,t,anim,f){
   g.save(); g.translate(p.lx,p.ly); g.rotate(p.giro);
   const hipY=coloso?-31:fino?-34:-30, torsoL=(coloso?28:fino?23:24)-p.resp*0.4;
   const [tx,ty]=D(0,hipY,-p.incl,-torsoL);
+  if(reina){                                                  // aura de agua y oro que la hace inconfundible
+    const pu=0.85+0.15*sen(t*2.2), ga=g.createRadialGradient(0,-34,4,0,-34,46);
+    ga.addColorStop(0,'rgba(127,227,245,'+(0.42*pu)+')'); ga.addColorStop(0.55,'rgba(230,193,78,'+(0.16*pu)+')'); ga.addColorStop(1,'rgba(127,227,245,0)');
+    g.fillStyle=ga; g.beginPath(); g.arc(0,-34,46,0,TAU); g.fill();
+  }
 
   /* cola gruesa que se arrastra, detrás de todo */
   {
@@ -10145,7 +10159,7 @@ function pintarReptil(g,u,p,P,t,anim,f){
     let px=-3, py=hipY+3;
     for(let i=0;i<8;i++){
       const nx=-3-(i+1)*6.4, ny=hipY+3+(i+1)*(i+1)*0.42+sen(t*2.4-(i+1)*0.7)*(1+i*0.55)*am;
-      cap(g,px,py,nx,ny,gr*(1-i/9.5),i%2?verde2:tono(verde2,-10));
+      cap(g,px,py,nx,ny,gr*(1-i/9.5),(reina&&i%2)?'#D9B13F':(i%2?verde2:tono(verde2,-10)));
       px=nx; py=ny;
     }
   }
@@ -10166,8 +10180,9 @@ function pintarReptil(g,u,p,P,t,anim,f){
   if(u.capa){                                                 // capa de la Reina
     g.fillStyle=u.capa; g.globalAlpha=.94; g.beginPath();
     const on=sen(t*2.4)*3+(anim==='caminar'?sen(t*7.2)*5:0);
-    g.moveTo(tx-7,ty-1); g.quadraticCurveTo(-18-on,hipY+2,-12-on*1.3,hipY+22);
-    g.lineTo(8,hipY+18); g.quadraticCurveTo(11,ty+8,tx+5,ty-1); g.fill(); g.globalAlpha=1;
+    g.moveTo(tx-7,ty-1); g.quadraticCurveTo(-22-on,hipY+2,-15-on*1.3,hipY+34);
+    g.lineTo(9,hipY+30); g.quadraticCurveTo(13,ty+8,tx+5,ty-1); g.fill(); g.globalAlpha=1;
+    g.strokeStyle='#E6C14E'; g.lineWidth=2; g.beginPath(); g.moveTo(-15-on*1.3,hipY+34); g.lineTo(9,hipY+30); g.stroke();
   }
   if(fino){                                                   // carcaj de dardos a la espalda
     g.save(); g.translate(tx-9,ty+7); g.rotate(-0.50);
@@ -10218,7 +10233,14 @@ function pintarReptil(g,u,p,P,t,anim,f){
     g.strokeStyle=cuero; g.lineWidth=2.6; g.lineCap='butt';
     g.beginPath(); g.moveTo(-Wh+2,1); g.lineTo(Wc-1,L-3); g.stroke();
     elip(g,-Wh*0.2,L*0.38,1.4,1.4,P.acento);
-    if(reina){ g.fillStyle='#E6C14E'; g.fillRect(-Wh+1,0.4,Wh*2-2,2.4); elip(g,0,2.2,2.2,2.0,'#D9363E'); }
+    if(reina){                                               // peto de oro con escamas y hombreras con púas
+      g.fillStyle='#D9B13F'; g.beginPath(); g.moveTo(-Wh+0.5,0.6); g.lineTo(Wh-0.5,0.6); g.lineTo(Wc+1,L*0.62); g.lineTo(-Wc-1,L*0.62); g.closePath(); g.fill();
+      g.strokeStyle='#8A6A1E'; g.lineWidth=1; for(let i=1;i<4;i++){ g.beginPath(); g.moveTo(-Wh+1.5+i*0.8,0.6+i*L*0.15); g.lineTo(Wh-1.5-i*0.8,0.6+i*L*0.15); g.stroke(); }
+      g.fillStyle='#F2D64E'; g.beginPath(); g.moveTo(-Wh+0.5,0.6); g.lineTo(0,-1.8); g.lineTo(Wh-0.5,0.6); g.closePath(); g.fill();
+      elip(g,0,L*0.22,2.6,2.6,'#D9363E'); elip(g,-0.6,L*0.22-0.8,0.9,0.8,'#FFB6B6');
+      for(const sx of [-1,1]){ const X=sx*(Wh-0.5); elip(g,X,1.2,6.8,5.2,'#E6C14E'); g.fillStyle='#F2D64E';
+        for(let q=-1;q<=1;q++){ g.beginPath(); g.moveTo(X+q*3.4-1.6,-1.8); g.lineTo(X+q*3.4,-8.4+Math.abs(q)*2); g.lineTo(X+q*3.4+1.6,-1.8); g.fill(); } }
+    }
   }
   /* manchas del lomo y púas */
   g.fillStyle=verde2; g.globalAlpha=.6;
@@ -10550,7 +10572,7 @@ function flechaPintada(g,P,sinPunta,gir){
   g.beginPath(); g.moveTo(-20,0); g.lineTo(-27,4.2*gir); g.lineTo(-23,0); g.fill();
 }
 function dibujarTiro(g,u,P,f,largo){
-  let bx=20, by=-49; if(u._tiro==='dardo'){ bx=58; by=-69; } largo=largo||92;
+  let bx=20, by=-49; if(u._tiro==='dardo'){ bx=58; by=-69; } else if(u._tiro==='agua'){ bx=44; by=-84; } largo=largo||92;
   /* fogonazo en la boca del arma */
   if(u._tiro==='bala' && f>=SOL && f<SOL+0.07){
     const k=1-(f-SOL)/0.07;
@@ -10576,6 +10598,10 @@ function dibujarTiro(g,u,P,f,largo){
     g.beginPath(); g.moveTo(x-20,y+1); g.lineTo(x-2,y); g.stroke();
     g.globalAlpha=al; g.fillStyle='#FFF6D8';
     g.beginPath(); g.ellipse(x,y,3.2,1.5,0,0,TAU); g.fill();
+  } else if(u._tiro==='agua'){
+    g.globalAlpha=al*0.30; g.strokeStyle='#7FE3F5'; g.lineWidth=7; g.beginPath(); g.moveTo(x-26,y+1); g.lineTo(x-4,y); g.stroke();
+    g.globalAlpha=al; const gg=g.createRadialGradient(x,y,0,x,y,11); gg.addColorStop(0,'rgba(220,252,255,1)'); gg.addColorStop(.45,'rgba(127,227,245,.9)'); gg.addColorStop(1,'rgba(127,227,245,0)');
+    g.fillStyle=gg; g.beginPath(); g.arc(x,y,11,0,TAU); g.fill();
   } else if(u._tiro==='dardo'){
     g.globalAlpha=al*0.18; g.strokeStyle='#C8F27A'; g.lineWidth=3;
     g.beginPath(); g.moveTo(x-22,y+1); g.lineTo(x-6,y); g.stroke();
@@ -10695,7 +10721,7 @@ const TIRO_FAC={conquistadores:'bala', oscura:'flecha', terrarios:'piedra', rept
    arma (chispas del choque), el que esquiva, el que recibe el golpe (sangre, savia, astillas
    o chispas según de qué esté hecho) y la flecha que queda clavada en el cuerpo o en el suelo. */
 const CUERPO_Y={biped:-46,bestia:-22,lagarto:-11,alado:-16,planta:-22,bola:-13,arbol:-34,moto:-24};
-const ARMAS_DE_MANO=['lanza','tridente','baston','sable','hacha','rifle','arco','cerbatana'];
+const ARMAS_DE_MANO=['lanza','tridente','cetro','baston','sable','hacha','rifle','arco','cerbatana'];
 function esArmado(tipo){ const u=figuraDe(tipo); return !!u&&u.rig==='biped'&&ARMAS_DE_MANO.indexOf(u.arma)>=0; }
 function escalaDe(tipo){ const u=figuraDe(tipo); return u?(u.esc||1)*ESCRIG[u.rig]:1; }
 function tiroDe(tipo){ const u=figuraDe(tipo); return u?(u.tiro||TIRO_FAC[u.fac]||'flecha'):'flecha'; }
@@ -12906,10 +12932,10 @@ const TEMA=(function(){
     if(c.width!==Math.round(W*dpr)){ c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); }
     const g=c.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
     const t=performance.now()/1000;
-    const L=[['lider_terr','#8CC23F',1],['lider_conq','#5AA7D8',1],['lider_osc','#C7455F',-1]];
-    const px=Math.min(H*0.80,W/3*0.95);
+    const L=[['lider_terr','#8CC23F',1],['lider_conq','#5AA7D8',1],['lider_osc','#C7455F',-1],['lider_rept','#27B58A',-1]];
+    const px=Math.min(H*0.80,W/4*0.98);
     L.forEach(([tipo,col,mira],i)=>{
-      const x=W*(0.2+i*0.3), y=H*0.70;
+      const x=W*(0.13+i*0.245), y=H*0.70;
       g.fillStyle='rgba(0,0,0,.45)'; g.beginPath(); g.ellipse(x,y+px*0.24,px*0.30,px*0.07,0,0,7); g.fill();
       g.fillStyle=col; g.globalAlpha=.35; g.beginPath(); g.ellipse(x,y+px*0.24,px*0.25,px*0.055,0,0,7); g.fill(); g.globalAlpha=1;
       try{ VIVO_ARTE.dibujar(g,tipo,x,y,px,'quieto',0,t+i*0.7,mira,col,0,false,null,null,false,0); }catch(e){}
