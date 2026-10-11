@@ -732,17 +732,17 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
     </div>
     <div class="mcard">
       <h3>En línea</h3>
-      <p>Cada uno desde su dispositivo, con una sala de código corto. La partida se sincroniza turno a turno y cada jugador ve solo lo que le corresponde.</p>
+      <p>Cada uno desde su dispositivo, con una sala de código corto. Los dispositivos se conectan directo entre sí y cada jugador ve solo lo que le corresponde. Quien crea la sala es el anfitrión y tiene que mantenerla abierta mientras se juega.</p>
       <p class="tiny" id="netEstado" style="margin:0 0 12px"></p>
       <div class="room"><input id="roomCode" maxlength="4" placeholder="CÓDIGO"><button id="btnJoin">Unirse</button></div>
       <label class="tiny" style="display:block;margin:10px 0 4px">Empezar la sala desde</label>
       <select id="seedSlot" style="width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--ink);padding:9px;font-family:inherit;font-size:13px;margin-bottom:8px"><option value="">Partida nueva</option></select>
       <button class="ghost" id="btnCreateRoom">Crear una sala</button>
-      <button class="ghost" id="btnNetCfg" style="margin-top:6px">Ver o cambiar la conexión</button>
+      <button class="ghost" id="btnNetCfg" style="margin-top:6px">Firebase (opcional)</button>
     </div>
     <div class="mcard" style="grid-column:1/-1">
       <h3>Tus partidas en línea</h3>
-      <p>Las salas en las que estás siguen guardadas en el servidor. Entrá cuando quieras: la partida espera a que estén todos y sigue donde quedó.</p>
+      <p>Las salas en las que jugaste quedan guardadas en este dispositivo. Si eras el anfitrión, la reabrís y los demás entran con el mismo código; la partida espera a que estén todos y sigue donde quedó.</p>
       <div id="misSalas"></div>
       <button class="ghost" id="btnRefreshSalas" style="margin-top:10px">Actualizar lista</button>
     </div>
@@ -766,11 +766,12 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
 <!-- ══════════════ CONFIGURAR FIREBASE ══════════════ -->
 <section id="netcfg" class="screen hidden">
 <div class="pane">
-  <div class="pane-head"><button class="back" data-go="multi">← Volver</button><h2>Conexión</h2></div>
+  <div class="pane-head"><button class="back" data-go="multi">← Volver</button><h2>Firebase (opcional)</h2></div>
   <div class="netcfg-grid">
     <div>
-      <h3 class="fieldtitle">Ya está conectado</h3>
-      <p class="tiny" style="margin:0 0 22px;line-height:1.7">El juego trae configurado el proyecto <b>westho-ab9bb</b>: podés crear salas sin tocar nada.</p>
+      <h3 class="fieldtitle">Las salas no lo necesitan</h3>
+      <p class="tiny" style="margin:0 0 12px;line-height:1.7">Jugar en línea y guardar las partidas funciona sin Firebase: las salas van directo entre los dispositivos y todo se guarda en el tuyo. Firebase sólo sirve para <b>cuentas en la nube</b> (entrar con tu usuario desde otro celular), el <b>ranking del desafío del día</b> y las <b>estadísticas globales</b>.</p>
+      <label class="tiny" style="display:flex;gap:8px;align-items:center;margin:0 0 22px"><input type="checkbox" id="netFbOn"> Usar Firebase (cuentas en la nube, ranking y estadísticas)</label>
 
       <h3 class="fieldtitle">Cerrar el modo de prueba</h3>
       <p class="tiny" style="margin:0 0 10px;line-height:1.7">El modo de prueba vence a los 30 días y mientras tanto cualquiera puede leer y escribir toda la base. Para cerrarlo: entrá a <b>Realtime Database → pestaña Reglas</b>, borrá lo que haya y pegá esto, después <b>Publicar</b>.</p>
@@ -1107,15 +1108,15 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
   <div class="cab"><img src="estudio.png" alt="El Gallo McFlay"><div><h2>La Batalla por Terrania</h2><p>Un juego de <b>El Gallo McFlay</b>.<br>© 2026 Facundo · El Gallo McFlay. Todos los derechos reservados.</p></div></div>
   <h3>Autoría</h3><p>Idea, mundo, historia, facciones, reglas, campañas y dirección: <b>Facundo</b>. El código y el arte se hicieron con asistencia de inteligencia artificial (Claude, de Anthropic), bajo su dirección y revisión.</p>
   <h3>Tipografías</h3><p><b>Fraunces</b> — Undercase Type (Phaedra Charles y Flavia Zimbardi). Licencia SIL Open Font License 1.1.</p><p><b>Barlow</b> — Jeremy Tribby. Licencia SIL Open Font License 1.1.</p><p>Se sirven desde Google Fonts.</p>
-  <h3>Bibliotecas</h3><p><b>Firebase JavaScript SDK</b> 10.12.2 (app y base de datos en tiempo real), © Google LLC. Licencia Apache 2.0. Se usa sólo para el multijugador en línea.</p>
+  <h3>Bibliotecas</h3><p><b>Firebase JavaScript SDK</b> 10.12.2 (app y base de datos en tiempo real), © Google LLC. Licencia Apache 2.0. Opcional: sólo para cuentas en la nube, ranking y estadísticas globales.</p><p><b>PeerJS</b> 1.5.4, © Michelle Bu y Eric Zhang. Licencia MIT. Conecta las salas en línea directo entre los dispositivos (WebRTC).</p>
   <h3>Arte, música y sonido</h3><p>Los dibujos del mapa, las unidades y las bases son procedurales, hechos en código para este juego. Los sonidos y la música se generan en el momento con el sintetizador del navegador. No se usan imágenes ni grabaciones de terceros.</p>
   <button class="start" id="btnCreditosCerrar" style="margin-top:16px">Cerrar</button>
 </div></div>
   <div id="welcome" class="hidden"><div class="welbox">
     <p class="eyebrow">Bienvenido a</p>
     <h2>Terrania</h2>
-    <p>Tu usuario es único y con clave: entrá con el mismo nombre desde cualquier celular y vas a encontrar tus partidas, tu campaña y tus veteranos donde los dejaste.</p>
-    <div class="weltabs">
+    <p id="welLead">Tu usuario es único y con clave: entrá con el mismo nombre desde cualquier celular y vas a encontrar tus partidas, tu campaña y tus veteranos donde los dejaste.</p>
+    <div class="weltabs" id="welTabs">
       <button class="weltab" data-weltab="login" aria-pressed="true">Ya tengo cuenta</button>
       <button class="weltab" data-weltab="crear" aria-pressed="false">Crear cuenta</button>
     </div>
@@ -1125,6 +1126,7 @@ d.addEventListener('click',fuera);setTimeout(fuera,2600);})();</script>
     <p class="tiny" id="welMsg" style="min-height:18px;margin:2px 0 12px"></p>
     <button class="start" id="welOk">Entrar</button>
     <button class="ghost" id="welSkip">Jugar como invitado (sin guardar en la nube)</button>
+    <button class="ghost" id="welNube" style="margin-top:6px"></button>
   </div></div>
 
 <script>
@@ -4349,7 +4351,7 @@ async function registrarPartidaAnonima(){
 async function resumenBalanceGlobal(){
   const el=document.getElementById('balanceGlobal'); if(!el) return;
   try{
-    if(!await NET.init()){ el.textContent='Sin conexión.'; return; }
+    if(!await NET.init()){ el.textContent='Las estadísticas globales necesitan Firebase (opcional, apagado).'; return; }
     const snap=await NET.fb.get(NET.fb.query(NET.fb.ref(NET.db,'estadisticas/partidas'),NET.fb.limitToLast(500)));
     if(!snap.exists()){ el.textContent='Todavía no hay partidas registradas.'; return; }
     const regs=Object.values(snap.val()); const w={conquistadores:0,oscura:0,terrarios:0,reptiloides:0}, jug={conquistadores:0,oscura:0,terrarios:0,reptiloides:0};
@@ -4463,7 +4465,7 @@ async function diarioSubir(fecha,p,pts,gano,fac){
   }catch(e){ /* sin conexión o sin permiso: el puntaje queda sólo en el perfil */ }
 }
 async function diarioRanking(fecha){
-  try{ if(!await NET.init()) return {error:'Sin conexión configurada.'};
+  try{ if(!await NET.init()) return {error:'El ranking en línea necesita Firebase (opcional, está apagado). Tu mejor puntaje queda guardado en tu perfil.'};
     const snap=await NET.fb.get(NET.fb.ref(NET.db,'diario/'+fecha));
     if(!snap.exists()) return {lista:[]};
     return {lista:Object.entries(snap.val()).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>b.s-a.s).slice(0,10)};
@@ -4869,27 +4871,33 @@ function refreshSeedSlots(){
 }
 function netEstado(){
   const el=document.getElementById('netEstado'); if(!el) return;
-  const c=NET.loadCfg();
-  el.innerHTML=c?`Conectado al proyecto <b style="color:var(--bone)">${c.projectId||'de Firebase'}</b>.`:'Falta configurar la conexión. Tocá <b>Configurar la conexión</b> y seguí los cinco pasos.';
-  ['btnCreateRoom','btnJoin','roomCode'].forEach(id=>{ const b=document.getElementById(id); if(b) b.disabled=!c; });
+  el.innerHTML=`Las salas van <b style="color:var(--bone)">directo entre los dispositivos</b>: no hace falta ninguna cuenta ni servidor propio. Firebase: <b style="color:var(--bone)">${NET.fbOn()?'activado':'apagado'}</b> (opcional).`;
+  const nf=document.getElementById('netFbOn'); if(nf) nf.checked=NET.fbOn();
 }
 async function renderMisSalas(){
   const box=document.getElementById('misSalas'); if(!box) return;
   if(!PROF.activo){ box.innerHTML='<p class="tiny">Creá tu jugador para ver tus partidas.</p>'; return; }
   box.innerHTML='<p class="tiny">Buscando…</p>';
   let lista=[];
-  try{ lista=await NET.misPartidas(); }catch(e){ box.innerHTML='<p class="tiny">No pude leer el servidor.</p>'; return; }
+  try{ lista=await NET.misPartidas(); }catch(e){ box.innerHTML='<p class="tiny">No pude leer las partidas guardadas.</p>'; return; }
   if(!lista.length){ box.innerHTML='<p class="tiny">No tenés partidas en línea guardadas.</p>'; return; }
   box.innerHTML='';
   lista.forEach(p=>{
     const M=MAPS.find(m=>m.id===p.map);
     const d=document.createElement('div'); d.className='salarow';
-    d.innerHTML=`<span><b>${p.code}</b> · ${M?M.name:p.map}<br><small>${p.estado==='lobby'?'en la sala de espera':'turno '+p.turno} · ${p.jugadores.join(', ')}${p.faltan?' · faltan '+p.faltan:''}</small></span>`;
-    const ir=document.createElement('button'); ir.className='take'; ir.textContent='Entrar';
-    ir.onclick=async()=>{ try{ const r=await NET.unirse(p.code,true); if(r!=='ok'&&r!=='ya-empezo') toast('No pude entrar.'); }catch(e){ toast('Error: '+e.message); } };
-    const del=document.createElement('button'); del.className='udel'; del.textContent='✕'; del.title='Borrar la partida';
-    del.onclick=async()=>{ if(confirm(`¿Borrar la partida ${p.code} para todos?`)){ await NET.borrarSala(p.code); renderMisSalas(); } };
-    d.appendChild(ir); d.appendChild(del); box.appendChild(d);
+    d.innerHTML=`<span><b>${p.code}</b> · ${M?M.name:p.map}<br><small>${p.estado==='lobby'?'en la sala de espera':'turno '+p.turno} · ${p.jugadores.join(', ')}${p.host?' · sos el anfitrión':''}</small></span>`;
+    const ir=document.createElement('button'); ir.className='take'; ir.textContent=p.host?'Reabrir sala':'Entrar';
+    ir.title=p.host?'Vos sos el anfitrión: reabrís la sala y los demás entran con el mismo código':'Se conecta al anfitrión (tiene que tener la sala abierta)';
+    ir.onclick=async()=>{ if(!exigirJugador()) return; toast(p.host?'Reabriendo la sala…':'Conectando…');
+      try{ const ok=await NET.retomar(p.code,p.host); if(!ok) toast(p.host?'No pude reabrir la sala.':'No encontré al anfitrión. ¿Tiene la sala abierta?'); }catch(e){ toast('Error: '+e.message); } };
+    d.appendChild(ir);
+    if(!p.host){ const al=document.createElement('button'); al.className='take'; al.textContent='Alojar yo'; al.title='Reabrir esta sala desde mi copia, siendo yo el anfitrión';
+      al.onclick=async()=>{ if(!exigirJugador()) return; if(!confirm('¿Alojar esta sala vos? Los demás van a entrar a tu dispositivo con el mismo código. Usalo si el anfitrión original no puede.')) return;
+        try{ const ok=await NET.retomar(p.code,true); if(!ok) toast('No pude reabrir la sala.'); }catch(e){ toast('Error: '+e.message); } };
+      d.appendChild(al); }
+    const del=document.createElement('button'); del.className='udel'; del.textContent='✕'; del.title='Borrar la partida de este dispositivo';
+    del.onclick=async()=>{ if(confirm(`¿Borrar la partida ${p.code} de este dispositivo?`)){ await NET.borrarSala(p.code); renderMisSalas(); } };
+    d.appendChild(del); box.appendChild(d);
   });
 }
 function renderLobby(sala){
@@ -4928,7 +4936,19 @@ function renderLobby(sala){
   st.style.display=NET.host?'':'none'; st.disabled=humanos<1;
   hint.textContent=NET.host?`${humanos} persona(s) en la sala. Los lugares libres los juega la IA.`:'Esperando a que el anfitrión empiece.';
 }
-function abrirBienvenida(){ const d=document.getElementById('welcome'); d.classList.remove('hidden'); setTimeout(()=>document.getElementById('welName').focus(),120); }
+function refrescarBienvenida(){
+  const $=id=>document.getElementById(id), nube=NET.fbOn();
+  $('welLead').textContent=nube?'Tu usuario es único y con clave: entrá con el mismo nombre desde cualquier celular y vas a encontrar tus partidas, tu campaña y tus veteranos donde los dejaste.'
+    :'Elegí tu nombre. Tus estadísticas, campañas y veteranos se guardan en este dispositivo, sin cuenta ni servidor.';
+  $('welTabs').style.display=nube?'':'none';
+  $('welClave').style.display=nube?'':'none';
+  $('welClave2').style.display=nube&&WELTAB==='crear'?'':'none';
+  $('welOk').textContent=nube?(WELTAB==='crear'?'Crear cuenta':'Entrar'):'Empezar a jugar';
+  $('welSkip').style.display=nube?'':'none';
+  $('welNube').textContent=nube?'Jugar sin cuenta en la nube':'Tengo una cuenta en la nube (opcional)';
+  $('welMsg').textContent='';
+}
+function abrirBienvenida(){ refrescarBienvenida(); const d=document.getElementById('welcome'); d.classList.remove('hidden'); setTimeout(()=>document.getElementById('welName').focus(),120); }
 function cerrarBienvenida(){ document.getElementById('welcome').classList.add('hidden'); }
 let WELTAB='login';
 function bindBienvenida(){
@@ -4937,13 +4957,16 @@ function bindBienvenida(){
   document.querySelectorAll('.weltab').forEach(b=>b.onclick=()=>{
     WELTAB=b.dataset.weltab;
     document.querySelectorAll('.weltab').forEach(x=>x.setAttribute('aria-pressed',x===b));
-    $('welClave2').style.display=WELTAB==='crear'?'':'none';
-    $('welOk').textContent=WELTAB==='crear'?'Crear cuenta':'Entrar';
-    msg('');
+    refrescarBienvenida();
   });
   async function intentar(){
     const nombre=$('welName').value.trim(), clave=$('welClave').value;
     if(!nombre) return msg('Escribí tu nombre de usuario.','err');
+    if(!NET.fbOn()){                                   // modo local: sólo el nombre, todo queda en este dispositivo
+      const ex=PROF.list.find(p=>p.name.toLowerCase()===nombre.toLowerCase());
+      if(ex){ PROF.activo=ex.id; saveProfiles(); } else if(!profNuevo(nombre)) return msg('No pude crear ese jugador.','err');
+      cerrarBienvenida(); refreshProfilePill(); refreshAcctPill(); toast('¡Hola, '+profName(PROF.activo)+'!'); return;
+    }
     if(!clave) return msg('Escribí tu clave.','err');
     $('welOk').disabled=true; msg(WELTAB==='crear'?'Creando cuenta…':'Entrando…');
     let r;
@@ -4961,6 +4984,8 @@ function bindBienvenida(){
   $('welClave2').addEventListener('keydown',e=>{ if(e.key==='Enter') intentar(); });
   $('welClave').addEventListener('keydown',e=>{ if(e.key==='Enter'&&WELTAB==='login') intentar(); });
   $('welSkip').onclick=cerrarBienvenida;
+  $('welNube').onclick=()=>{ NET.fbActivar(!NET.fbOn()); refrescarBienvenida(); };
+  $('welName').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!NET.fbOn()) intentar(); });
 }
 function exigirJugador(motivo){ if(PROF.activo) return true; abrirBienvenida(); toast(motivo||'Creá tu jugador para seguir.'); return false; }
 function refreshAcctPill(){
@@ -4973,19 +4998,20 @@ function refreshAcctPill(){
 }
 function bindNet(){
   const $=id=>document.getElementById(id);
-  $('btnNetCfg').onclick=()=>{ const c=NET.loadCfg(); if(c) $('netCfgText').value=JSON.stringify(c,null,2); show('netcfg'); };
+  $('btnNetCfg').onclick=()=>{ const c=NET.loadCfg(); if(c) $('netCfgText').value=JSON.stringify(c,null,2); netEstado(); show('netcfg'); };
   $('btnSaveNetCfg').onclick=()=>{ const ok=NET.saveCfg($('netCfgText').value);
-    $('netCfgMsg').innerHTML=ok?'<b style="color:var(--good)">Listo.</b> Ya podés crear o unirte a una sala.':'<b style="color:var(--bad)">No pude leer esa configuración.</b> Tiene que incluir apiKey y databaseURL.';
+    $('netCfgMsg').innerHTML=ok?'<b style="color:var(--good)">Listo.</b> Guardé la configuración de Firebase.':'<b style="color:var(--bad)">No pude leer esa configuración.</b> Tiene que incluir apiKey y databaseURL.';
     netEstado(); };
   $('btnCreateRoom').onclick=async()=>{ if(!exigirJugador('Necesitás un nombre para crear la sala.')) return;
     const slot=$('seedSlot').value||null; pedirPermisoAvisos();
     toast(slot?'Creando sala desde la partida guardada…':'Creando sala…');
-    try{ const c=await NET.crear(slot); if(!c) toast('Revisá la configuración de Firebase.'); }catch(e){ toast('No pude conectar: '+e.message); } };
+    try{ await NET.crear(slot); }catch(e){ toast('No pude crear la sala: '+e.message); } };
   $('btnJoin').onclick=async()=>{ if(!exigirJugador('Necesitás un nombre para entrar a la sala.')) return; pedirPermisoAvisos();
     const c=$('roomCode').value; if(c.length<4) return toast('El código tiene 4 letras.');
     try{ const r=await NET.unirse(c);
-      if(r==='no-existe') toast('No existe esa sala.'); else if(r==='ya-empezo') toast('Esa partida ya empezó.'); else if(r==='sin-config') toast('Configurá la conexión primero.');
+      if(r==='no-existe') toast('No encontré esa sala. El anfitrión tiene que tenerla abierta.'); else if(r==='ya-empezo') toast('Esa partida ya empezó.');
     }catch(e){ toast('No pude conectar: '+e.message); } };
+  $('netFbOn').onchange=e=>{ NET.fbActivar(e.target.checked); netEstado(); toast(e.target.checked?'Firebase activado.':'Firebase apagado.'); };
   $('btnCopyRules').onclick=()=>{ const t=document.getElementById('reglasJson').innerText;
     if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>toast('Reglas copiadas')); else toast('Copialas a mano desde el recuadro.'); };
   $('btnResetNetCfg').onclick=()=>{ localStorage.removeItem('terrania.fb'); NET.cfg=null; NET.db=null; NET.loadCfg();
@@ -4996,7 +5022,7 @@ function bindNet(){
   $('btnLeaveRoom').onclick=()=>{ NET.salir(); show('multi'); };
   document.querySelectorAll('[data-net]').forEach(b=>b.onclick=async()=>{
     if(!exigirJugador()) return; toast('Volviendo a la sala…');
-    try{ if(!await NET.reconectar()) toast('Esa sala ya no existe.'); }catch(e){ toast('No pude conectar: '+e.message); }
+    try{ if(!await NET.reconectar()) toast('No pude volver a esa sala. Si no sos el anfitrión, él tiene que tenerla abierta.'); }catch(e){ toast('No pude conectar: '+e.message); }
   });
 }
 
@@ -7805,6 +7831,7 @@ const NET={
     this.cfg=o; localStorage.setItem('terrania.fb',JSON.stringify(o)); return true;
   },
   async init(){
+    if(!this.fbOn()) return false;                  // Firebase es opcional: apagado por defecto
     if(this.db) return true;
     if(!this.loadCfg()) return false;
     const app=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
@@ -7813,16 +7840,102 @@ const NET={
     return true;
   },
   nuevoCodigo(){ const L='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let c=''; for(let i=0;i<4;i++) c+=L[rnd(L.length)]; return c; },
-  ref(path){ return this.fb.ref(this.db,'salas/'+this.code+(path?'/'+path:'')); },
+  /* ── Firebase: OPCIONAL. Sólo se usa para cuentas en la nube, ranking del día y estadísticas globales.
+     Las salas en línea ya no lo necesitan: van directo entre los dispositivos (PeerJS / WebRTC). ── */
+  fbOn(){ try{ const v=localStorage.getItem('terrania.fbOn'); if(v!==null) return v==='1'; }catch(e){} return PROF.list.some(p=>p.cloud); },
+  fbActivar(si){ try{ localStorage.setItem('terrania.fbOn',si?'1':'0'); }catch(e){} if(!si){ this.db=null; this.fb=null; } },
+  /* ── Salas directas: el anfitrión guarda la sala y la reparte; los demás le mandan sus jugadas ── */
+  sala:null, peer:null, conn:null, conns:new Map(), listener:null,
+  peerOpts(){ try{ const o=JSON.parse(localStorage.getItem('terrania.peerCfg')||'null'); if(o&&typeof o==='object') return o; }catch(e){} return {}; },
+  async peerLib(){
+    if(window.Peer) return window.Peer;
+    let fuentes=['https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js','https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'];
+    try{ const o=localStorage.getItem('terrania.peerSrc'); if(o) fuentes=[o]; }catch(e){}
+    for(const src of fuentes){
+      try{
+        await new Promise((ok,ko)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ s.remove(); ko(new Error('x')); }; document.head.appendChild(s); });
+        if(window.Peer) return window.Peer;
+      }catch(e){}
+    }
+    throw new Error('No pude cargar el conector de salas. ¿Hay internet?');
+  },
+  peerId(code){ return 'terrania-sala-'+code; },
+  nuevoPeer(id){
+    return this.peerLib().then(P=>new Promise((ok,ko)=>{
+      const p=id?new P(id,this.peerOpts()):new P(this.peerOpts());
+      const t=setTimeout(()=>{ try{p.destroy();}catch(e){} ko(new Error('El servidor de conexión no responde.')); },12000);
+      p.on('open',()=>{ clearTimeout(t); p.removeAllListeners('error'); p.on('error',e=>console.warn('peer:',e&&e.type)); ok(p); });
+      p.on('error',e=>{ clearTimeout(t); try{p.destroy();}catch(_){} ko(new Error(e&&e.type==='unavailable-id'?'ID-TOMADO':((e&&e.message)||(e&&e.type)||'error'))); });
+    }));
+  },
+  cerrarRed(){
+    this.pararLatido(); clearInterval(this._reint); this._reint=null;
+    try{ this.conns.forEach(x=>{ try{x.conn.close();}catch(e){} }); }catch(e){}
+    this.conns=new Map();
+    try{ if(this.conn) this.conn.close(); }catch(e){} this.conn=null;
+    try{ if(this.peer) this.peer.destroy(); }catch(e){} this.peer=null;
+    this.listener=null;
+  },
+  setPath(o,path,val){
+    const ks=path.split('/'); let x=o;
+    for(let i=0;i<ks.length-1;i++){ const k=ks[i]; if(x[k]===null||typeof x[k]!=='object') x[k]=(/^\d+$/.test(ks[i+1])?[]:{}); x=x[k]; }
+    const u=ks[ks.length-1]; if(val===null||val===undefined) delete x[u]; else x[u]=val;
+  },
+  /* qué puede escribir un invitado: su lugar, su civilización y el estado de la partida */
+  permitido(k){ return /^slots\/\d+\/(userId|nombre|tipo|fac|azar)$/.test(k)||/^(v|por|turno|estadoJuego)$/.test(k); },
+  escribir(up){
+    if(this.host){ this.aplicar(up); return Promise.resolve(); }
+    if(this.conn&&this.conn.open) this.conn.send({t:'upd',up});
+    return Promise.resolve();
+  },
+  aplicar(up,desde){
+    if(!this.sala) return;
+    for(const k in up){ if(desde&&!this.permitido(k)) continue; this.setPath(this.sala,k,up[k]); }
+    this.persistir();
+    const m={t:'upd',up:desde?Object.fromEntries(Object.entries(up).filter(([k])=>this.permitido(k))):up};
+    this.conns.forEach(x=>{ if(x.conn.open) try{ x.conn.send(m); }catch(e){} });
+    this.notificar();
+  },
+  notificar(){ if(this.listener&&this.sala) this.listener(this.sala); },
+  presenciaEdades(){ const p=(this.sala&&this.sala.presencia)||{}, ahora=Date.now(), o={}; for(const k in p) o[k]=Math.max(0,ahora-p[k]); return o; },
+  difundirPresencia(){
+    const m={t:'pres',p:this.presenciaEdades()};
+    this.conns.forEach(x=>{ if(x.conn.open) try{ x.conn.send(m); }catch(e){} });
+    if(this.sala&&this.listener&&this.sala.estado==='jugando') this.chequearPresencia(this.sala);
+  },
+  hostConexion(c){
+    c.on('open',()=>{ this.conns.set(c.peer,{conn:c}); try{ c.send({t:'sala',sala:this.sala,edades:this.presenciaEdades()}); }catch(e){} });
+    c.on('data',m=>{
+      if(!m||typeof m!=='object') return;
+      if(m.t==='upd'&&m.up&&typeof m.up==='object') this.aplicar(m.up,c.peer);
+      else if(m.t==='hb'&&typeof m.uid==='string'){ this.sala.presencia=this.sala.presencia||{}; this.sala.presencia[m.uid]=Date.now(); this.difundirPresencia(); }
+    });
+    c.on('close',()=>{ this.conns.delete(c.peer); });
+    c.on('error',()=>{});
+  },
+  /* guardado local de las salas (en este dispositivo): permite retomar sin ningún servidor */
+  persistir(){
+    if(!this.code||!this.sala) return;
+    clearTimeout(this._pt);
+    this._pt=setTimeout(()=>{
+      const copia=Object.assign({},this.sala); delete copia.presencia;
+      let todo={}; try{ todo=JSON.parse(localStorage.getItem('terrania.salas')||'{}'); }catch(e){}
+      todo[this.code]={sala:copia,host:this.host,cuando:Date.now()};
+      const claves=Object.keys(todo).sort((a,b)=>todo[b].cuando-todo[a].cuando);
+      for(let n=Math.min(claves.length,5); n>=1; n--){
+        const sub={}; claves.slice(0,n).forEach(k=>sub[k]=todo[k]);
+        try{ localStorage.setItem('terrania.salas',JSON.stringify(sub)); return; }catch(e){}
+      }
+    },700);
+  },
+  salasLocales(){ try{ return JSON.parse(localStorage.getItem('terrania.salas')||'{}'); }catch(e){ return {}; } },
   async crear(seedSlot){
-    if(!await this.init()) return null;
-    try{ await this.fb.get(this.fb.ref(this.db,'salas')); }catch(e){ toast('La base rechazó la conexión. Revisá las Reglas de Firebase.'); return null; }
-    const u=profGet(PROF.activo); this.code=this.nuevoCodigo(); this.host=true;
-    let sala;
+    const u=profGet(PROF.activo);
     const guardado=seedSlot?readSave(seedSlot):null;
+    let sala;
     if(guardado){
       const M=mapaConFlip(guardado.map,guardado.flip);
-      if(!M){ toast('Ese mapa guardado ya no existe.'); this.code=null; return null; }
+      if(!M){ toast('Ese mapa guardado ya no existe.'); return null; }
       const slots=guardado.sides.map((x,i)=>({fac:x.fac,team:x.team||i+1,tipo:x.human?'humano':'ia',userId:null,nombre:null}));
       const yo=slots.findIndex(x=>x.tipo==='humano');
       if(yo>=0){ slots[yo].userId=u?u.id:'anon'; slots[yo].nombre=u?u.name:'Anfitrión'; }
@@ -7836,53 +7949,101 @@ const NET={
         slots:Array.from({length:M.players},(_,i)=>({fac:FAC_IDS[i%3],team:i+1,tipo:i===0?'humano':'ia',
           userId:i===0?(u?u.id:'anon'):null,nombre:i===0?(u?u.name:'Anfitrión'):null}))};
     }
-    await this.fb.set(this.ref(),sala);
-    try{                                                   // limpieza: borrar salas de más de un día
-      const todas=await this.fb.get(this.fb.ref(this.db,'salas'));
-      if(todas.exists()){ const v=todas.val(), ahora=Date.now();
-        for(const k in v){ if(k!==this.code && v[k] && v[k].creada && ahora-v[k].creada>864e5) this.fb.remove(this.fb.ref(this.db,'salas/'+k)); } }
-    }catch(e){}
+    this.cerrarRed(); this.host=true; this.on=false; this.code=null;
+    let ok=false;
+    for(let i=0;i<6&&!ok;i++){
+      const code=this.nuevoCodigo();
+      try{ this.peer=await this.nuevoPeer(this.peerId(code)); this.code=code; ok=true; }
+      catch(e){ if(e.message!=='ID-TOMADO') throw e; }
+    }
+    if(!ok) throw new Error('No encontré un código libre. Probá de nuevo.');
+    this.peer.on('connection',c=>this.hostConexion(c));
+    this.peer.on('disconnected',()=>{ try{ this.peer.reconnect(); }catch(e){} });
+    sala.presencia={}; this.sala=sala; this.persistir();
     this.escuchar(); return this.code;
   },
   async misPartidas(){
-    if(!await this.init()) return [];
     const u=profGet(PROF.activo); if(!u) return [];
-    const snap=await this.fb.get(this.fb.ref(this.db,'salas'));
-    if(!snap.exists()) return [];
-    const v=snap.val(), out=[];
-    for(const code in v){
-      const sala=v[code]; if(!sala||!sala.slots) continue;
+    const todo=this.salasLocales(), out=[];
+    for(const code in todo){
+      const e=todo[code], sala=e&&e.sala; if(!sala||!sala.slots) continue;
       if(!sala.slots.some(x=>x.userId===u.id)) continue;
-      out.push({code,estado:sala.estado,turno:(JSON.parse(sala.estadoJuego||'{}').turn)||0,
-        map:sala.cfg?sala.cfg.map:'?',jugadores:sala.slots.filter(x=>x.tipo==='humano').map(x=>x.nombre),
-        creada:sala.creada||0,faltan:this.faltan(sala).length});
+      let turno=0; try{ turno=(JSON.parse(sala.estadoJuego||'{}').turn)||0; }catch(_){}
+      out.push({code,estado:sala.estado,turno,host:!!e.host,map:sala.cfg?sala.cfg.map:'?',
+        jugadores:sala.slots.filter(x=>x.tipo==='humano').map(x=>x.nombre),creada:e.cuando||0,faltan:0});
     }
     return out.sort((a,b)=>b.creada-a.creada);
   },
-  async borrarSala(code){ if(!await this.init()) return; await this.fb.remove(this.fb.ref(this.db,'salas/'+code)); },
+  async borrarSala(code){ const t=this.salasLocales(); delete t[code]; try{ localStorage.setItem('terrania.salas',JSON.stringify(t)); }catch(e){} },
+  /* invitado: se conecta al anfitrión con el código. Devuelve 'ok' | 'no-existe' | 'ya-empezo' */
   async unirse(code,retomar){
-    if(!await this.init()) return 'sin-config';
-    this.code=code.toUpperCase().trim(); this.host=false;
-    const snap=await this.fb.get(this.ref());
-    if(!snap.exists()) { this.code=null; return 'no-existe'; }
-    const sala=snap.val();
-    if(sala.estado!=='lobby'&&!retomar) { this.code=null; return 'ya-empezo'; }
+    this.cerrarRed(); this.code=code.toUpperCase().trim(); this.host=false; this.sala=null;
+    let p;
+    try{ p=await this.nuevoPeer(); }catch(e){ this.code=null; throw e; }
+    this.peer=p;
+    const r=await this.conectarAlAnfitrion(10000);
+    if(r!=='ok'){ this.cerrarRed(); this.code=null; return r; }
+    if(this.sala.estado!=='lobby'&&!retomar){ this.cerrarRed(); this.code=null; this.sala=null; return 'ya-empezo'; }
     this.escuchar(); return 'ok';
+  },
+  conectarAlAnfitrion(ms){
+    return new Promise(res=>{
+      let listo=false; const fin=v=>{ if(listo) return; listo=true; clearTimeout(t); res(v); };
+      const t=setTimeout(()=>{ try{c.close();}catch(e){} fin('no-existe'); },ms);
+      const c=this.peer.connect(this.peerId(this.code),{reliable:true});
+      this.conn=c;
+      this.peer.once('error',e=>{ if(e&&e.type==='peer-unavailable') fin('no-existe'); });
+      c.on('data',m=>this.invitadoRecibe(m,listo?null:fin));
+      c.on('close',()=>{ fin('no-existe'); this.anfitrionPerdido(c); });
+      c.on('error',()=>{});
+    });
+  },
+  invitadoRecibe(m,fin){
+    if(!m||typeof m!=='object') return;
+    if(m.t==='sala'){
+      this.sala=m.sala; this.aplicarEdades(m.edades); this.persistir();
+      if(fin) fin('ok'); else this.notificar();
+    } else if(m.t==='upd'&&this.sala&&m.up){
+      for(const k in m.up) this.setPath(this.sala,k,m.up[k]);
+      this.persistir(); this.notificar();
+    } else if(m.t==='pres'&&this.sala){
+      this.aplicarEdades(m.p);
+      if(this.listener&&this.sala.estado==='jugando') this.chequearPresencia(this.sala);
+    }
+  },
+  aplicarEdades(ed){ if(!ed||!this.sala) return; const ahora=Date.now(); this.sala.presencia={}; for(const k in ed) this.sala.presencia[k]=ahora-ed[k]; },
+  anfitrionPerdido(c){
+    if(c!==this.conn||this.host||!this.code||!this.peer) return;
+    if(this.sala){ this.sala.presencia={}; if(this.listener&&this.on) this.chequearPresencia(this.sala); }
+    if(this._reint) return;
+    this._reint=setInterval(async()=>{
+      if(!this.code||this.host||!this.peer){ clearInterval(this._reint); this._reint=null; return; }
+      if(this.conn&&this.conn.open){ clearInterval(this._reint); this._reint=null; return; }
+      const r=await this.conectarAlAnfitrion(6000);
+      if(r==='ok'){ clearInterval(this._reint); this._reint=null; this.notificar(); this.latir(); }
+    },5000);
   },
   recordar(){ try{ localStorage.setItem('terrania.sala',JSON.stringify({code:this.code,host:this.host,when:Date.now()})); }catch(e){} },
   olvidar(){ try{ localStorage.removeItem('terrania.sala'); }catch(e){} },
-  guardada(){ try{ const v=JSON.parse(localStorage.getItem('terrania.sala')||'null'); return (v&&Date.now()-v.when<864e5)?v:null; }catch(e){ return null; } },
-  async reconectar(){
-    const v=this.guardada(); if(!v) return false;
-    if(!await this.init()) return false;
-    this.code=v.code; this.host=!!v.host;
-    const snap=await this.fb.get(this.ref());
-    if(!snap.exists()){ this.olvidar(); this.code=null; return false; }
+  guardada(){ try{ const v=JSON.parse(localStorage.getItem('terrania.sala')||'null'); return (v&&Date.now()-v.when<7*864e5)?v:null; }catch(e){ return null; } },
+  /* volver a una sala: el anfitrión la reabre desde su copia guardada; los demás se conectan a él */
+  async reconectar(){ const v=this.guardada(); if(!v) return false; return this.retomar(v.code,v.host); },
+  async retomar(code,comoHost){
+    code=String(code).toUpperCase();
+    if(!comoHost){ const r=await this.unirse(code,true); return r==='ok'||r==='ya-empezo'; }
+    const e=this.salasLocales()[code]; if(!e||!e.sala) return false;
+    this.cerrarRed(); this.host=true; this.code=code; this.on=false;
+    try{ this.peer=await this.nuevoPeer(this.peerId(code)); }
+    catch(er){ this.code=null; if(er.message==='ID-TOMADO') toast('Esa sala ya está abierta en otro dispositivo.'); else throw er; return false; }
+    this.peer.on('connection',c=>this.hostConexion(c));
+    this.peer.on('disconnected',()=>{ try{ this.peer.reconnect(); }catch(e){} });
+    this.sala=e.sala; this.sala.presencia={}; this.persistir();
     this.escuchar(); return true;
   },
   latir(){
-    const u=profGet(PROF.activo); if(!u||!this.code||!this.db) return;
-    this.fb.set(this.fb.ref(this.db,'salas/'+this.code+'/presencia/'+u.id),Date.now()).catch(()=>{});
+    const u=profGet(PROF.activo); if(!u||!this.code) return;
+    if(this.host){ if(this.sala){ this.sala.presencia=this.sala.presencia||{}; this.sala.presencia[u.id]=Date.now(); this.difundirPresencia(); } }
+    else if(this.conn&&this.conn.open) try{ this.conn.send({t:'hb',uid:u.id}); }catch(e){}
   },
   arrancarLatido(){ clearInterval(this._hb); this.latir(); this._hb=setInterval(()=>this.latir(),7000); },
   pararLatido(){ clearInterval(this._hb); this._hb=null; },
@@ -7892,13 +8053,12 @@ const NET={
   },
   escuchar(){
     this.recordar(); this.arrancarLatido();
-    if(this.unsub) this.unsub();
-    this.unsub=this.fb.onValue(this.ref(),snap=>{
-      const sala=snap.val(); if(!sala) return;
+    this.listener=sala=>{
       NET.sala=sala;
       if(sala.estado==='lobby'){ renderLobby(sala); }
       else if(sala.estado==='jugando'){ NET.recibir(sala); NET.chequearPresencia(sala); }
-    });
+    };
+    this.notificar();
   },
   async tomarLugar(i){
     const u=profGet(PROF.activo); if(!u) return toast('Primero creá tu jugador.');
@@ -7907,14 +8067,14 @@ const NET={
     const up={};
     if(ya>=0&&ya!==i){ up['slots/'+ya+'/userId']=null; up['slots/'+ya+'/nombre']=null; up['slots/'+ya+'/tipo']='ia'; }
     up['slots/'+i+'/userId']=u.id; up['slots/'+i+'/nombre']=u.name; up['slots/'+i+'/tipo']='humano';
-    await this.fb.update(this.ref(),up);
+    await this.escribir(up);
   },
-  async cambiarSlot(i,campo,valor){ if(!this.host&&campo!=='fac'&&campo!=='azar') return; await this.fb.update(this.ref(),{['slots/'+i+'/'+campo]:valor}); },
-  async cambiarCfg(campo,valor){ if(!this.host) return; await this.fb.update(this.ref(),{['cfg/'+campo]:valor}); },
+  async cambiarSlot(i,campo,valor){ if(!this.host&&campo!=='fac'&&campo!=='azar') return; await this.escribir({['slots/'+i+'/'+campo]:valor}); },
+  async cambiarCfg(campo,valor){ if(!this.host) return; await this.escribir({['cfg/'+campo]:valor}); },
   async empezar(){
     if(!this.host) return;
     const sala=this.sala;
-    if(!sala.semilla){ sala.slots.forEach((sl,i)=>{ if(sl.azar){ sl.fac=FAC_IDS[Math.floor(Math.random()*FAC_IDS.length)]; sl.azar=false; try{ this.fb.update(this.ref(),{['slots/'+i+'/fac']:sl.fac,['slots/'+i+'/azar']:false}); }catch(e){} } }); }
+    if(!sala.semilla){ sala.slots.forEach((sl,i)=>{ if(sl.azar){ sl.fac=FAC_IDS[Math.floor(Math.random()*FAC_IDS.length)]; sl.azar=false; try{ this.escribir({['slots/'+i+'/fac']:sl.fac,['slots/'+i+'/azar']:false}); }catch(e){} } }); }
     if(sala.semilla){
       const g=JSON.parse(sala.semilla);
       aplicarEstado(g);
@@ -7927,7 +8087,7 @@ const NET={
       S.fog=sala.cfg.fog; climaIniciar(sala.cfg.clima!==false);
       S.sides.forEach((sd,i)=>{ sd.user=sala.slots[i].nombre||null; });
     }
-    await this.fb.update(this.ref(),{estado:'jugando',v:1,por:'inicio',turno:S.turn,estadoJuego:JSON.stringify(serializeGame())});
+    await this.escribir({estado:'jugando',v:1,por:'inicio',turno:S.turn,estadoJuego:JSON.stringify(serializeGame())});
   },
   entrarPartida(sala){
     const u=profGet(PROF.activo);
@@ -7967,6 +8127,7 @@ const NET={
     if(!this.on) return;
     const f=this.faltan(sala), d=document.getElementById('waitDlg');
     if(!d) return;
+    if(this._hayFaltan!==(f.length>0)){ this._hayFaltan=f.length>0; try{ refreshUI(); }catch(e){} }   // habilita o bloquea "Terminar turno" según estén todos
     if(f.length){
       d.querySelector('.wait-list').innerHTML=f.map(x=>`<span class="wfalta">${x.nombre}</span>`).join('');
       d.querySelector('.wait-hay').innerHTML=(sala.slots||[]).filter(x=>x.tipo==='humano'&&!f.includes(x)).map(x=>`<span class="why">${x.nombre}</span>`).join('')||'<span class="tiny">nadie todavía</span>';
@@ -7990,7 +8151,7 @@ const NET={
         this._reenviar=false;
         const yo=(profGet(PROF.activo)||{}).id;
         const v=(this.vistaV||0)+1; this.vistaV=v;
-        try{ await this.fb.update(this.ref(),{v,por:yo,turno:S.turn,estadoJuego:JSON.stringify(serializeGame())}); }
+        try{ await this.escribir({v,por:yo,turno:S.turn,estadoJuego:JSON.stringify(serializeGame())}); }
         catch(e){ console.error('No se pudo sincronizar la sala:',e); }
       } while(this._reenviar);
     };
@@ -8004,8 +8165,12 @@ const NET={
     clearTimeout(this._parcialTimer);
     this._parcialTimer=setTimeout(()=>{ this._parcialTimer=null; this.enviar().catch(()=>{}); },140);
   },
-  salir(){ this.pararLatido(); if(this.unsub) this.unsub(); this.unsub=null; this.on=false; this.code=null; this.me=-1; this.sala=null; this.olvidar(); },
-  dejarAbierta(){ this.pararLatido(); if(this.unsub) this.unsub(); this.unsub=null; this.on=false; this.sala=null; },
+  salir(){ this.cerrarRed(); this.on=false; this.code=null; this.me=-1; this.sala=null; this.host=false; this.olvidar(); },
+  /* salir al menú sin cerrar la sala: el anfitrión sigue repartiendo jugadas; un invitado se desconecta y puede volver */
+  dejarAbierta(){
+    this.pararLatido(); this.listener=null; this.on=false;
+    if(!this.host){ this.cerrarRed(); this.sala=null; }
+  },
 };
 const esMiTurno=()=>!NET.on||S.cur===NET.me;
 
