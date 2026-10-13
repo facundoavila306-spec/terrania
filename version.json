@@ -1,9 +1,9 @@
 {
- "version": "34.48",
+ "version": "34.49",
  "base": "34",
  "fecha": "13/10/2026",
  "notas": [
-  "Intro del motor MEV (volcán) después del logo del estudio; un toque la saltea. Modo itch.io."
+  "La intro del MEV muestra también el logo de El Gallo McFlay (\"presenta\") arriba del volcán."
  ],
  "archivos": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "p": "index.html",
-   "h": "5a223b7cd95836317ab1c5da4e350396ce43447e942d9ced41f973682ba82924",
-   "n": 1024995
+   "h": "b498c20c475a23dcff3a466fd17fd0254e3a2491999b004fb39c6e36d492504c",
+   "n": 1025621
   },
   {
    "p": "mapas/anillo.jpg",
